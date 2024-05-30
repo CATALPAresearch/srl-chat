@@ -10,6 +10,7 @@ database "Data Store" as ds {
     folder "Signed up user" {
         [language]
         [start prompt]
+        [conversation context]
         [interview outcome]
     }
 }

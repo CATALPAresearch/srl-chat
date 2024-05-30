@@ -1,0 +1,22 @@
+{
+    "language_not_supported_message": "The language you have specified is currently not supported. Please specify 'en' for English or 'de' for German. <br/>Die von dir gewünschte Sprache wird derzeit nicht unterstützt. Bitte gib entweder 'en' für Englisch oder 'de' für Deutsch an.",
+    "translations":
+    {
+        "en": {
+            "command_response": "Please check your DMs for a message from me.",
+            "conversation_start": "Starting conversation...",
+            "start_prompt": {
+                "version": 1,
+                "text": "[INST]You are a study advisor. Your task is to ask students to describe their study processes. Reply with a friendly greeting and a single question asking to describe their favourite study method.[/INST]"
+            }
+        },
+        "de": {
+            "command_response": "Du bekommst gleich eine persönliche Nachricht von mir.",
+            "conversation_start": "Unser Gespräch beginnt gleich...",
+            "start_prompt": {
+                "version": 2,
+                "text": "[INST]!!Du bist ein Studienberater an einer deutschen Universität. Deine Aufgabe ist es, Studenten und Studentinnen nach ihren bevorzugten Lernmethoden zu fragen. Beginne das Gespräch mit einer freundlichen Begrüßung und einer Aufforderung, eine Lernmethode zu beschreiben, die die Person selbst oft einsetzt. Antworte stets auf Deutsch.[/INST]"
+            }
+        }
+    }
+}
