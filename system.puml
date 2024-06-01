@@ -8,10 +8,14 @@ cloud {
 }
 database "Data Store" as ds {
     folder "Signed up user" {
-        [language]
-        [start prompt]
-        [conversation context]
-        [interview outcome]
+        [language] #pink
+        [user ID] #pink
+        [client] #pink
+        [conversation context] #orange
+        [interview outcome] #orange
+        [other conversations\n(stretch goal)] #lightblue
+        [name\n(stretch goal)] #lightblue
+        [start prompt\n(stretch goal)] #lightblue
     }
 }
 
