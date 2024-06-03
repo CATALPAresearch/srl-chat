@@ -23,4 +23,6 @@ def get_hf_llm_message(prompt):
 def get_llm_message(model, prompt):
     data = {"model": model, "prompt": prompt, "stream": False}
     response = requests.post(f"{OLLAMA_API_URL}/generate", data=json.dumps(data))
-    return response
+    print(response.content)
+    response_json = json.loads(response.content.decode('utf8'))
+    return response_json["response"]

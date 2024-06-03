@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS users (
     user_id VARCHAR NOT NULL,
     client VARCHAR NOT NULL,
     language_id VARCHAR NOT NULL REFERENCES languages,
+    message_history VARCHAR,
     PRIMARY KEY (user_id, client)
 );
 

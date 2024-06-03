@@ -40,19 +40,21 @@ def query_db(query, args=(), one=False):
     return (rv[0] if rv else None) if one else rv
 
 
-def db_insert(query, args=(), one=False):
+def db_insert_or_update(query, args=(), one=False):
     conn = get_db()
     cur = conn.cursor().execute(query, args)
     conn.commit()
     id = cur.lastrowid
     cur.close()
+    if not id:
+        count = cur.rowcount
+        return count
     return id
 
 
-def add_user(user_id, client, language):
+def add_user(user_id, client, language, start_prompt):
     language_id = query_db("SELECT language_id FROM languages where lang_code = ?", [language], one=True)
-    res = db_insert("INSERT INTO users VALUES (?, ?, ?)", [user_id, client, language_id[0]])
-    print(res)
+    res = db_insert_or_update("INSERT INTO users VALUES (?, ?, ?, ?)", [user_id, client, language_id[0], start_prompt])
     if res:
         return True
     else:
@@ -86,9 +88,46 @@ def start_conversation():
         response = xmlescape(msg, {"ä": "&auml;", "ö": "&ouml;", "ü": "&uuml;"})
         return htmlescape(response), 400
 
-    db_response = add_user(userid, client, language)
-    return "OK" if db_response is True else "ERROR"
+    start_prompt = translations["translations"][language]["start_prompt"]["text"]
+    llm_message = get_llm_message("mixtral", start_prompt)
+
+    db_response = add_user(userid, client, language, f"<s>[INST]{start_prompt}[/INST]{llm_message}</s>")
+    if db_response is not True:
+        return "An error occurred, please try to restart the conversation", 500
     # TODO: check if user has already started a conversation so we continue from there
-    # llm_message = get_llm_message("mixtral", translations["translations"][language]["start_prompt"]["text"])
-    # response_json = json.loads(llm_message.content.decode('utf8').replace("'", '"'))
-    # return response_json["response"]
+    return llm_message
+
+
+@app.route("/reply", methods=['POST'])
+def reply():
+    """
+    Post request format:
+    {
+        "client": "discord",
+        "userid": Discord user ID
+        "message": message
+    }
+    """
+    # TODO error if conversation not started - redirect?
+    content = request.json
+    client = content["client"]
+    userid = content["userid"]
+    user_message = content["message"]
+
+    message_history = retrieve_user_context(userid, client)
+    prompt = f"{message_history}[INST]{user_message}[/INST]"
+    print(prompt)
+    llm_message = get_llm_message("mixtral", prompt)
+    res = db_insert_or_update(
+        "UPDATE users SET message_history = message_history || ? WHERE user_id = ? and client = ?",
+        [f"[INST]{user_message}[/INST]{llm_message}", userid, client])
+    if res:
+        return llm_message
+    else:
+        return "An error occurred, please try resending the message", 500
+
+
+def retrieve_user_context(userid, client):
+    message_history = query_db("SELECT message_history FROM users where user_id = ? and client = ?", [userid, client],
+                               one=True)
+    return message_history[0]
