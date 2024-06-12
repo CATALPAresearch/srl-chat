@@ -35,8 +35,10 @@ def start_conversation():
         "userid": Discord user ID
     }
     """
-    with open("C:/Users/Elisabeth/Uni/StudyBotPy/flask_v2/translations.json") as file:
+    with open("config/translations.json") as file:
         translations = json.load(file)
+    with open("config/interview.json") as file:
+        interview_context = json.load(file)
     content = request.json
     language = content["language"]
     client = content["client"]
@@ -47,7 +49,9 @@ def start_conversation():
         response = xmlescape(msg, {"ä": "&auml;", "ö": "&ouml;", "ü": "&uuml;"})
         return htmlescape(response), 400
 
-    start_prompt = translations["translations"][language]["start_prompt"]["text"]
+    # start_prompt = translations["translations"][language]["start_prompt"]["text"]
+    start_prompt = get_start_prompt(interview_context[language]["contexts"][0])
+
     llm_message = get_llm_message("mixtral", start_prompt)
 
     language_db = db.session.scalar(
@@ -80,13 +84,25 @@ def reply():
     userid = content["userid"]
     user_message = content["message"]
 
+    with open("config/interview.json") as file:
+        interview_context = json.load(file)
+    strategies = interview_context["de"]["strategies"]
+    eval_prompt = f"Evaluiere die Antwort der Nutzerin/des Nutzers, die durch '###' abgegrenzt ist. Bestimme, " \
+                  f"ob die Antwort eine der folgenden Lernstrategien erwähnt und gib ihren Index in der folgenden " \
+                  f"Liste an: {strategies} ### {user_message}"
+
     user = db.session.scalar(
         sa.select(User).where(User.id == userid and User.client == client))
     message_history = user.message_history
-    prompt = f"{message_history}[INST]{user_message}[/INST]"
+    # prompt = f"{message_history}[INST]{user_message}[/INST]"
+    # llm_message = get_llm_message("mixtral", prompt)
 
-    llm_message = get_llm_message("mixtral", prompt)
+    llm_message = get_llm_message("mixtral", eval_prompt)
 
     user.message_history += f"[INST]{user_message}[/INST]{llm_message}"
     db.session.commit()
     return llm_message
+
+
+def get_start_prompt(context):
+    return f"Du bist ein Studienberater an einer deutschen Universität. Deine Aufgabe ist es, die bevorzugten Lernmethoden von Studenten und Studentinnen zu evaluieren. Beginne das Gespräch mit einer freundlichen Begrüßung und einer Aufforderung, eine Lernmethode zu beschreiben, die die Person im Lernkontext '{context}' oft einsetzt. Antworte stets auf Deutsch und duze deinen Gesprächspartner. Sende und erwähne keine englische Übersetzung."

@@ -1,0 +1,50 @@
+{
+  "en": {
+    "contexts": [
+      "learning and remembering what was said during in-person or online events",
+      "reviewing course material at home",
+      "writing papers",
+      "completing practice tasks",
+      "preparing for and taking oral or written exams",
+      "when poorly motivated"
+    ],
+    "strategies": [
+        "goal setting and planning",
+        "environmental structuring",
+        "self-consequences (i.e. self-rewarding and self-punishment)",
+        "self-evaluating",
+        "organising and transforming",
+        "seeking and selecting information",
+        "rehearsal and mnemonic strategies (memorising)",
+        "seeking social assistance from fellow students",
+        "seeking social assistance from teachers",
+        "seeking social assistance from others (not fellow students or teachers)",
+        "reviewing previously compiled records, e.g. tests, notes or course material/textbooks",
+        "keeping records and monitoring"
+    ]
+  },
+  "de": {
+    "contexts": [
+    "Aufnehmen und Erinnern von Inhalten von Live-Veranstaltungen in Präsenz oder Online",
+    "Beim Durcharbeiten von Kurstexten",
+    "Hausarbeiten schreiben",
+    "Übungsaufgaben bearbeiten",
+    "Bei der Vorbereitung und beim Ablegen mündlicher oder schriflicher Prüfungen",
+    "Bei geringer Motivation"
+  ],
+  "strategies": [
+      "Lernziele setzen und Zeitmanagement",
+      "Räumliche Rahmenbedingungen setzen, z.B. Arbeitsplatz strukturieren",
+      "Selbstbelohnung oder -strafe",
+      "Selbstevaluation - Bewertung der eigenen Arbeit",
+      "Umstrukturierung von Lernmaterial zur Verbesserung des Lerneffekts",
+      "Weitere Informationsquellen aufsuchen (von anderen Informationsquellen als anderen Personen), z.B. Bücher oder anderes Material",
+      "Auswendig lernen",
+      "Hilfe bei Kommilitonen suchen",
+      "Hilfe bei Lehrpersonal suchen",
+      "Hilfe bei anderen suchen (nicht Kommilitonen oder Lehrpersonal)",
+      "Notizen, frühere Prüfungen oder Kursmaterial wiederholen",
+      "Notizen machen und Fehler festhalten"
+  ]
+  }
+}
