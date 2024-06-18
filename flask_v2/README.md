@@ -5,6 +5,38 @@ self-regulated learning skills based on Zimmerman and Martinez-Pons' Self-Regula
 
 Zimmerman, B. J., & Martinez-Pons, M. M. (1986). _Development of a Structured Interview for Assessing Student Use of Self-Regulated Learning Strategies._ American Educational Research Journal, 23(4), 614–628. https://doi.org/10.2307/1163093
 
+## Running the app locally
+
+```shell
+flask run # use --reload option to interactively restart the app following code changes
+```
+
+The following endpoints will then be available:
+
+```http request
+POST http://127.0.0.1:5000/startConversation
+Content-Type: application/json
+
+{
+    "language": "de", // "de" or "en" currently supported
+    "client": "discord",
+    "userid": "123" // needs to be unique for the client
+}
+```
+
+```http request
+POST http://127.0.0.1:5000/reply
+Content-Type: application/json
+
+{
+    "message": "A user response",
+    "client": "discord",
+    "userid": "56"
+}
+```
+
+
+
 ## App Structure
 
 ![system_arch.png](..%2Fsystem_arch.png)
