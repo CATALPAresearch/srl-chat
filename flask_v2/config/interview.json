@@ -24,27 +24,27 @@
     ]
   },
   "de": {
-    "contexts": [
-    "Aufnehmen und Erinnern von Inhalten von Live-Veranstaltungen in Präsenz oder Online",
-    "Beim Durcharbeiten von Kurstexten",
-    "Hausarbeiten schreiben",
-    "Übungsaufgaben bearbeiten",
-    "Bei der Vorbereitung und beim Ablegen mündlicher oder schriflicher Prüfungen",
-    "Bei geringer Motivation"
-  ],
-  "strategies": [
-      "Lernziele setzen und Zeitmanagement",
-      "Räumliche Rahmenbedingungen setzen, z.B. Arbeitsplatz strukturieren",
-      "Selbstbelohnung oder -strafe",
-      "Selbstevaluation - Bewertung der eigenen Arbeit",
-      "Umstrukturierung von Lernmaterial zur Verbesserung des Lerneffekts",
-      "Weitere Informationsquellen aufsuchen (von anderen Informationsquellen als anderen Personen), z.B. Bücher oder anderes Material",
-      "Auswendig lernen",
-      "Hilfe bei Kommilitonen suchen",
-      "Hilfe bei Lehrpersonal suchen",
-      "Hilfe bei anderen suchen (nicht Kommilitonen oder Lehrpersonal)",
-      "Notizen, frühere Prüfungen oder Kursmaterial wiederholen",
-      "Notizen machen und Fehler festhalten"
-  ]
+    "contexts": {
+      "C1": "Aufnehmen und Erinnern von Inhalten von Live-Veranstaltungen in Präsenz oder Online",
+      "C2": "Beim Durcharbeiten von Kurstexten",
+      "C3": "Hausarbeiten schreiben",
+      "C4": "Übungsaufgaben bearbeiten",
+      "C5": "Bei der Vorbereitung und beim Ablegen mündlicher oder schriflicher Prüfungen",
+      "C6": "Bei geringer Motivation"
+    },
+  "strategies": {
+    "S1": "Lernziele setzen und Zeitmanagement",
+    "S2": "Räumliche Rahmenbedingungen setzen, z.B. Arbeitsplatz strukturieren",
+    "S3": "Selbstbelohnung oder -strafe",
+    "S4": "Selbstevaluation - Bewertung der eigenen Arbeit",
+    "S5": "Umstrukturierung von Lernmaterial zur Verbesserung des Lerneffekts",
+    "S6": "Weitere Informationsquellen aufsuchen (von anderen Informationsquellen als anderen Personen), z.B. Bücher oder anderes Material",
+    "S7": "Auswendig lernen",
+    "S8": "Hilfe bei Kommilitonen suchen",
+    "S9": "Hilfe bei Lehrpersonal suchen",
+    "S10": "Hilfe bei anderen suchen (nicht Kommilitonen oder Lehrpersonal)",
+    "S11": "Notizen, frühere Prüfungen oder Kursmaterial wiederholen",
+    "S12": "Notizen machen und Fehler festhalten"
+  }
   }
 }

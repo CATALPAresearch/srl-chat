@@ -8,6 +8,7 @@ from xml.sax.saxutils import escape as xmlescape
 from html import escape as htmlescape
 
 from app.llm import get_llm_message
+from controller.conversation_controller import get_language, get_user, first_time_setup
 
 
 @app.route('/')
@@ -44,27 +45,24 @@ def start_conversation():
     client = content["client"]
     userid = content["userid"]
 
-    if language != "en" and language != "de":
+    if get_user(userid, client) is not None:
+        # TODO
+        raise NotImplementedError("user exists, continue conversation")
+
+    if not get_language(language):
         msg = translations["language_not_supported_message"]
         response = xmlescape(msg, {"ä": "&auml;", "ö": "&ouml;", "ü": "&uuml;"})
         return htmlescape(response), 400
+
+    created_user = first_time_setup(userid, client, language)
+    if created_user is None:
+        return "An error occurred, please try to restart the conversation", 500
 
     # start_prompt = translations["translations"][language]["start_prompt"]["text"]
     start_prompt = get_start_prompt(interview_context[language]["contexts"][0])
 
     llm_message = get_llm_message("mixtral", start_prompt)
 
-    language_db = db.session.scalar(
-        sa.select(Language).where(Language.lang_code == language))
-    user = User(id=userid, client=client, language_id=language_db.id,
-                message_history=f"<s>[INST]{start_prompt}[/INST]{llm_message}</s>")
-    db.session.add(user)
-    db.session.commit()
-    created_user = db.session.scalar(
-        sa.select(User).where(User.id == userid and User.client == client))
-    if created_user is None:
-        return "An error occurred, please try to restart the conversation", 500
-    # TODO: check if user has already started a conversation so we continue from there
     return llm_message
 
 
@@ -78,11 +76,14 @@ def reply():
         "message": message
     }
     """
-    # TODO error if conversation not started - redirect?
     content = request.json
     client = content["client"]
     userid = content["userid"]
     user_message = content["message"]
+
+    if get_user(userid, client) is None:
+        # TODO
+        raise NotImplementedError("user does not exist, create new conversation")
 
     with open("config/interview.json") as file:
         interview_context = json.load(file)
