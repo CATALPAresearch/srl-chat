@@ -8,6 +8,7 @@ Zimmerman, B. J., & Martinez-Pons, M. M. (1986). _Development of a Structured In
 ## Running the app locally
 
 ```shell
+cd .\flask_v2\
 flask run # use --reload option to interactively restart the app following code changes
 ```
 
@@ -35,7 +36,13 @@ Content-Type: application/json
 }
 ```
 
+## Making changes to the DB
 
+```shell
+cd .\flask_v2\
+flask db migrate -m "Describe migration"
+flask db upgrade
+```
 
 ## App Structure
 

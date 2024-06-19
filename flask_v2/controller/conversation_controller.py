@@ -8,7 +8,6 @@ with open("config/translations.json") as file:
     translations = json.load(file)
 with open("config/interview.json") as file:
     interview_context = json.load(file)
-start_prompt = translations["translations"][language]["start_prompt"]["text"]
 
 
 def get_user(userid, client) -> User | None:

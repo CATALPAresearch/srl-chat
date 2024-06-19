@@ -9,6 +9,8 @@ class Language(db.Model):
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     lang_code: so.Mapped[str] = so.mapped_column(sa.String(2), index=True,
                                                  unique=True)
+    contexts: so.Mapped[List["Context"]] = so.relationship()
+    strategies: so.Mapped[List["Strategy"]] = so.relationship()
 
 
 class User(db.Model):
@@ -32,13 +34,13 @@ class ConversationState(db.Model):
 
 class Context(db.Model):
     id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True)
-    name: so.Mapped[str] = so.mapped_column(sa.String())
-
+    context: so.Mapped[str] = so.mapped_column(sa.String())
+    language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
 
 class Strategy(db.Model):
     id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True)
-    name: so.Mapped[str] = so.mapped_column(sa.String())
-
+    strategy: so.Mapped[str] = so.mapped_column(sa.String())
+    language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
 
 class InterviewAnswer(db.Model):
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
