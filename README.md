@@ -61,11 +61,11 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 ## App Structure
 
-![system_arch.png](..%2Fsystem_arch.png)
+![system_arch.png](system_arch.png)
 
 ## Dialogue Flow
 
-![interview.png](..%2Finterview.png)
+![interview.png](interview.png)
 
 ## Current status
 
