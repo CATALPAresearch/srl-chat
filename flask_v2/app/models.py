@@ -7,8 +7,7 @@ from app import db
 class Language(db.Model):
     __tablename__ = "languages"
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
-    lang_code: so.Mapped[str] = so.mapped_column(sa.String(2), index=True,
-                                                 unique=True)
+    lang_code: so.Mapped[str] = so.mapped_column(sa.String(2), index=True, unique=True)
     contexts: so.Mapped[List["Context"]] = so.relationship()
     strategies: so.Mapped[List["Strategy"]] = so.relationship()
 
@@ -20,7 +19,7 @@ class User(db.Model):
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
     message_history: so.Mapped[Optional[str]] = so.mapped_column(sa.String())
     interview_answers: so.Mapped[List["InterviewAnswer"]] = so.relationship(back_populates="user")
-    conversation_state: so.Mapped[str] = so.relationship(back_populates="user")
+    conversation_state: so.Mapped["ConversationState"] = so.relationship(back_populates="user")
 
 
 class ConversationState(db.Model):
@@ -33,6 +32,7 @@ class ConversationState(db.Model):
 
 
 class Context(db.Model):
+    __tablename__ = "contexts"
     id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True)
     context: so.Mapped[str] = so.mapped_column(sa.String())
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
@@ -47,4 +47,4 @@ class InterviewAnswer(db.Model):
     user_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(User.id))
     user: so.Mapped["User"] = so.relationship(back_populates="interview_answers")
     context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id))
-    strategies: so.Mapped[List["Strategy"]] = so.relationship()
+    strategies: so.Mapped[List[int]] = so.mapped_column(sa.ForeignKey(Strategy.id))

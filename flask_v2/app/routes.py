@@ -18,7 +18,7 @@ def index():
 
 
 @app.route('/user/<id>')
-def get_user(id):
+def get_user_by_id(id):
     user = db.session.scalar(
         sa.select(User).where(User.id == id))
     if user is None:

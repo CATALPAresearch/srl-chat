@@ -44,6 +44,21 @@ flask db migrate -m "Describe migration"
 flask db upgrade
 ```
 
+### To reinitialise DB from scratch
+
+- Delete *.db file
+
+```shell
+flask db upgrade
+python
+
+Python 3.12.3 (tags/v3.12.3:f6650f9, Apr  9 2024, 14:05:25) [MSC v.1938 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from setup.db_setup import populate_contexts
+>>> populate_contexts()
+
+```
+
 ## App Structure
 
 ![system_arch.png](..%2Fsystem_arch.png)
@@ -62,7 +77,7 @@ The following steps need to be completed before the app is ready for user testin
 | ✓     | Define database models for required interview elements: learning contexts, learning strategies and user answers connecting them                                                          |
 | ✓     | Create API endpoint to send first response and perform initial setup for users in database                                                                                               |
 | ✓     | Create API endpoint to reply to user message based on previous messages                                                                                                                  |
-|       | Populate learning contexts and strategies in database                                                                                                                                    |                                                    |
+| ✓     | Populate learning contexts and strategies in database                                                                                                                                    |                                                    |
 |       | Implement dialogue loop with chained LLM prompts to ask about strategies for each learning context in turn, evaluate answers' mention of strategies and ask required follow-up questions |
 |       | Implement prediction of learner achievement and SRL skill based on interview responses                                                                                                   |
 |       | Store results in database                                                                                                                                                                |
