@@ -20,9 +20,9 @@ def get_hf_llm_message(prompt):
     return generated_response
 
 
-def get_llm_message(model, prompt):
+def get_llm_message(model, prompt, temperature):
     data = dict(model=model, prompt=prompt, stream=False, options={
-        "temperature": 1
+        "temperature": temperature
     })
     response = requests.post(f"{OLLAMA_API_URL}/generate", data=json.dumps(data))
     print(response.content)

@@ -57,7 +57,7 @@ def start_conversation():
     # start_prompt = translations["translations"][language]["start_prompt"]["text"]
     start_prompt = get_start_prompt(interview_context[language]["contexts"][0])
 
-    llm_message = get_llm_message("mixtral", start_prompt)
+    llm_message = get_llm_message("mixtral", start_prompt, 0.8)
 
     return llm_message
 
@@ -93,7 +93,7 @@ def reply():
     # prompt = f"{message_history}[INST]{user_message}[/INST]"
     # llm_message = get_llm_message("mixtral", prompt)
 
-    llm_message = get_llm_message("mixtral", eval_prompt)
+    llm_message = get_llm_message("mixtral", eval_prompt, 1)
 
     user.message_history += f"[INST]{user_message}[/INST]{llm_message}"
     db.session.commit()
@@ -130,6 +130,6 @@ def start_conversation(language, client, userid):
     # start_prompt = translations["translations"][language]["start_prompt"]["text"]
     start_prompt = get_start_prompt(interview_context[language]["contexts"][0])
 
-    llm_message = get_llm_message("mixtral", start_prompt)
+    llm_message = get_llm_message("mixtral", start_prompt, 0.8)
 
     return llm_message
