@@ -8,7 +8,7 @@ from xml.sax.saxutils import escape as xmlescape
 from html import escape as htmlescape
 
 from app.llm import get_llm_message
-from controller.conversation_controller import get_language, get_user, first_time_setup, get_strategies
+from controller.conversation_controller import get_language, get_language_by_id, get_user, first_time_setup, get_strategies, get_contexts
 
 
 @app.route('/')
@@ -78,30 +78,41 @@ def reply():
     user_message = content["message"]
 
     user = get_user(userid, client)
-
     if user is None:
         language = "en" # TODO - always supply or ask first time?
         return start_conversation(language, client, userid)
 
+    if user.conversation_state.interview_completed:
+        pass
+
+    if user.conversation_state.last_answered_context == 0:
+        pass
+        # start_interview(user)
+
     strategies = get_strategies(user.language_id)
-    eval_prompt = f"Evaluiere die Antwort der Nutzerin/des Nutzers, die durch '###' abgegrenzt ist. Bestimme, " \
-                  f"ob die Antwort eine oder mehrere der folgenden Lernstrategien erwähnt und gib ihre Indizes in der folgenden " \
-                  f"Liste an: {strategies}. Gib deine Antwort als JSON-string im folgenden Format an: \
-                   [{{ \"index\": <Index als Zahl>, \"strategy\": <Name der Strategie>}}] ### {user_message}"
+    prompt = get_eval_prompt(strategies, user_message, user)
 
-    # message_history = user.message_history
-    # prompt = f"{message_history}[INST]{user_message}[/INST]"
-    # llm_message = get_llm_message("mixtral", prompt)
-
-    llm_message = get_llm_message("mixtral", eval_prompt, 1)
+    llm_message = get_llm_message("mixtral", prompt, 1)
 
     user.message_history += f"[INST]{user_message}[/INST]{llm_message}"
     db.session.commit()
     return llm_message
 
 
-def get_start_prompt(context):
-    return f"Du bist ein Studienberater an einer deutschen Universität. Deine Aufgabe ist es, die bevorzugten Lernmethoden von Studenten und Studentinnen zu evaluieren. Beginne das Gespräch mit einer freundlichen Begrüßung und einer Aufforderung, eine Lernmethode zu beschreiben, die die Person im Lernkontext '{context}' oft einsetzt. Antworte stets auf Deutsch und duze deinen Gesprächspartner. Schlage selbst keine Strategien als Beispiel vor. Sende und erwähne keine englische Übersetzung."
+def get_start_prompt(context, user):
+    with open("config/prompts.json") as file:
+        prompts = json.load(file)
+    user_lang = get_language_by_id(user.language_id)
+    prompt = prompts[user_lang.lang_code]["start"].replace("${context}", str(context))
+    return prompt
+
+
+def get_eval_prompt(strategies, user_message, user):
+    with open("config/prompts.json") as file:
+        prompts = json.load(file)
+    user_lang = get_language_by_id(user.language_id)
+    prompt = prompts[user_lang.lang_code]["eval"].replace("${strategies}", str(strategies)).replace("${user_message}", user_message)
+    return prompt
 
 
 def start_conversation(language, client, userid):
@@ -127,9 +138,12 @@ def start_conversation(language, client, userid):
     if created_user is None:
         return "An error occurred, please try to restart the conversation", 500
 
-    # start_prompt = translations["translations"][language]["start_prompt"]["text"]
     start_prompt = get_start_prompt(interview_context[language]["contexts"][0])
 
     llm_message = get_llm_message("mixtral", start_prompt, 0.8)
 
     return llm_message
+
+
+def start_interview(user: User):
+    contexts = get_contexts(user.language_id)

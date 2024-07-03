@@ -1,5 +1,5 @@
 from app import app, db
-from app.models import User, Language, ConversationState, Strategy
+from app.models import User, Language, ConversationState, Strategy, Context
 import sqlalchemy as sa
 import json
 import uuid
@@ -21,6 +21,20 @@ def get_language(lang_code) -> Language | None:
     language_db = db.session.scalar(
         sa.select(Language).where(Language.lang_code == lang_code))
     return language_db
+
+
+def get_language_by_id(lang_id) -> Language | None:
+    language_db = db.session.scalar(
+        sa.select(Language).where(Language.id == lang_id))
+    return language_db
+
+
+def get_contexts(lang_id):
+    contexts = db.session.execute(
+        sa.select(Context)
+        .where(Context.language_id == lang_id)
+    ).all()
+    return contexts
 
 
 def get_strategies(lang_id):
