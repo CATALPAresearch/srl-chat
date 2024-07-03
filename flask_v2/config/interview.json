@@ -9,18 +9,58 @@
       "when poorly motivated"
     ],
     "strategies": [
-        "goal setting and planning",
-        "environmental structuring",
-        "self-consequences (i.e. self-rewarding and self-punishment)",
-        "self-evaluating",
-        "organising and transforming",
-        "seeking and selecting information",
-        "rehearsal and mnemonic strategies (memorising)",
-        "seeking social assistance from fellow students",
-        "seeking social assistance from teachers",
-        "seeking social assistance from others (not fellow students or teachers)",
-        "reviewing previously compiled records, e.g. tests, notes or course material/textbooks",
-        "keeping records and monitoring"
+      {
+        "name": "goal setting and planning",
+        "description": "Statements indicating student setting of educational goals or subgoals and planning for sequencing, timing, and completing activities related to those goals, e.g., 'First, I start studying two weeks before exams, and I pace myself'"
+      },
+      {
+        "name": "environmental structuring",
+        "description": "Statements indicating student-initiated efforts to select or arrange the physical setting to make learning easier, e.g., 'I isolate myself from anything that distracts me.' 'I turned off the radio so I can concentrate on what I am doing.'"
+      },
+      {
+        "name": "self-consequences (i.e. self-rewarding and self-punishment)",
+        "description": "Statements indicating student arrangement or imagination of rewards or punishment for success or failure, e.g., \"If I do well on a test, I treat myself to a movie.\""
+      },
+      {
+        "name": "self-evaluating",
+        "description": "Statements indicating student-initiated evaluations of the quality or progress of their work, e.g., \"I check over my work to make sure I did it right.\""
+      },
+      {
+        "name": "organising and transforming",
+        "description": "Statements indicating student-initiated overt or covert rearrangement of instructional materials to improve learning, e.g., \"I make an outline before I write my paper.\""
+      },
+      {
+        "name": "seeking and selecting information",
+        "description": "Statements indicating student-initiated efforts to secure further task information from nonsocial sources when undertaking an assignment, e.g., \"Before beginning to write the paper, I go to the library to get as much information as possible concerning the topic.\""
+      },
+      {
+        "name": "rehearsal and mnemonic strategies (memorising)",
+        "description": "Statements indicating student-initiated efforts to memorize material by overt or covert practice, e.g., \"In preparing for a math test, I keep writing the formula down until I remember it.\""
+      },
+      {
+        "name": "seeking social assistance from fellow students",
+        "description": "Statements indicating student-initiated efforts to solicit help from fellow students, e.g., \"If I have problems with math assignments, I ask for help in the class forums.\""
+      },
+      {
+        "name": "seeking social assistance from teachers",
+        "description": "Statements indicating student-initiated efforts to solicit help from teachers, e.g., \"If I have problems with math assignments, I ask a lecturer for help.\""
+      },
+      {
+        "name": "seeking social assistance from others (not fellow students or teachers)",
+        "description": "Statements indicating student-initiated efforts to solicit help from others who are not teachers or fellow students, e.g., \"If I have problems with math assignments, I ask a friend to help.\""
+      },
+      {
+        "name": "reviewing previously compiled records, e.g. tests, notes or course material/textbooks",
+        "description": "Statements indicating student-initiated efforts to reread tests (12) notes (13), or textbooks (14) to prepare for class or further testing, e.g., \"When preparing for a test, I review my notes.\""
+      },
+      {
+        "name": "keeping records and monitoring",
+        "description": "Statements indicating student-initiated efforts to record events or results, e.g., \"I took notes of the class discussion.\" \"I kept a list of the words I got wrong.\""
+      },
+      {
+        "name": "other",
+        "description": "Statements indicating learning behavior that is initiated by other persons such as teachers or parents, and all unclear verbal responses, e.g., \"I just do what the teacher says.\""
+      }
     ]
   },
   "de": {
@@ -32,19 +72,60 @@
       "Bei der Vorbereitung und beim Ablegen mündlicher oder schriflicher Prüfungen",
       "Bei geringer Motivation"
     ],
-  "strategies": [
-    "Lernziele setzen und Zeitmanagement",
-    "Räumliche Rahmenbedingungen setzen, z.B. Arbeitsplatz strukturieren",
-    "Selbstbelohnung oder -strafe",
-    "Selbstevaluation - Bewertung der eigenen Arbeit",
-    "Umstrukturierung von Lernmaterial zur Verbesserung des Lerneffekts",
-    "Weitere Informationsquellen aufsuchen (von anderen Informationsquellen als anderen Personen), z.B. Bücher oder anderes Material",
-    "Auswendig lernen",
-    "Hilfe bei Kommilitonen suchen",
-    "Hilfe bei Lehrpersonal suchen",
-    "Hilfe bei anderen suchen (nicht Kommilitonen oder Lehrpersonal)",
-    "Notizen, frühere Prüfungen oder Kursmaterial wiederholen",
-    "Notizen machen und Fehler festhalten"
-  ]
+  "strategies":
+  [
+      {
+        "name": "Lernziele setzen, Planung und Zeitmanagement",
+        "description": "Aussagen, die darauf hinweisen, dass sich ein Student Lernziele oder Teilziele setzt und die Reihenfolge, den Zeitpunkt und die Durchführung der mit diesen Zielen in Zusammenhang stehenden Aktivitäten plant, z. B.: 'Erstens beginne ich zwei Wochen vor den Prüfungen mit dem Lernen und teile es mir selbst ein.'"
+      },
+      {
+        "name": "Räumliche Rahmenbedingungen setzen, z.B. Arbeitsplatz strukturieren",
+        "description": "Aussagen, die auf von den Schülern initiierte Bemühungen hinweisen, die physische Umgebung so auszuwählen oder zu gestalten, dass das Lernen erleichtert wird, z. B. 'Ich isoliere mich von allem, was mich ablenkt.' 'Ich habe das Radio ausgeschaltet, damit ich mich auf das konzentrieren kann, was ich tue.'"
+      },
+      {
+        "name": "Selbstbelohnung oder -strafe",
+        "description": "Aussagen, die darauf hinweisen, dass sich Schüler Belohnungen oder Bestrafungen für Erfolg oder Misserfolg ausdenken oder diese planen, z. B.: 'Wenn ich bei einem Test gut abschneide, gönne ich mir einen Film.'"
+      },
+      {
+        "name": "Selbstevaluation - Bewertung der eigenen Arbeit",
+        "description": "Aussagen, die auf von den Studierenden initiierte Bewertungen der Qualität oder des Fortschritts ihrer Arbeit hinweisen, z.B. 'Ich überprüfe meine Arbeit, um sicherzustellen, dass ich sie richtig gemacht habe.'"
+      },
+      {
+        "name": "Umstrukturierung von Lernmaterial zur Verbesserung des Lerneffekts",
+        "description": "Aussagen, die auf eine offene oder verdeckte Umgestaltung des Unterrichtsmaterials durch den Schüler hinweisen, um das Lernen zu verbessern, z. B. 'Ich erstelle eine Gliederung, bevor ich meine Arbeit schreibe.'"
+      },
+      {
+        "name": "Weitere Informationsquellen aufsuchen (von anderen Informationsquellen als anderen Personen), z.B. Bücher oder anderes Material",
+        "description": "Aussagen, die auf von den Schülern initiierte Bemühungen hinweisen, bei der Bearbeitung einer Aufgabe weitere Aufgabeninformationen aus nicht-sozialen Quellen zu beschaffen, z. B.: 'Bevor ich mit dem Schreiben der Arbeit beginne, gehe ich in die Bibliothek, um möglichst viele Informationen zum Thema zu sammeln.'"
+      },
+      {
+        "name": "Übungs- und Gedächtnisstrategien (Auswendig lernen)",
+        "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, sich den Lernstoff durch offenes oder verdecktes Üben einzuprägen, z.B.: 'Wenn ich mich auf eine Matheprüfung vorbereite, schreibe ich die Formel so lange auf, bis ich sie mir einpräge.'"
+      },
+      {
+        "name": "Hilfe bei Kommilitonen suchen",
+        "description": "Aussagen, die auf von Studierenden initiierte Bemühungen hinweisen, bei Mitstudierenden Hilfe zu suchen, z. B.: 'Wenn ich Probleme mit Matheaufgaben habe, bitte ich im Klassenforum um Hilfe.'"
+      },
+      {
+        "name": "Hilfe bei Lehrpersonal suchen",
+        "description": "Aussagen, die auf von Studierenden initiierte Bemühungen hinweisen, Hilfe von Lehrkräften in Anspruch zu nehmen, z. B.: 'Wenn ich Probleme mit Matheaufgaben habe, bitte ich einen Dozenten um Hilfe.'"
+      },
+      {
+        "name": "Hilfe bei anderen suchen (nicht Kommilitonen oder Lehrpersonal)",
+        "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, Hilfe von anderen Personen als Lehrern oder Mitschülern zu erbitten, z. B.: 'Wenn ich Probleme mit Matheaufgaben habe, bitte ich einen Freund um Hilfe.'"
+      },
+      {
+        "name": "Notizen, frühere Prüfungen oder Kursmaterial wiederholen",
+        "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, Tests (12), Notizen (13) oder Lehrbücher (14) erneut durchzulesen, um sich auf den Unterricht oder weitere Prüfungen vorzubereiten, z.B.: 'Wenn ich mich auf eine Prüfung vorbereite, schaue ich mir meine Notizen noch einmal an.'"
+      },
+      {
+        "name": "Notizen machen und Fehler festhalten",
+        "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, Ereignisse oder Ergebnisse aufzuzeichnen, z. B. 'Ich habe mir Notizen zur Unterrichtsdiskussion gemacht.' 'Ich habe eine Liste der Wörter geführt, die ich falsch hatte.'"
+      },
+      {
+        "name": "other",
+        "description": "Aussagen über Lernverhalten, das von anderen Personen wie Lehrern oder Eltern initiiert wird, und alle unklaren verbalen Reaktionen, z. B.: 'Ich mache nur, was der Lehrer sagt.'"
+      }
+    ]
   }
 }

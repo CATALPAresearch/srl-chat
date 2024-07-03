@@ -23,6 +23,6 @@ def populate_contexts():
             db.session.add(context_db)
             db.session.commit()
         for strategy in interview_context[lang_code]["strategies"]:
-            strategy_db = Strategy(strategy=strategy, language_id=language_db.id)
+            strategy_db = Strategy(strategy=strategy["name"], description=strategy["description"], language_id=language_db.id)
             db.session.add(strategy_db)
             db.session.commit()

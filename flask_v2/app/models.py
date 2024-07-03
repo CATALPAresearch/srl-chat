@@ -40,6 +40,7 @@ class Context(db.Model):
 class Strategy(db.Model):
     id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True)
     strategy: so.Mapped[str] = so.mapped_column(sa.String())
+    description: so.Mapped[str] = so.mapped_column(sa.String())
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
 
 class InterviewAnswer(db.Model):

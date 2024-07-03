@@ -1,4 +1,16 @@
 @startuml
+
+package "System"
+start
+:User message received;
+if (User exists?) then (yes)
+    :Check conversation state for
+    next incomplete learning context;
+else (no)
+    :DB setup;
+    :Send start message;
+endif
+
 package "SRLIS Assessment Interview" {
 
 start

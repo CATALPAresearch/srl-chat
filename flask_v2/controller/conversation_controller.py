@@ -1,5 +1,5 @@
 from app import app, db
-from app.models import User, Language, ConversationState
+from app.models import User, Language, ConversationState, Strategy
 import sqlalchemy as sa
 import json
 import uuid
@@ -12,8 +12,8 @@ with open("config/interview.json") as file:
 
 def get_user(userid, client) -> User | None:
     user = db.session.scalar(
-        sa.select(User).where(User.id == userid and User.client == client))\
-        .join(User.conversation_state)
+        sa.select(User).where(User.id == userid and User.client == client)
+        .join(User.conversation_state))
     return user
 
 
@@ -21,6 +21,14 @@ def get_language(lang_code) -> Language | None:
     language_db = db.session.scalar(
         sa.select(Language).where(Language.lang_code == lang_code))
     return language_db
+
+
+def get_strategies(lang_id):
+    strats = db.session.execute(
+        sa.select(Strategy.id, Strategy.strategy, Strategy.description)
+        .where(Strategy.language_id == lang_id)
+    ).all()
+    return strats
 
 
 def first_time_setup(userid, client, language):
