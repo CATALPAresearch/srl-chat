@@ -2,7 +2,7 @@ from app import app, db
 from app.models import Language, Context, Strategy
 import json
 import uuid
-from controller.conversation_controller import get_language
+from db_utils.crud import get_language
 
 app.app_context().push()
 

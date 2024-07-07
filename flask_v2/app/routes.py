@@ -8,7 +8,19 @@ from xml.sax.saxutils import escape as xmlescape
 from html import escape as htmlescape
 
 from app.llm import get_llm_message
-from db_utils.crud import get_language, get_language_by_id, get_user, first_time_setup, get_strategies, get_contexts, store_answer, set_current_context
+from db_utils.crud import (
+    get_language,
+    get_language_by_id,
+    get_user,
+    first_time_setup,
+    get_strategies,
+    get_contexts,
+    get_context_by_id,
+    store_answer,
+    set_current_context,
+    set_context_completed,
+    get_completed_contexts
+)
 
 
 @app.route('/')
@@ -57,13 +69,17 @@ def start_conversation():
         user = created_user
 
     contexts = set(get_contexts(user.language_id))
-    completed_contexts = set([user.conversation_state.completed_contexts])
-    remaining_contexts = contexts.difference(completed_contexts)
+
+    if get_completed_contexts(user) is not None:
+        completed_contexts = set(get_completed_contexts(user))
+        remaining_contexts = contexts.difference(completed_contexts)
+    else:
+        remaining_contexts = contexts
     current_context = list(remaining_contexts)[0]
 
     set_current_context(user, current_context)
 
-    start_prompt = get_start_prompt(current_context[0].context, user)
+    start_prompt = get_start_prompt(current_context.context, user)
 
     llm_message = get_llm_message("mixtral", start_prompt, 0.8)
 
@@ -93,37 +109,40 @@ def reply():
     if user.conversation_state.interview_completed:
         pass
 
+    # Retrieve current context
+    current_context = user.conversation_state.current_context
+
     # Evaluate if user response mentions any strategies
     strategies = get_strategies(user.language_id)
     prompt = get_eval_prompt(strategies, user_message, user)
     llm_eval = get_llm_message("mixtral", prompt, 1)
 
-    # Retrieve current context
-    current_context = user.conversation_state.current_context
-
     # Identify ID of "other" strategy (corresponding to no concrete strategy mentioned)
     no_strategy_mentioned = list(filter(lambda strategy: strategy[1] == "other", strategies))
 
     identified_strategy = json.loads(llm_eval)[0]["index"]
+    # Store user's answer
+    store_answer(user, current_context, identified_strategy, user_message)
 
     if identified_strategy == no_strategy_mentioned[0][0]:
         # Probe further if "other" strategy identified
-        probe_prompt = get_probe_prompt(current_context[1], user)
-        llm_message = get_llm_message("mixtral", probe_prompt, 0.8)
+        probe_prompt = get_probe_prompt(current_context.context, user)
+        llm_message = get_llm_message("mixtral", probe_prompt, 0.9)
     else:
-        # Store user's answer and move to next context
-        # store_answer(user, current_context, identified_strategy, user_message)
+        # Set context completed and move to next context
         contexts = set(get_contexts(user.language_id))
-        completed_contexts = set([user.conversation_state.completed_contexts])
+        set_context_completed(user, current_context)
+
+        completed_contexts = set(get_completed_contexts(user))
         remaining_contexts = contexts.difference(completed_contexts)
-        next_context = remaining_contexts[0]
-        set_current_context(next_context)
+        if remaining_contexts == set():
+            return "Interview complete"
 
-        context_prompt = get_context_prompt(next_context, user)
-        llm_message = get_llm_message("mixtral", context_prompt, 0.8)
+        next_context = list(remaining_contexts)[0]
+        set_current_context(user, next_context)
+        context_prompt = get_context_prompt(next_context.context, user)
+        llm_message = get_llm_message("mixtral", context_prompt, 0.9)
 
-    # # user.message_history += f"[INST]{user_message}[/INST]{llm_message}"
-    # # db.session.commit()
     return llm_message
 
 
@@ -187,7 +206,3 @@ def start_conversation(language, client, userid):
     llm_message = get_llm_message("mixtral", start_prompt, 0.8)
 
     return llm_message
-
-
-def start_interview(user: User):
-    contexts = get_contexts(user.language_id)

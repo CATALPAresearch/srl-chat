@@ -1,5 +1,5 @@
 from app import app, db
-from app.models import User, Language, ConversationState, Strategy, Context, InterviewAnswer
+from app.models import User, Language, ConversationState, Strategy, Context, InterviewAnswer, ConversationCompletedContexts
 import sqlalchemy as sa
 import json
 import uuid
@@ -34,7 +34,37 @@ def get_contexts(lang_id):
         sa.select(Context)
         .where(Context.language_id == lang_id)
     ).all()
-    return contexts
+    result = [con for con, in contexts]
+    return result
+
+
+def get_context_by_id(id):
+    context = db.session.scalar(
+        sa.select(Context).where(Context.id == id))
+    return context
+
+
+def set_context_completed(user, context):
+    completed_contexts = ConversationCompletedContexts(
+        conversation_id=user.conversation_state.id,
+        completed_context_id=context
+    )
+    db.session.add(completed_contexts)
+    db.session.commit()
+
+
+def get_completed_contexts(user):
+    completed_contexts = db.session.execute(
+        sa.select(ConversationCompletedContexts)
+        .where(ConversationCompletedContexts.conversation_id == user.conversation_state.id)
+    ).all()
+    completed_contexts_result = [con.completed_context_id for con, in completed_contexts]
+    contexts = db.session.execute(
+        sa.select(Context)
+        .where(Context.id.in_(completed_contexts_result))
+    ).all()
+    result = [con for con, in contexts]
+    return result
 
 
 def get_strategies(lang_id):
@@ -58,7 +88,7 @@ def first_time_setup(userid, client, language):
 
 
 def set_current_context(user, context):
-    user.conversation_state.current_context = context[0].id
+    user.conversation_state.current_context = context.id
     db.session.commit()
 
 
@@ -67,7 +97,7 @@ def store_answer(user, context, strategy, message):
     answer = InterviewAnswer(id=answer_id,
                              user=user,
                              context=context,
-                             strategy=strategy,
+                             strategies=strategy,
                              message=message)
     db.session.add(answer)
     db.session.commit()

@@ -35,8 +35,13 @@ class ConversationState(db.Model):
     user_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(User.id))
     user: so.Mapped["User"] = so.relationship(back_populates="conversation_state")
     interview_completed: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=0)
-    completed_contexts: so.Mapped[List[int]] = so.mapped_column(sa.ForeignKey(Context.id), nullable=True)
     current_context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), nullable=True)
+
+
+class ConversationCompletedContexts(db.Model):
+    __tablename__ = "conversation_completed_contexts"
+    conversation_id: so.Mapped["ConversationState"] = so.mapped_column(sa.ForeignKey(ConversationState.id), primary_key=True)
+    completed_context_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), primary_key=True)
 
 
 class Strategy(db.Model):
