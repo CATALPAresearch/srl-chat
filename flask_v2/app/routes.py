@@ -50,12 +50,16 @@ def start_conversation():
         response = xmlescape(msg, {"ä": "&auml;", "ö": "&ouml;", "ü": "&uuml;"})
         return htmlescape(response), 400
 
-    created_user = first_time_setup(userid, client, language)
-    if created_user is None:
-        return "An error occurred, please try to restart the conversation", 500
+    user = get_user(userid, client)
+
+    if user is None:
+        created_user = first_time_setup(userid, client, language)
+        if created_user is None:
+            return "An error occurred, please try to restart the conversation", 500
+        user = created_user
 
     # start_prompt = translations["translations"][language]["start_prompt"]["text"]
-    start_prompt = get_start_prompt(interview_context[language]["contexts"][0])
+    start_prompt = get_start_prompt(interview_context[language]["contexts"][0], user)
 
     llm_message = get_llm_message("mixtral", start_prompt, 0.8)
 
@@ -154,7 +158,7 @@ def start_conversation(language, client, userid):
     if created_user is None:
         return "An error occurred, please try to restart the conversation", 500
 
-    start_prompt = get_start_prompt(interview_context[language]["contexts"][0])
+    start_prompt = get_start_prompt(interview_context[language]["contexts"][0], created_user)
 
     llm_message = get_llm_message("mixtral", start_prompt, 0.8)
 
