@@ -91,27 +91,43 @@ def reply():
 
     strategies = get_strategies(user.language_id)
     prompt = get_eval_prompt(strategies, user_message, user)
+    llm_eval = get_llm_message("mixtral", prompt, 1)
 
-    llm_message = get_llm_message("mixtral", prompt, 1)
+    no_strategy_mentioned = list(filter(lambda strategy: strategy[1] == "other", strategies))
+    if json.loads(llm_eval)[0]["index"] == no_strategy_mentioned[0][0]:
+        probe_prompt = get_probe_prompt("Aufnehmen und Erinnern von Inhalten von Live-Veranstaltungen in Präsenz oder Online", user)
+        llm_message = get_llm_message("mixtral", probe_prompt, 0.8)
+    else:
+        pass
 
-    user.message_history += f"[INST]{user_message}[/INST]{llm_message}"
-    db.session.commit()
+    # user.message_history += f"[INST]{user_message}[/INST]{llm_message}"
+    # db.session.commit()
     return llm_message
 
 
-def get_start_prompt(context, user):
+def get_prompt(user, prompt_name):
     with open("config/prompts.json") as file:
         prompts = json.load(file)
     user_lang = get_language_by_id(user.language_id)
-    prompt = prompts[user_lang.lang_code]["start"].replace("${context}", str(context))
+    prompt = prompts[user_lang.lang_code][prompt_name]
+    return prompt
+
+
+def get_probe_prompt(context, user):
+    prompt = get_prompt(user, "probe")
+    prompt = prompt.replace("${context}", context)
+    return prompt
+
+
+def get_start_prompt(context, user):
+    prompt = get_prompt(user, "start")
+    prompt = prompt.replace("${context}", str(context))
     return prompt
 
 
 def get_eval_prompt(strategies, user_message, user):
-    with open("config/prompts.json") as file:
-        prompts = json.load(file)
-    user_lang = get_language_by_id(user.language_id)
-    prompt = prompts[user_lang.lang_code]["eval"].replace("${strategies}", str(strategies)).replace("${user_message}", user_message)
+    prompt = get_prompt(user, "eval")
+    prompt = prompt.replace("${strategies}", str(strategies)).replace("${user_message}", user_message)
     return prompt
 
 
