@@ -1,5 +1,5 @@
 from app import app, db
-from app.models import User, Language, ConversationState, Strategy, Context
+from app.models import User, Language, ConversationState, Strategy, Context, InterviewAnswer
 import sqlalchemy as sa
 import json
 import uuid
@@ -55,6 +55,26 @@ def first_time_setup(userid, client, language):
     created_user = db.session.scalar(
         sa.select(User).where(User.id == userid and User.client == client))
     return created_user
+
+
+def set_current_context(user, context):
+    user.conversation_state.current_context = context[0].id
+    db.session.commit()
+
+
+def store_answer(user, context, strategy, message):
+    answer_id = str(uuid.uuid4())
+    answer = InterviewAnswer(id=answer_id,
+                             user=user,
+                             context=context,
+                             strategy=strategy,
+                             message=message)
+    db.session.add(answer)
+    db.session.commit()
+    created_answer = db.session.scalar(
+        sa.select(InterviewAnswer).where(InterviewAnswer.id == answer_id)
+    )
+    return created_answer
 
 
 def converse(userid, client):

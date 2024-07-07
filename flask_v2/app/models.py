@@ -36,6 +36,7 @@ class ConversationState(db.Model):
     user: so.Mapped["User"] = so.relationship(back_populates="conversation_state")
     interview_completed: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=0)
     completed_contexts: so.Mapped[List[int]] = so.mapped_column(sa.ForeignKey(Context.id), nullable=True)
+    current_context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), nullable=True)
 
 
 class Strategy(db.Model):
@@ -51,3 +52,4 @@ class InterviewAnswer(db.Model):
     user: so.Mapped["User"] = so.relationship(back_populates="interview_answers")
     context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id))
     strategies: so.Mapped[List[int]] = so.mapped_column(sa.ForeignKey(Strategy.id))
+    message: so.Mapped[str] = so.mapped_column(sa.String())

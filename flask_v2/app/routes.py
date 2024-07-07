@@ -8,7 +8,7 @@ from xml.sax.saxutils import escape as xmlescape
 from html import escape as htmlescape
 
 from app.llm import get_llm_message
-from controller.conversation_controller import get_language, get_language_by_id, get_user, first_time_setup, get_strategies, get_contexts
+from db_utils.crud import get_language, get_language_by_id, get_user, first_time_setup, get_strategies, get_contexts, store_answer, set_current_context
 
 
 @app.route('/')
@@ -38,8 +38,6 @@ def start_conversation():
     """
     with open("config/translations.json") as file:
         translations = json.load(file)
-    with open("config/interview.json") as file:
-        interview_context = json.load(file)
     content = request.json
     language = content["language"]
     client = content["client"]
@@ -58,8 +56,14 @@ def start_conversation():
             return "An error occurred, please try to restart the conversation", 500
         user = created_user
 
-    # start_prompt = translations["translations"][language]["start_prompt"]["text"]
-    start_prompt = get_start_prompt(interview_context[language]["contexts"][0], user)
+    contexts = set(get_contexts(user.language_id))
+    completed_contexts = set([user.conversation_state.completed_contexts])
+    remaining_contexts = contexts.difference(completed_contexts)
+    current_context = list(remaining_contexts)[0]
+
+    set_current_context(user, current_context)
+
+    start_prompt = get_start_prompt(current_context[0].context, user)
 
     llm_message = get_llm_message("mixtral", start_prompt, 0.8)
 
@@ -89,23 +93,37 @@ def reply():
     if user.conversation_state.interview_completed:
         pass
 
-    if user.conversation_state.last_answered_context == 0:
-        pass
-        # start_interview(user)
-
+    # Evaluate if user response mentions any strategies
     strategies = get_strategies(user.language_id)
     prompt = get_eval_prompt(strategies, user_message, user)
     llm_eval = get_llm_message("mixtral", prompt, 1)
 
+    # Retrieve current context
+    current_context = user.conversation_state.current_context
+
+    # Identify ID of "other" strategy (corresponding to no concrete strategy mentioned)
     no_strategy_mentioned = list(filter(lambda strategy: strategy[1] == "other", strategies))
-    if json.loads(llm_eval)[0]["index"] == no_strategy_mentioned[0][0]:
-        probe_prompt = get_probe_prompt("Aufnehmen und Erinnern von Inhalten von Live-Veranstaltungen in Präsenz oder Online", user)
+
+    identified_strategy = json.loads(llm_eval)[0]["index"]
+
+    if identified_strategy == no_strategy_mentioned[0][0]:
+        # Probe further if "other" strategy identified
+        probe_prompt = get_probe_prompt(current_context[1], user)
         llm_message = get_llm_message("mixtral", probe_prompt, 0.8)
     else:
-        pass
+        # Store user's answer and move to next context
+        # store_answer(user, current_context, identified_strategy, user_message)
+        contexts = set(get_contexts(user.language_id))
+        completed_contexts = set([user.conversation_state.completed_contexts])
+        remaining_contexts = contexts.difference(completed_contexts)
+        next_context = remaining_contexts[0]
+        set_current_context(next_context)
 
-    # user.message_history += f"[INST]{user_message}[/INST]{llm_message}"
-    # db.session.commit()
+        context_prompt = get_context_prompt(next_context, user)
+        llm_message = get_llm_message("mixtral", context_prompt, 0.8)
+
+    # # user.message_history += f"[INST]{user_message}[/INST]{llm_message}"
+    # # db.session.commit()
     return llm_message
 
 
@@ -119,6 +137,12 @@ def get_prompt(user, prompt_name):
 
 def get_probe_prompt(context, user):
     prompt = get_prompt(user, "probe")
+    prompt = prompt.replace("${context}", context)
+    return prompt
+
+
+def get_context_prompt(context, user):
+    prompt = get_prompt(user, "context")
     prompt = prompt.replace("${context}", context)
     return prompt
 
