@@ -140,8 +140,6 @@ def reply():
     current_context_id = user.conversation_state.current_context
     current_context = get_context_by_id(current_context_id)
 
-    return eval_strategies(user, user_message)
-
     match user.conversation_state.most_recent_response:
         case "getstrategies":
             identified_strategy = eval_strategies(user, user_message)
@@ -219,50 +217,33 @@ def eval_strategies(user, user_message):
         name="Reformat_strategy",
         llm_config={"config_list": config_list_code},
         system_message=f"""Reformat the learning strategies employed by the user to json. Take strategy metadata from 
-        the following information: {strategies}. Output an array of strategies with each strategy given in the 
-        following format: {{"index": <index as number>, "strategy": <name of strategy>}}""",
+        the following information: {strategies}. Output only an array of strategies, with each strategy given in the 
+        following format, and include no other content in your message:
+         {{"index": <index as number>, "strategy": <name of strategy>}}.""",
     )
 
-    def state_transition(last_speaker, group_chat):
-        messages = group_chat.messages
-
-        if last_speaker is strategy_recogniser:
-            return strategy_formatter
-        elif last_speaker is strategy_formatter:
-            try:
-                json.loads(messages[-1]["content"])
-                return None
-            except JSONDecodeError:
-                # retrieve --(execution failed)--> retrieve
-                return strategy_formatter
-
-    group_chat = GroupChat(
-        agents=[strategy_recogniser, strategy_formatter],
-        messages=[],
-        max_round=3,
-        speaker_selection_method=state_transition,
-    )
-    manager = GroupChatManager(groupchat=group_chat, llm_config={"config_list": config_list_read})
     initializer = UserProxyAgent(
         name="Init",
         code_execution_config=False
     )
-    # chat = initializer.initiate_chat(
-    #     manager,
-    #     message=user_message
-    # )
-    chat = strategy_recogniser.initiate_chat(
-        strategy_formatter,
-        message=user_message,
-        max_turns=2
+    chat_results = initializer.initiate_chats(
+        [
+            {
+                "recipient": strategy_recogniser,
+                "message": user_message,
+                "max_turns": 1,
+                "summary_method": "last_msg",
+            },
+            {
+                "recipient": strategy_formatter,
+                "message": "Please reformat the strategies we have recognised.",
+                "max_turns": 1,
+                "summary_method": "last_msg",
+            },
+        ]
     )
-    print(chat)
-    return chat.summary
-
-    # prompt = get_eval_prompt(strategies, user_message, user)
-    # llm_eval = get_llm_message("mixtral", prompt, 1)
-    # identified_strategy = json.loads(llm_eval)[0]
-    # return identified_strategy
+    print(chat_results)
+    return chat_results[-1].summary
 
 
 def set_current_context_complete(user, current_context):
