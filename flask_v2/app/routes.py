@@ -1,3 +1,5 @@
+from json import JSONDecodeError
+
 from app import app, db
 from app.models import User, Language
 
@@ -6,7 +8,7 @@ import json
 import sqlalchemy as sa
 from xml.sax.saxutils import escape as xmlescape
 from html import escape as htmlescape
-from autogen import ConversableAgent
+from autogen import AssistantAgent, ConversableAgent, GroupChat, GroupChatManager, UserProxyAgent
 
 from app.llm import get_llm_message
 from db_utils.crud import (
@@ -137,6 +139,9 @@ def reply():
     # Retrieve current context
     current_context_id = user.conversation_state.current_context
     current_context = get_context_by_id(current_context_id)
+
+    return eval_strategies(user, user_message)
+
     match user.conversation_state.most_recent_response:
         case "getstrategies":
             identified_strategy = eval_strategies(user, user_message)
@@ -186,12 +191,78 @@ def reply():
 
 
 def eval_strategies(user, user_message):
-    # Evaluate if user response mentions any strategies
+    """
+    Evaluate if user response mentions any strategies.
+    """
     strategies = get_strategies(user.language_id)
-    prompt = get_eval_prompt(strategies, user_message, user)
-    llm_eval = get_llm_message("mixtral", prompt, 1)
-    identified_strategy = json.loads(llm_eval)[0]
-    return identified_strategy
+    config_list_read = [
+        {
+            "model": "mixtral",
+            "base_url": "http://132.176.10.80/v1",
+            "api_key": "ollama",
+        }
+    ]
+    config_list_code = [
+        {
+            "model": "openhermes2.5-mistral",
+            "base_url": "http://132.176.10.80/v1",
+            "api_key": "ollama",
+        }
+    ]
+    strategy_recogniser = AssistantAgent(
+        name="Recognise_strategy",
+        llm_config={"config_list": config_list_read},
+        system_message=f"""Read the user message and decide whether they have mentioned one or several strategies from 
+        the following list: {strategies}, then state what strategies they are.""",
+    )
+    strategy_formatter = AssistantAgent(
+        name="Reformat_strategy",
+        llm_config={"config_list": config_list_code},
+        system_message=f"""Reformat the learning strategies employed by the user to json. Take strategy metadata from 
+        the following information: {strategies}. Output an array of strategies with each strategy given in the 
+        following format: {{"index": <index as number>, "strategy": <name of strategy>}}""",
+    )
+
+    def state_transition(last_speaker, group_chat):
+        messages = group_chat.messages
+
+        if last_speaker is strategy_recogniser:
+            return strategy_formatter
+        elif last_speaker is strategy_formatter:
+            try:
+                json.loads(messages[-1]["content"])
+                return None
+            except JSONDecodeError:
+                # retrieve --(execution failed)--> retrieve
+                return strategy_formatter
+
+    group_chat = GroupChat(
+        agents=[strategy_recogniser, strategy_formatter],
+        messages=[],
+        max_round=3,
+        speaker_selection_method=state_transition,
+    )
+    manager = GroupChatManager(groupchat=group_chat, llm_config={"config_list": config_list_read})
+    initializer = UserProxyAgent(
+        name="Init",
+        code_execution_config=False
+    )
+    # chat = initializer.initiate_chat(
+    #     manager,
+    #     message=user_message
+    # )
+    chat = strategy_recogniser.initiate_chat(
+        strategy_formatter,
+        message=user_message,
+        max_turns=2
+    )
+    print(chat)
+    return chat.summary
+
+    # prompt = get_eval_prompt(strategies, user_message, user)
+    # llm_eval = get_llm_message("mixtral", prompt, 1)
+    # identified_strategy = json.loads(llm_eval)[0]
+    # return identified_strategy
 
 
 def set_current_context_complete(user, current_context):
