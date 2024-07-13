@@ -6,6 +6,7 @@ import json
 import sqlalchemy as sa
 from xml.sax.saxutils import escape as xmlescape
 from html import escape as htmlescape
+from autogen import ConversableAgent
 
 from app.llm import get_llm_message
 from db_utils.crud import (
@@ -88,6 +89,27 @@ def start_conversation():
 
     return llm_message
 
+
+@app.route("/autogen_test", methods=['POST'])
+def autogen():
+    config_list = [
+        {
+            "model": "mixtral",
+            "base_url": "http://132.176.10.80/v1",
+            "api_key": "ollama",
+        }
+    ]
+    content = request.json
+    user_message = content["message"]
+    agent = ConversableAgent(
+        "chatbot",
+        llm_config={"config_list": config_list},
+        code_execution_config=False,  # Turn off code execution, by default it is off.
+        function_map=None,  # No registered functions, by default it is None.
+        human_input_mode="NEVER",  # Never ask for human input.
+    )
+    response = agent.generate_reply(messages=[{"content": user_message, "role": "user"}])
+    return response
 
 @app.route("/reply", methods=['POST'])
 def reply():
