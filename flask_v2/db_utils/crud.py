@@ -1,5 +1,5 @@
 from app import app, db
-from app.models import User, Language, ConversationState, Strategy, Context, InterviewAnswer, ConversationCompletedContexts
+from app.models import User, Language, LlmResponse, ConversationState, Strategy, Context, InterviewAnswer, ConversationCompletedContexts
 import sqlalchemy as sa
 import json
 import uuid
@@ -38,10 +38,16 @@ def get_contexts(lang_id):
     return result
 
 
-def get_context_by_id(id):
+def get_context_by_id(context_id):
     context = db.session.scalar(
-        sa.select(Context).where(Context.id == id))
+        sa.select(Context).where(Context.id == context_id))
     return context
+
+
+def get_strategy_by_id(strategy_id):
+    strategy = db.session.scalar(
+        sa.select(Strategy).where(Strategy.id == strategy_id))
+    return strategy
 
 
 def set_context_completed(user, context):
@@ -113,7 +119,7 @@ def store_answer(user, context, strategy, message):
     answer = InterviewAnswer(id=answer_id,
                              user=user,
                              context=context,
-                             strategies=strategy,
+                             strategy=strategy,
                              message=message)
     db.session.add(answer)
     db.session.commit()
@@ -123,17 +129,25 @@ def store_answer(user, context, strategy, message):
     return created_answer
 
 
-def update_answer_with_frequency(user, context_id, frequency):
+def store_llm_answer(user, message):
+    answer_id = str(uuid.uuid4())
+    answer = LlmResponse(id=answer_id,
+                         user=user,
+                         message=message)
+    db.session.add(answer)
+    db.session.commit()
+    created_answer = db.session.scalar(
+        sa.select(LlmResponse).where(LlmResponse.id == answer_id)
+    )
+    return created_answer
+
+
+def update_answer_with_frequency(user, context_id, strategy_id, frequency):
     answer = db.session.scalar(
         sa.select(InterviewAnswer)
         .where(InterviewAnswer.user == user)
         .where(InterviewAnswer.context == context_id)
+        .where(InterviewAnswer.strategy == strategy_id)
     )
     answer.frequency = frequency
     db.session.commit()
-
-
-def converse(userid, client):
-    user = get_user(userid, client)
-    if not user.conversation_state.interview_completed:
-        print("nope")

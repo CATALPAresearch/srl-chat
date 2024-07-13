@@ -19,13 +19,16 @@ from db_utils.crud import (
     get_strategies,
     get_contexts,
     get_context_by_id,
+    get_strategy_by_id,
     store_answer,
     set_current_context,
     set_context_completed,
     get_completed_contexts,
     update_most_recent_response,
     update_answer_with_frequency,
-    get_answers_for_context
+    get_answers_for_context,
+    store_llm_answer,
+    get_most_recent_llm_response
 )
 
 
@@ -147,6 +150,8 @@ def reply():
             # Identify ID of "other" strategy (corresponding to no concrete strategy mentioned)
             no_strategy_mentioned = []
             # Store user's answer(s)
+            if not type(identified_strategy_array) == list:
+                identified_strategy_array = [identified_strategy_array]
             for identified_strategy in identified_strategy_array:
                 store_answer(user, current_context_id, identified_strategy["index"], user_message)
                 if identified_strategy["strategy"] == "other":
@@ -160,21 +165,22 @@ def reply():
             else:
                 # retrieve all interview answers for current context
                 answers = get_answers_for_context(user, current_context_id)
-
                 def list_filter(a):
                     other_strategy_indices = [13, 26]
-                    if a.frequency is None and a.strategies not in other_strategy_indices:
+                    if a.frequency is None and a.strategy not in other_strategy_indices:
                         return True
                     else:
                         return False
 
-                print(answers[0].frequency)
                 answers_without_frequency = list(filter(list_filter, answers))
                 if len(answers_without_frequency):
                     for answer in answers_without_frequency:
-                        frequency_prompt = get_frequency_prompt(user, answer.context, answer.strategies)
+                        context = get_context_by_id(answer.context)
+                        strategy = get_strategy_by_id(answer.strategy)
+                        frequency_prompt = get_frequency_prompt(user, context.context, strategy.strategy)
                         update_most_recent_response(user, "frequency")
                         llm_message = get_llm_message("mixtral", frequency_prompt, 0.9)
+                        break
                 # if all answers have frequency, move to next context
                 else:
                     next_context = set_current_context_complete(user, current_context_id)
@@ -185,7 +191,15 @@ def reply():
 
         case "probe":
             identified_strategy_array = eval_strategies(user, user_message)
-            store_answer(user, current_context_id, identified_strategy_array, user_message)
+            # Identify ID of "other" strategy (corresponding to no concrete strategy mentioned)
+            no_strategy_mentioned = []
+            # Store user's answer(s)
+            if not type(identified_strategy_array) == list:
+                identified_strategy_array = [identified_strategy_array]
+            for identified_strategy in identified_strategy_array:
+                store_answer(user, current_context_id, identified_strategy["index"], user_message)
+                if identified_strategy["strategy"] == "other":
+                    no_strategy_mentioned.append(1)
             if identified_strategy_array["strategy"] == "other":
                 next_context = set_current_context_complete(user, current_context_id)
                 context_prompt = get_context_prompt(next_context.context, user)
@@ -198,9 +212,11 @@ def reply():
 
         case "frequency":
             # evaluate and store indicated frequency of strategy use
-            eval_frequency_prompt = get_eval_frequency_prompt(user, user_message)
-            llm_eval = get_llm_message("mixtral", eval_frequency_prompt, 1)
-            update_answer_with_frequency(user, current_context_id, llm_eval)
+            frequency_json = eval_frequencies(user, user_message)
+            # Identify ID of "other" strategy (corresponding to no concrete strategy mentioned)
+            no_strategy_mentioned = []
+            # Store user's answer(s)
+            update_answer_with_frequency(user, current_context_id, frequency_json["strategy"], frequency_json["frequency"])
 
             # check if further strategies need to be checked for frequency
             # retrieve all interview answers for current context
@@ -208,7 +224,7 @@ def reply():
 
             def list_filter(a):
                 other_strategy_indices = [13, 26]
-                if a.frequency is None and a.strategies not in other_strategy_indices:
+                if a.frequency is None and a.strategy not in other_strategy_indices:
                     return True
                 else:
                     return False
@@ -216,9 +232,12 @@ def reply():
             answers_without_frequency = list(filter(list_filter, answers))
             if len(answers_without_frequency):
                 for answer in answers_without_frequency:
-                    frequency_prompt = get_frequency_prompt(user, answer.context, answer.strategies)
+                    context = get_context_by_id(answer.context)
+                    strategy = get_strategy_by_id(answer.strategy)
+                    frequency_prompt = get_frequency_prompt(user, context.context, strategy.strategy)
                     update_most_recent_response(user, "frequency")
                     llm_message = get_llm_message("mixtral", frequency_prompt, 0.9)
+                    break
             # if all answers have frequency set, move to next context
             else:
                 next_context = set_current_context_complete(user, current_context_id)
@@ -229,6 +248,7 @@ def reply():
         case _:
             pass
 
+    store_llm_answer(user, llm_message)
     return llm_message
 
 
@@ -281,6 +301,72 @@ def eval_strategies(user, user_message):
             {
                 "recipient": strategy_formatter,
                 "message": "Please reformat the strategies we have recognised.",
+                "max_turns": 1,
+                "summary_method": "last_msg",
+            },
+        ]
+    )
+    print(chat_results)
+    print("***********************")
+    print(chat_results[-1].summary)
+    return json.loads(chat_results[-1].summary)
+
+
+def eval_frequencies(user, user_message):
+    """
+    Evaluate frequency of strategy use mentioned in most recent user response
+    for context asked for in most recent LLM message.
+    """
+    strategies = get_strategies(user.language_id)
+    most_recent_response = user.llm_responses[0]
+    for response in user.llm_responses:
+        if response.message_time >= most_recent_response.message_time:
+            most_recent_response = response
+
+    config_list_read = [
+        {
+            "model": "mixtral",
+            "base_url": "http://132.176.10.80/v1",
+            "api_key": "ollama",
+        }
+    ]
+    config_list_code = [
+        {
+            "model": "openhermes2.5-mistral",
+            "base_url": "http://132.176.10.80/v1",
+            "api_key": "ollama",
+        }
+    ]
+    frequency_eval = AssistantAgent(
+        name="Evaluate_frequency",
+        llm_config={"config_list": config_list_code},
+        system_message=f"""Evaluate the user's answer. Determine whether the answer mentions a 
+        number between 1 and 4 and reply with that number as the frequency number and the number of 
+        the context in the following format: {{"strategy": <Index of strategy>, "frequency": <Frequency number>}}.
+        """,
+    )
+    context_eval = AssistantAgent(
+        name="Evaluate_context",
+        llm_config={"config_list": config_list_read},
+        system_message=f"""Give back the index of the strategy this message talks about 
+        based on the following list: {strategies}. Your response should be a single number.""",
+    )
+
+    initializer = UserProxyAgent(
+        name="Init",
+        code_execution_config=False
+    )
+    chat_results = initializer.initiate_chats(
+        [
+            {
+                "recipient": context_eval,
+                "message": most_recent_response.message,
+                "max_turns": 1,
+                "summary_method": "last_msg",
+            },
+            {
+                "recipient": frequency_eval,
+                "message": user_message,
                 "max_turns": 1,
                 "summary_method": "last_msg",
             },
