@@ -48,8 +48,8 @@ class ConversationState(db.Model):
         cascade="all, delete",
         passive_deletes=True,
     )
-    most_recent_response: so.Mapped[str] = so.mapped_column(sa.String(32), sa.CheckConstraint("most_recent_response IN ('getstrategies', 'probe', 'frequency')", name="response_check"), nullable=True)
-
+    most_recent_response: so.Mapped[str] = so.mapped_column(sa.String(32), sa.CheckConstraint(
+        "most_recent_response IN ('getstrategies', 'probe', 'frequency')", name="response_check"), nullable=True)
 
 
 class ConversationCompletedContexts(db.Model):

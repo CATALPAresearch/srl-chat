@@ -24,7 +24,8 @@ from db_utils.crud import (
     set_context_completed,
     get_completed_contexts,
     update_most_recent_response,
-    update_answer_with_frequency
+    update_answer_with_frequency,
+    get_answers_for_context
 )
 
 
@@ -142,45 +143,88 @@ def reply():
 
     match user.conversation_state.most_recent_response:
         case "getstrategies":
-            identified_strategy = eval_strategies(user, user_message)
+            identified_strategy_array = eval_strategies(user, user_message)
             # Identify ID of "other" strategy (corresponding to no concrete strategy mentioned)
-            # no_strategy_mentioned = list(filter(lambda strategy: strategy[1] == "other", strategies))
-            # Store user's answer
-            store_answer(user, current_context_id, identified_strategy["index"], user_message)
+            no_strategy_mentioned = []
+            # Store user's answer(s)
+            for identified_strategy in identified_strategy_array:
+                store_answer(user, current_context_id, identified_strategy["index"], user_message)
+                if identified_strategy["strategy"] == "other":
+                    no_strategy_mentioned.append(1)
 
-            if identified_strategy["strategy"] == "other":
-                # Probe further if "other" strategy identified
-
+            if no_strategy_mentioned == [1]:
+                # Probe further if only "other" strategy identified
                 probe_prompt = get_probe_prompt(current_context.context, user)
                 update_most_recent_response(user, "probe")
                 llm_message = get_llm_message("mixtral", probe_prompt, 0.9)
             else:
-                frequency_prompt = get_frequency_prompt(user, current_context.context, identified_strategy)
-                update_most_recent_response(user, "frequency")
-                llm_message = get_llm_message("mixtral", frequency_prompt, 0.9)
+                # retrieve all interview answers for current context
+                answers = get_answers_for_context(user, current_context_id)
+
+                def list_filter(a):
+                    other_strategy_indices = [13, 26]
+                    if a.frequency is None and a.strategies not in other_strategy_indices:
+                        return True
+                    else:
+                        return False
+
+                print(answers[0].frequency)
+                answers_without_frequency = list(filter(list_filter, answers))
+                if len(answers_without_frequency):
+                    for answer in answers_without_frequency:
+                        frequency_prompt = get_frequency_prompt(user, answer.context, answer.strategies)
+                        update_most_recent_response(user, "frequency")
+                        llm_message = get_llm_message("mixtral", frequency_prompt, 0.9)
+                # if all answers have frequency, move to next context
+                else:
+                    next_context = set_current_context_complete(user, current_context_id)
+                    context_prompt = get_context_prompt(next_context.context, user)
+                    update_most_recent_response(user, "getstrategies")
+                    llm_message = get_llm_message("mixtral", context_prompt, 0.9)
+
 
         case "probe":
-            identified_strategy = eval_strategies(user, user_message)
-            store_answer(user, current_context_id, identified_strategy, user_message)
-            if identified_strategy["strategy"] == "other":
+            identified_strategy_array = eval_strategies(user, user_message)
+            store_answer(user, current_context_id, identified_strategy_array, user_message)
+            if identified_strategy_array["strategy"] == "other":
                 next_context = set_current_context_complete(user, current_context_id)
                 context_prompt = get_context_prompt(next_context.context, user)
                 update_most_recent_response(user, "getstrategies")
                 llm_message = get_llm_message("mixtral", context_prompt, 0.9)
             else:
-                frequency_prompt = get_frequency_prompt(user, current_context.context, identified_strategy)
+                frequency_prompt = get_frequency_prompt(user, current_context.context, identified_strategy_array)
                 update_most_recent_response(user, "frequency")
                 llm_message = get_llm_message("mixtral", frequency_prompt, 0.9)
 
         case "frequency":
+            # evaluate and store indicated frequency of strategy use
             eval_frequency_prompt = get_eval_frequency_prompt(user, user_message)
             llm_eval = get_llm_message("mixtral", eval_frequency_prompt, 1)
             update_answer_with_frequency(user, current_context_id, llm_eval)
 
-            next_context = set_current_context_complete(user, current_context_id)
-            context_prompt = get_context_prompt(next_context.context, user)
-            update_most_recent_response(user, "getstrategies")
-            llm_message = get_llm_message("mixtral", context_prompt, 0.9)
+            # check if further strategies need to be checked for frequency
+            # retrieve all interview answers for current context
+            answers = get_answers_for_context(user, current_context_id)
+
+            def list_filter(a):
+                other_strategy_indices = [13, 26]
+                if a.frequency is None and a.strategies not in other_strategy_indices:
+                    return True
+                else:
+                    return False
+
+            answers_without_frequency = list(filter(list_filter, answers))
+            if len(answers_without_frequency):
+                for answer in answers_without_frequency:
+                    frequency_prompt = get_frequency_prompt(user, answer.context, answer.strategies)
+                    update_most_recent_response(user, "frequency")
+                    llm_message = get_llm_message("mixtral", frequency_prompt, 0.9)
+            # if all answers have frequency set, move to next context
+            else:
+                next_context = set_current_context_complete(user, current_context_id)
+                context_prompt = get_context_prompt(next_context.context, user)
+                update_most_recent_response(user, "getstrategies")
+                llm_message = get_llm_message("mixtral", context_prompt, 0.9)
 
         case _:
             pass
@@ -243,7 +287,9 @@ def eval_strategies(user, user_message):
         ]
     )
     print(chat_results)
-    return chat_results[-1].summary
+    print("***********************")
+    print(chat_results[-1].summary)
+    return json.loads(chat_results[-1].summary)
 
 
 def set_current_context_complete(user, current_context):

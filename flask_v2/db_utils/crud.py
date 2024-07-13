@@ -75,6 +75,15 @@ def get_strategies(lang_id):
     return strats
 
 
+def get_answers_for_context(user, context_id):
+    answers = db.session.scalars(
+        sa.select(InterviewAnswer)
+        .where(InterviewAnswer.user == user)
+        .where(InterviewAnswer.context == context_id)
+    ).all()
+    return answers
+
+
 def first_time_setup(userid, client, language):
     language_db = get_language(language)
     user = User(id=userid, client=client, language_id=language_db.id,
@@ -117,10 +126,9 @@ def store_answer(user, context, strategy, message):
 def update_answer_with_frequency(user, context_id, frequency):
     answer = db.session.scalar(
         sa.select(InterviewAnswer)
-        .where(InterviewAnswer.user_id == user.id)
+        .where(InterviewAnswer.user == user)
         .where(InterviewAnswer.context == context_id)
     )
-    print(answer, answer.context, answer.message)
     answer.frequency = frequency
     db.session.commit()
 
