@@ -19,7 +19,9 @@ from db_utils.crud import (
     store_answer,
     set_current_context,
     set_context_completed,
-    get_completed_contexts
+    get_completed_contexts,
+    update_most_recent_response,
+    update_answer_with_frequency
 )
 
 
@@ -80,6 +82,7 @@ def start_conversation():
     set_current_context(user, current_context)
 
     start_prompt = get_start_prompt(current_context.context, user)
+    update_most_recent_response(user, "getstrategies")
 
     llm_message = get_llm_message("mixtral", start_prompt, 0.8)
 
@@ -103,47 +106,85 @@ def reply():
 
     user = get_user(userid, client)
     if user is None:
-        language = "en" # TODO - always supply or ask first time?
+        language = "en" # TODO - ask first time
         return start_conversation(language, client, userid)
 
     if user.conversation_state.interview_completed:
         pass
 
     # Retrieve current context
-    current_context = user.conversation_state.current_context
+    current_context_id = user.conversation_state.current_context
+    current_context = get_context_by_id(current_context_id)
+    match user.conversation_state.most_recent_response:
+        case "getstrategies":
+            identified_strategy = eval_strategies(user, user_message)
+            # Identify ID of "other" strategy (corresponding to no concrete strategy mentioned)
+            # no_strategy_mentioned = list(filter(lambda strategy: strategy[1] == "other", strategies))
+            # Store user's answer
+            store_answer(user, current_context_id, identified_strategy["index"], user_message)
 
+            if identified_strategy["strategy"] == "other":
+                # Probe further if "other" strategy identified
+
+                probe_prompt = get_probe_prompt(current_context.context, user)
+                update_most_recent_response(user, "probe")
+                llm_message = get_llm_message("mixtral", probe_prompt, 0.9)
+            else:
+                frequency_prompt = get_frequency_prompt(user, current_context.context, identified_strategy)
+                update_most_recent_response(user, "frequency")
+                llm_message = get_llm_message("mixtral", frequency_prompt, 0.9)
+
+        case "probe":
+            identified_strategy = eval_strategies(user, user_message)
+            store_answer(user, current_context_id, identified_strategy, user_message)
+            if identified_strategy["strategy"] == "other":
+                next_context = set_current_context_complete(user, current_context_id)
+                context_prompt = get_context_prompt(next_context.context, user)
+                update_most_recent_response(user, "getstrategies")
+                llm_message = get_llm_message("mixtral", context_prompt, 0.9)
+            else:
+                frequency_prompt = get_frequency_prompt(user, current_context.context, identified_strategy)
+                update_most_recent_response(user, "frequency")
+                llm_message = get_llm_message("mixtral", frequency_prompt, 0.9)
+
+        case "frequency":
+            eval_frequency_prompt = get_eval_frequency_prompt(user, user_message)
+            llm_eval = get_llm_message("mixtral", eval_frequency_prompt, 1)
+            update_answer_with_frequency(user, current_context_id, llm_eval)
+
+            next_context = set_current_context_complete(user, current_context_id)
+            context_prompt = get_context_prompt(next_context.context, user)
+            update_most_recent_response(user, "getstrategies")
+            llm_message = get_llm_message("mixtral", context_prompt, 0.9)
+
+        case _:
+            pass
+
+    return llm_message
+
+
+def eval_strategies(user, user_message):
     # Evaluate if user response mentions any strategies
     strategies = get_strategies(user.language_id)
     prompt = get_eval_prompt(strategies, user_message, user)
     llm_eval = get_llm_message("mixtral", prompt, 1)
+    identified_strategy = json.loads(llm_eval)[0]
+    return identified_strategy
 
-    # Identify ID of "other" strategy (corresponding to no concrete strategy mentioned)
-    no_strategy_mentioned = list(filter(lambda strategy: strategy[1] == "other", strategies))
 
-    identified_strategy = json.loads(llm_eval)[0]["index"]
-    # Store user's answer
-    store_answer(user, current_context, identified_strategy, user_message)
+def set_current_context_complete(user, current_context):
+    # Set context completed and move to next context
+    contexts = set(get_contexts(user.language_id))
+    set_context_completed(user, current_context)
 
-    if identified_strategy == no_strategy_mentioned[0][0]:
-        # Probe further if "other" strategy identified
-        probe_prompt = get_probe_prompt(current_context.context, user)
-        llm_message = get_llm_message("mixtral", probe_prompt, 0.9)
-    else:
-        # Set context completed and move to next context
-        contexts = set(get_contexts(user.language_id))
-        set_context_completed(user, current_context)
+    completed_contexts = set(get_completed_contexts(user))
+    remaining_contexts = contexts.difference(completed_contexts)
+    if remaining_contexts == set():
+        return "Interview complete"
 
-        completed_contexts = set(get_completed_contexts(user))
-        remaining_contexts = contexts.difference(completed_contexts)
-        if remaining_contexts == set():
-            return "Interview complete"
-
-        next_context = list(remaining_contexts)[0]
-        set_current_context(user, next_context)
-        context_prompt = get_context_prompt(next_context.context, user)
-        llm_message = get_llm_message("mixtral", context_prompt, 0.9)
-
-    return llm_message
+    next_context = list(remaining_contexts)[0]
+    set_current_context(user, next_context)
+    return next_context
 
 
 def get_prompt(user, prompt_name):
@@ -175,6 +216,18 @@ def get_start_prompt(context, user):
 def get_eval_prompt(strategies, user_message, user):
     prompt = get_prompt(user, "eval")
     prompt = prompt.replace("${strategies}", str(strategies)).replace("${user_message}", user_message)
+    return prompt
+
+
+def get_frequency_prompt(user, context, strategy):
+    prompt = get_prompt(user, "frequency")
+    prompt = prompt.replace("${strategy}", str(strategy)).replace("${context}", context)
+    return prompt
+
+
+def get_eval_frequency_prompt(user, user_message):
+    prompt = get_prompt(user, "eval_frequency")
+    prompt = prompt.replace("${user_message}", str(user_message))
     return prompt
 
 

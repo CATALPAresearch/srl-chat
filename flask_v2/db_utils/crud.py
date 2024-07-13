@@ -12,7 +12,7 @@ with open("config/interview.json") as file:
 
 def get_user(userid, client) -> User | None:
     user = db.session.scalar(
-        sa.select(User).where(User.id == userid and User.client == client)
+        sa.select(User).where(User.id == userid).where(User.client == client)
         .join(User.conversation_state))
     return user
 
@@ -83,12 +83,19 @@ def first_time_setup(userid, client, language):
     db.session.add(user)
     db.session.commit()
     created_user = db.session.scalar(
-        sa.select(User).where(User.id == userid and User.client == client))
+        sa.select(User)
+        .where(User.id == userid)
+        .where(User.client == client))
     return created_user
 
 
 def set_current_context(user, context):
     user.conversation_state.current_context = context.id
+    db.session.commit()
+
+
+def update_most_recent_response(user, response):
+    user.conversation_state.most_recent_response = response
     db.session.commit()
 
 
@@ -105,6 +112,17 @@ def store_answer(user, context, strategy, message):
         sa.select(InterviewAnswer).where(InterviewAnswer.id == answer_id)
     )
     return created_answer
+
+
+def update_answer_with_frequency(user, context_id, frequency):
+    answer = db.session.scalar(
+        sa.select(InterviewAnswer)
+        .where(InterviewAnswer.user_id == user.id)
+        .where(InterviewAnswer.context == context_id)
+    )
+    print(answer, answer.context, answer.message)
+    answer.frequency = frequency
+    db.session.commit()
 
 
 def converse(userid, client):

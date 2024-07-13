@@ -48,6 +48,8 @@ class ConversationState(db.Model):
         cascade="all, delete",
         passive_deletes=True,
     )
+    most_recent_response: so.Mapped[str] = so.mapped_column(sa.String(32), sa.CheckConstraint("most_recent_response IN ('getstrategies', 'probe', 'frequency')", name="response_check"), nullable=True)
+
 
 
 class ConversationCompletedContexts(db.Model):
@@ -71,4 +73,5 @@ class InterviewAnswer(db.Model):
     user: so.Mapped["User"] = so.relationship(back_populates="interview_answers")
     context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id))
     strategies: so.Mapped[List[int]] = so.mapped_column(sa.ForeignKey(Strategy.id))
+    frequency: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=True)
     message: so.Mapped[str] = so.mapped_column(sa.String())
