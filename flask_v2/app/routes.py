@@ -27,25 +27,13 @@ from db_utils.crud import (
     update_most_recent_response,
     update_answer_with_frequency,
     get_answers_for_context,
-    store_llm_answer,
-    get_most_recent_llm_response
+    store_llm_answer
 )
 
 
 @app.route('/')
-@app.route('/index')
 def index():
-    return "Hello, World!"
-
-
-@app.route('/user/<id>')
-def get_user_by_id(id):
-    user = db.session.scalar(
-        sa.select(User).where(User.id == id))
-    if user is None:
-        return "User not found", 404
-    return user.client
-
+    return "OK"
 
 @app.route("/startConversation", methods=['POST'])
 def start_conversation():
@@ -95,27 +83,6 @@ def start_conversation():
 
     return llm_message
 
-
-@app.route("/autogen_test", methods=['POST'])
-def autogen():
-    config_list = [
-        {
-            "model": "mixtral",
-            "base_url": "http://132.176.10.80/v1",
-            "api_key": "ollama",
-        }
-    ]
-    content = request.json
-    user_message = content["message"]
-    agent = ConversableAgent(
-        "chatbot",
-        llm_config={"config_list": config_list},
-        code_execution_config=False,  # Turn off code execution, by default it is off.
-        function_map=None,  # No registered functions, by default it is None.
-        human_input_mode="NEVER",  # Never ask for human input.
-    )
-    response = agent.generate_reply(messages=[{"content": user_message, "role": "user"}])
-    return response
 
 @app.route("/reply", methods=['POST'])
 def reply():
@@ -187,7 +154,6 @@ def reply():
                     context_prompt = get_context_prompt(next_context.context, user)
                     update_most_recent_response(user, "getstrategies")
                     llm_message = get_llm_message("mixtral", context_prompt, 0.9)
-
 
         case "probe":
             identified_strategy_array = eval_strategies(user, user_message)
@@ -342,7 +308,7 @@ def eval_frequencies(user, user_message):
         llm_config={"config_list": config_list_code},
         system_message=f"""Evaluate the user's answer. Determine whether the answer mentions a 
         number between 1 and 4 and reply with that number as the frequency number and the number of 
-        the context in the following format: {{"strategy": <Index of strategy>, "frequency": <Frequency number>}}.
+        the strategy in the following format: {{"strategy": <Index of strategy>, "frequency": <Frequency number>}}.
         """,
     )
     context_eval = AssistantAgent(
