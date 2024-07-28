@@ -5,6 +5,52 @@ self-regulated learning skills based on Zimmerman and Martinez-Pons' Self-Regula
 
 Zimmerman, B. J., & Martinez-Pons, M. M. (1986). _Development of a Structured Interview for Assessing Student Use of Self-Regulated Learning Strategies._ American Educational Research Journal, 23(4), 614–628. https://doi.org/10.2307/1163093
 
+## Local development
+
+The API and Discord bot can be started using Docker Compose. For local development, the API container's port 5000 is exposed while in the Kubernetes deployment, for security reasons, the API is not exposed to the internet but only accessible from within the cluster.
+The Compose file starts the API server in development mode so that it automatically reloads when any changes are made to files in the `flask_v2` directory. Note that the Discord bot needs to be restarted manually after changes are made.
+
+Prerequisites: A system with Docker installed.
+
+```shell
+docker-compose up --build
+```
+```shell
+# To restart Discord bot
+docker-compose restart bot
+```
+
+## Kubernetes deployment (local)
+
+Prerequisites: A system with Docker and Kubernetes (e.g. minikube) installed
+
+### Building app images
+```shell
+cd .\kubernetes
+& minikube -p minikube docker-env --shell powershell | Invoke-Expression
+docker build -t studybotpy-api:v1.0 ..
+docker build -t studybotpy-bot:v1.0 ..\discord
+```
+
+### Deploying app images
+```shell
+kubectl apply -f .\namespace.yaml
+kubectl -n study-bot apply -f .
+```
+
+### Verifying deployment
+```shell
+kubectl -n study-bot get pods
+kubectl -n study-bot get services
+```
+
+### Teardown
+```shell
+kubectl -n study-bot delete service api
+kubectl -n study-bot delete --all deployments
+kubectl -n study-bot delete --all pods
+```
+
 ## Running the app locally
 
 ```shell

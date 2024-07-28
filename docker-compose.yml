@@ -3,8 +3,8 @@ services:
     build: .
     environment:
       - PYTHONUNBUFFERED=1
-    expose:
-      - "5000"
+    ports:
+      - 5000:5000
     command: ["gunicorn", "app:app", "-b", "0.0.0.0:5000", "--reload"]
     networks:
       - bot-net
