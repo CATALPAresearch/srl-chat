@@ -1,3 +1,4 @@
+import os
 from json import JSONDecodeError
 
 from app import app, db
@@ -10,7 +11,7 @@ from xml.sax.saxutils import escape as xmlescape
 from html import escape as htmlescape
 from autogen import AssistantAgent, ConversableAgent, GroupChat, GroupChatManager, UserProxyAgent
 
-from app.llm import get_llm_message
+from app.llm import get_llm_response_openai
 from db_utils.crud import (
     get_language,
     get_language_by_id,
@@ -29,6 +30,9 @@ from db_utils.crud import (
     get_answers_for_context,
     store_llm_answer
 )
+
+OPENROUTER_HOST = "https://openrouter.ai/api/v1"
+OPENROUTER_KEY = os.getenv("OPENROUTER_KEY")
 
 
 @app.route('/')
@@ -79,7 +83,7 @@ def start_conversation():
     start_prompt = get_start_prompt(current_context.context, user)
     update_most_recent_response(user, "getstrategies")
 
-    llm_message = get_llm_message("mixtral", start_prompt, 0.8)
+    llm_message = get_llm_response_openai("mistralai/mixtral-8x22b-instruct", start_prompt, "Lass uns loslegen", 0.1)
 
     return llm_message
 
@@ -128,7 +132,7 @@ def reply():
                 # Probe further if only "other" strategy identified
                 probe_prompt = get_probe_prompt(current_context.context, user)
                 update_most_recent_response(user, "probe")
-                llm_message = get_llm_message("mixtral", probe_prompt, 0.9)
+                llm_message = get_llm_response_openai("mistralai/mixtral-8x22b-instruct", probe_prompt, "", 0.0)
             else:
                 # retrieve all interview answers for current context
                 answers = get_answers_for_context(user, current_context_id)
@@ -146,14 +150,14 @@ def reply():
                         strategy = get_strategy_by_id(answer.strategy)
                         frequency_prompt = get_frequency_prompt(user, context.context, strategy.strategy)
                         update_most_recent_response(user, "frequency")
-                        llm_message = get_llm_message("mixtral", frequency_prompt, 0.9)
+                        llm_message = get_llm_response_openai("mistralai/mixtral-8x22b-instruct", frequency_prompt, "", 0.0)
                         break
                 # if all answers have frequency, move to next context
                 else:
                     next_context = set_current_context_complete(user, current_context_id)
                     context_prompt = get_context_prompt(next_context.context, user)
                     update_most_recent_response(user, "getstrategies")
-                    llm_message = get_llm_message("mixtral", context_prompt, 0.9)
+                    llm_message = get_llm_response_openai("mistralai/mixtral-8x22b-instruct", context_prompt, "", 0.0)
 
         case "probe":
             identified_strategy_array = eval_strategies(user, user_message)
@@ -170,11 +174,11 @@ def reply():
                 next_context = set_current_context_complete(user, current_context_id)
                 context_prompt = get_context_prompt(next_context.context, user)
                 update_most_recent_response(user, "getstrategies")
-                llm_message = get_llm_message("mixtral", context_prompt, 0.9)
+                llm_message = get_llm_response_openai("mistralai/mixtral-8x22b-instruct", context_prompt, "", 0.0)
             else:
                 frequency_prompt = get_frequency_prompt(user, current_context.context, identified_strategy_array)
                 update_most_recent_response(user, "frequency")
-                llm_message = get_llm_message("mixtral", frequency_prompt, 0.9)
+                llm_message = get_llm_response_openai("mistralai/mixtral-8x22b-instruct", frequency_prompt, "", 0.0)
 
         case "frequency":
             # evaluate and store indicated frequency of strategy use
@@ -202,14 +206,14 @@ def reply():
                     strategy = get_strategy_by_id(answer.strategy)
                     frequency_prompt = get_frequency_prompt(user, context.context, strategy.strategy)
                     update_most_recent_response(user, "frequency")
-                    llm_message = get_llm_message("mixtral", frequency_prompt, 0.9)
+                    llm_message = get_llm_response_openai("mistralai/mixtral-8x22b-instruct", frequency_prompt, "", 0.0)
                     break
             # if all answers have frequency set, move to next context
             else:
                 next_context = set_current_context_complete(user, current_context_id)
                 context_prompt = get_context_prompt(next_context.context, user)
                 update_most_recent_response(user, "getstrategies")
-                llm_message = get_llm_message("mixtral", context_prompt, 0.9)
+                llm_message = get_llm_response_openai("mistralai/mixtral-8x22b-instruct", context_prompt, "", 0.0)
 
         case _:
             pass
@@ -225,16 +229,16 @@ def eval_strategies(user, user_message):
     strategies = get_strategies(user.language_id)
     config_list_read = [
         {
-            "model": "mixtral",
-            "base_url": "http://132.176.10.80/v1",
-            "api_key": "ollama",
+            "model": "meta-llama/llama-3.1-8b-instruct",
+            "base_url": OPENROUTER_HOST,
+            "api_key": OPENROUTER_KEY,
         }
     ]
     config_list_code = [
         {
-            "model": "openhermes2.5-mistral",
-            "base_url": "http://132.176.10.80/v1",
-            "api_key": "ollama",
+            "model": "nousresearch/hermes-2-pro-llama-3-8b",
+            "base_url": OPENROUTER_HOST,
+            "api_key": OPENROUTER_KEY,
         }
     ]
     strategy_recogniser = AssistantAgent(
@@ -291,16 +295,16 @@ def eval_frequencies(user, user_message):
 
     config_list_read = [
         {
-            "model": "mixtral",
-            "base_url": "http://132.176.10.80/v1",
-            "api_key": "ollama",
+            "model": "mistralai/mixtral-8x22b",
+            "base_url": OPENROUTER_HOST,
+            "api_key": OPENROUTER_KEY,
         }
     ]
     config_list_code = [
         {
-            "model": "openhermes2.5-mistral",
-            "base_url": "http://132.176.10.80/v1",
-            "api_key": "ollama",
+            "model": "meta-llama/codellama-34b-instruct",
+            "base_url": OPENROUTER_HOST,
+            "api_key": OPENROUTER_KEY,
         }
     ]
     frequency_eval = AssistantAgent(
@@ -428,6 +432,6 @@ def start_conversation(language, client, userid):
 
     start_prompt = get_start_prompt(interview_context[language]["contexts"][0], created_user)
 
-    llm_message = get_llm_message("mixtral", start_prompt, 0.8)
+    llm_message = get_llm_response_openai("mistralai/mixtral-8x22b-instruct", start_prompt, "", 0.1)
 
     return llm_message

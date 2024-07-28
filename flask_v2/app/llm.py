@@ -6,7 +6,9 @@ from openai import OpenAI
 HF_API_URL = "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1"
 headers = {"Authorization": f"Bearer {os.environ['HF_TOKEN']}"}
 OLLAMA_API_URL = "http://132.176.10.80/api"
-OLLAMA_HOST = "http://132.176.10.80"
+OLLAMA_HOST = "http://132.176.10.80/v1"
+OPENROUTER_HOST = "https://openrouter.ai/api/v1"
+OPENROUTER_KEY = os.getenv("OPENROUTER_KEY")
 
 
 def hf_query(payload):
@@ -34,8 +36,8 @@ def get_llm_message(model, prompt, temperature):
 
 def get_llm_response_openai(model, system_prompt, user_prompt, temperature):
     client = OpenAI(
-        base_url=f"{OLLAMA_HOST}/v1",
-        api_key="ollama",  # required, but unused
+        base_url=OPENROUTER_HOST,
+        api_key=OPENROUTER_KEY
     )
 
     response = client.chat.completions.create(
