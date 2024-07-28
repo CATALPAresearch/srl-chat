@@ -1,6 +1,6 @@
-from ..app import app
+from app import app
 
-from flask import request
+from flask import request, jsonify
 import json
 
 from .core import start_conversation_core, reply_core
@@ -9,6 +9,16 @@ from .core import start_conversation_core, reply_core
 @app.route('/')
 def index():
     return "OK"
+
+
+@app.route("/translations/<language>", methods=["GET"])
+def get_translations(language):
+    with open("config/translations.json", "r", encoding="utf-8") as file:
+        translations = json.load(file)
+    if language in list(translations["translations"].keys()):
+        return translations["translations"][language]
+    else:
+        return jsonify(translations["language_not_supported_message"]), 400
 
 
 @app.route("/startConversation", methods=['POST'])
@@ -21,8 +31,6 @@ def start_conversation_flask():
         "userid": Discord user ID
     }
     """
-    with open("config/translations.json") as file:
-        translations = json.load(file)
     content = request.json
     language = content["language"]
     client = content["client"]

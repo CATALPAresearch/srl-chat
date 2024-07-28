@@ -1,14 +1,8 @@
 """Discord bot to talk to an LLM."""
 from discord import Client, Intents, Interaction, Object, app_commands, DMChannel
 import json
-import sys
+import requests
 import os
-
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
-
-from app.core import start_conversation, reply
-from db_utils.crud import get_language
 
 # MY_GUILD = Object(1237341194338570250)
 MY_GUILD = Object(1243870532407922740)  # development server
@@ -16,6 +10,7 @@ MY_GUILD = Object(1243870532407922740)  # development server
 token = os.environ['BOT_TOKEN']
 
 CLIENT_NAME = "discord"
+API_URL = "http://127.0.0.1:5000"
 
 
 async def clear_messages(user, channel):
@@ -27,9 +22,40 @@ async def clear_messages(user, channel):
             await msg.delete()
 
 
-class MyClient(Client):
-    language = ""
+def start_conversation(language, userid):
+    url = f"{API_URL}/startConversation"
 
+    payload = json.dumps({
+        "language": language,
+        "client": CLIENT_NAME,
+        "userid": userid
+    })
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    return response.text
+
+
+def reply(message, userid):
+    url = f"{API_URL}/reply"
+
+    payload = json.dumps({
+        "message": message,
+        "client": CLIENT_NAME,
+        "userid": userid
+    })
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    return response.text
+
+
+class MyClient(Client):
     def __init__(self, *, intents: Intents):
         super().__init__(command_prefix='!', intents=intents)
         # A CommandTree is a special type that holds all the application command
@@ -67,7 +93,7 @@ class MyClient(Client):
 
         channel = message.channel
         async with channel.typing():
-            response, status_code = reply(CLIENT_NAME, message.author.id, message.content)
+            response = reply(message.author.id, message.content)
 
         await channel.send(response)
 
@@ -76,29 +102,41 @@ intents = Intents(messages=True)
 client = MyClient(intents=intents)
 
 
+async def talk_in_user_channel(user, language, translations):
+    user_channel = await user.create_dm()
+    await user_channel.send(translations['conversation_start'])
+
+    async with user_channel.typing():
+        message = start_conversation(language, user.id)
+        print(message)
+
+    await user_channel.send(message)
+
+
 @client.tree.command(name="studybot")
 @app_commands.describe(
     language="'en' for English | 'de' für Deutsch",
 )
 async def studybot(interaction: Interaction, language: str):
     """Start a conversation with StudyBot!"""
-    with open("flask_v2/config/translations.json") as file:
-        translations = json.load(file)
+    HEADERS = {'Content-Type': 'application/json; charset=utf-8', }
+    translations_response = requests.get(f"{API_URL}/translations/{language}",  headers=HEADERS)
+    try:
+        translations_response.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        print(translations_response.status_code, json.loads(translations_response.content))
+        if translations_response.status_code == 400:
+            await interaction.response.send_message(
+                f"Hey {interaction.user.mention}! {json.loads(translations_response.content)}")
+        return "Error: " + str(e)
 
-    if not get_language(language):
-        await interaction.response.send_message(translations["language_not_supported_message"])
-        return
-
-    client.language = language
-
-    await interaction.response.send_message(f"Hey {interaction.user.mention}! {translations[language]['command_response']}")
-    user_channel = await interaction.user.create_dm()
-    await user_channel.send(translations[language]['conversation_start'])
-
-    async with user_channel.typing():
-        message, status = start_conversation(language, CLIENT_NAME, interaction.user.id)
-
-    await user_channel.send(message)
+    try:
+        await interaction.response.send_message(
+            f"Hey {interaction.user.mention}! {translations_response.json()['command_response']}")
+        await talk_in_user_channel(interaction.user, language, translations_response.json())
+    except Exception as e:
+        print(e)
+        await interaction.response.send_message("Sorry, something went wrong")
 
 
 @client.tree.command(name='sync', description='Owner only')

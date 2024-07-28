@@ -40,7 +40,7 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
     }
     Returns: Tuple[message, status code]
     """
-    with open("config/translations.json") as file:
+    with open("config/translations.json", "r", encoding="utf-8") as file:
         translations = json.load(file)
 
     if not get_language(language):
@@ -345,7 +345,7 @@ def set_current_context_complete(user, current_context):
 
 
 def get_prompt(user, prompt_name):
-    with open("config/prompts.json") as file:
+    with open("config/prompts.json", "r", encoding="utf-8") as file:
         prompts = json.load(file)
     user_lang = get_language_by_id(user.language_id)
     prompt = prompts[user_lang.lang_code][prompt_name]
@@ -397,9 +397,9 @@ def start_conversation(language, client, userid):
         "userid": Discord user ID
     }
     """
-    with open("config/translations.json") as file:
+    with open("config/translations.json", "r", encoding="utf-8") as file:
         translations = json.load(file)
-    with open("config/interview.json") as file:
+    with open("config/interview.json", "r", encoding="utf-8") as file:
         interview_context = json.load(file)
 
     if not get_language(language):

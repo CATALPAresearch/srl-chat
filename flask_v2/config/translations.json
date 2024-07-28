@@ -1,5 +1,5 @@
 {
-    "language_not_supported_message": "The language you have specified is currently not supported. Please specify 'en' for English or 'de' for German. <br/>Die von dir gewünschte Sprache wird derzeit nicht unterstützt. Bitte gib entweder 'en' für Englisch oder 'de' für Deutsch an.",
+    "language_not_supported_message": "The language you have specified is currently not supported. Please specify 'en' for English or 'de' for German. Die von dir gewünschte Sprache wird derzeit nicht unterstützt. Bitte gib entweder 'en' für Englisch oder 'de' für Deutsch an.",
     "translations":
     {
         "en": {
