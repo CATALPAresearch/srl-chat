@@ -25,7 +25,7 @@ spec:
         - image: studybotpy-bot:v1.0
           env:
             - name: API_URL
-              value: http://api.default.svc.cluster.local:5000
+              value: http://api.study-bot.svc.cluster.local:5000
           name: bot
           imagePullPolicy: IfNotPresent
       restartPolicy: Always
