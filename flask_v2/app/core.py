@@ -7,7 +7,7 @@ from html import escape as htmlescape
 from autogen import AssistantAgent, UserProxyAgent
 
 from .llm import get_llm_response_openai
-from db_utils.crud import (
+from .db_utils.crud import (
     get_language,
     get_language_by_id,
     get_user,
@@ -38,9 +38,9 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
         "client": "discord",
         "userid": Discord user ID
     }
-    Returns: Tuple[message, status code]
+    Returns: tuple[message, status code]
     """
-    with open("config/translations.json", "r", encoding="utf-8") as file:
+    with open("app/config/translations.json", "r", encoding="utf-8") as file:
         translations = json.load(file)
 
     if not get_language(language):
@@ -345,7 +345,7 @@ def set_current_context_complete(user, current_context):
 
 
 def get_prompt(user, prompt_name):
-    with open("config/prompts.json", "r", encoding="utf-8") as file:
+    with open("app/config/prompts.json", "r", encoding="utf-8") as file:
         prompts = json.load(file)
     user_lang = get_language_by_id(user.language_id)
     prompt = prompts[user_lang.lang_code][prompt_name]
@@ -397,9 +397,9 @@ def start_conversation(language, client, userid):
         "userid": Discord user ID
     }
     """
-    with open("config/translations.json", "r", encoding="utf-8") as file:
+    with open("app/config/translations.json", "r", encoding="utf-8") as file:
         translations = json.load(file)
-    with open("config/interview.json", "r", encoding="utf-8") as file:
+    with open("app/config/interview.json", "r", encoding="utf-8") as file:
         interview_context = json.load(file)
 
     if not get_language(language):

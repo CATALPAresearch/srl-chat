@@ -13,7 +13,7 @@ def index():
 
 @app.route("/translations/<language>", methods=["GET"])
 def get_translations(language):
-    with open("config/translations.json", "r", encoding="utf-8") as file:
+    with open("app/config/translations.json", "r", encoding="utf-8") as file:
         translations = json.load(file)
     if language in list(translations["translations"].keys()):
         return translations["translations"][language]

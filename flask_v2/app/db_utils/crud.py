@@ -4,11 +4,6 @@ import sqlalchemy as sa
 import json
 import uuid
 
-with open("config/translations.json") as file:
-    translations = json.load(file)
-with open("config/interview.json") as file:
-    interview_context = json.load(file)
-
 
 def get_user(userid, client) -> User | None:
     user = db.session.scalar(

@@ -93,7 +93,7 @@ class MyClient(Client):
 
         channel = message.channel
         async with channel.typing():
-            response = reply(message.author.id, message.content)
+            response = reply(message.content, message.author.id)
 
         await channel.send(response)
 
