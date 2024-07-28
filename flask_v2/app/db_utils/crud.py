@@ -1,7 +1,6 @@
 from app import app, db
 from app.models import User, Language, LlmResponse, ConversationState, Strategy, Context, InterviewAnswer, ConversationCompletedContexts
 import sqlalchemy as sa
-import json
 import uuid
 
 

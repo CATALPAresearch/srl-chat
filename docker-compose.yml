@@ -1,0 +1,18 @@
+services:
+  api:
+    build: .
+    environment:
+      - PYTHONUNBUFFERED=1
+    expose:
+      - "5000"
+    command: ["gunicorn", "app:app", "-b", "0.0.0.0:5000", "--reload"]
+    networks:
+      - bot-net
+    volumes:
+      - ./flask_v2:/flask_v2
+  bot:
+    build: /discord
+    networks:
+      - bot-net
+networks:
+  bot-net:

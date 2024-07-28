@@ -3,14 +3,17 @@ from discord import Client, Intents, Interaction, Object, app_commands, DMChanne
 import json
 import requests
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # MY_GUILD = Object(1237341194338570250)
 MY_GUILD = Object(1243870532407922740)  # development server
 
-token = os.environ['BOT_TOKEN']
+token = os.getenv('BOT_TOKEN')
 
 CLIENT_NAME = "discord"
-API_URL = "http://127.0.0.1:5000"
+API_URL = os.getenv('API_URL', "http://127.0.0.1:5000")
 
 
 async def clear_messages(user, channel):
