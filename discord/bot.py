@@ -7,8 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# MY_GUILD = Object(1237341194338570250)
-MY_GUILD = Object(1243870532407922740)  # development server
+MY_GUILD = Object(os.getenv('DISCORD_SERVER_ID'))  # development server
 
 token = os.getenv('BOT_TOKEN')
 
