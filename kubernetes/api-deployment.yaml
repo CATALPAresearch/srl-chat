@@ -24,7 +24,7 @@ spec:
         io.kompose.service: api
     spec:
       containers:
-      - image: studybotpy-api:v1.0
+      - image: studybotregistry.azurecr.io/studybotpy-api:v1.0
         env:
           - name: PYTHONUNBUFFERED
             value: "1"
