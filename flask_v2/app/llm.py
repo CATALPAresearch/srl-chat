@@ -125,7 +125,7 @@ def eval_frequencies(user, user_message):
     ]
     config_list_code = [
         {
-            "model": "meta-llama/codellama-34b-instruct",
+            "model": "mistralai/codestral-mamba",
             "base_url": OPENROUTER_HOST,
             "api_key": OPENROUTER_KEY,
         }
@@ -133,15 +133,15 @@ def eval_frequencies(user, user_message):
     frequency_eval = AssistantAgent(
         name="Evaluate_frequency",
         llm_config={"config_list": config_list_code},
-        system_message=f"""Evaluate the user's answer. Determine whether the answer mentions a 
+        system_message=f"""You are a JSON generator. Evaluate the user's answer. Determine whether the answer mentions a 
         number between 1 and 4 and reply with that number as the frequency number and the number of 
-        the strategy in the following format: {{"strategy": <Index of strategy>, "frequency": <Frequency number>}}.
+        the strategy from context in the following format: {{"strategy": <Index of strategy>, "frequency": <Frequency number>}}.
         """,
     )
     context_eval = AssistantAgent(
         name="Evaluate_context",
         llm_config={"config_list": config_list_read},
-        system_message=f"""Give back the index of the strategy this message talks about 
+        system_message=f"""Extract strategy information. Give back the index of the strategy this message talks about 
         based on the following list: {strategies}. Your response should be a single number.""",
     )
 
