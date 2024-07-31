@@ -10,6 +10,7 @@ OLLAMA_API_URL = "http://132.176.10.80/api"
 OLLAMA_HOST = "http://132.176.10.80/v1"
 OPENROUTER_HOST = "https://openrouter.ai/api/v1"
 OPENROUTER_KEY = os.getenv("OPENROUTER_KEY")
+MODEL = os.getenv("MODEL")
 
 logger = logging.getLogger(__name__)
 
@@ -24,20 +25,21 @@ def get_llm_message(model, prompt, temperature):
     return response_json["response"]
 
 
-def get_llm_response_openai(model, system_prompt, user_prompt, temperature):
+def get_llm_response_openai(model, system_prompt, user_prompt, temperature, prev_conversation=[]):
     client = OpenAI(
         base_url=OPENROUTER_HOST,
         api_key=OPENROUTER_KEY
     )
 
+    messages = [{"role": "system", "content": system_prompt}]
+    if prev_conversation:
+        for message in prev_conversation:
+            messages.append(message)
+    messages.append({"role": "user", "content": user_prompt})
+
     response = client.chat.completions.create(
         model=model,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            # {"role": "user", "content": "Who won the world series in 2020?"},
-            # {"role": "assistant", "content": "The LA Dodgers won in 2020."},
-            {"role": "user", "content": user_prompt}
-        ],
+        messages=messages,
         temperature=temperature
     )
     print(response)
@@ -50,39 +52,30 @@ def eval_strategies(user, user_message):
     Evaluate if user response mentions any strategies.
     """
     strategies = get_strategies(user.language_id)
-    config_list_read = [
+    config_list = [
         {
-            "model": "meta-llama/llama-3.1-8b-instruct",
-            "base_url": OPENROUTER_HOST,
-            "api_key": OPENROUTER_KEY,
-        }
-    ]
-    config_list_code = [
-        {
-            "model": "nousresearch/hermes-2-pro-llama-3-8b",
+            "model": MODEL,
             "base_url": OPENROUTER_HOST,
             "api_key": OPENROUTER_KEY,
         }
     ]
     strategy_recogniser = AssistantAgent(
         name="Recognise_strategy",
-        llm_config={"config_list": config_list_read},
+        llm_config={"config_list": config_list},
         system_message=f"""Read the user message and decide whether they have mentioned one or several strategies from 
-        the following list: {strategies}, then state what strategies they are.""",
+        the following list: {strategies}, then state the strategy and its index in the list.""",
     )
     strategy_formatter = AssistantAgent(
         name="Reformat_strategy",
-        llm_config={"config_list": config_list_code},
-        system_message=f"""Reformat the learning strategies employed by the user to json. Take strategy metadata from 
-        the following information: {strategies}. Output only an array of strategies, with each strategy given in the 
-        following format, and include no other content in your message:
-         {{"index": <index as number>, "strategy": <name of strategy>}}.""",
+        llm_config={"config_list": config_list},
+        system_message=f"""You generate JSON code. Respond with a valid JSON array only.""",
     )
 
     initializer = UserProxyAgent(
         name="Init",
         code_execution_config=False
     )
+
     chat_results = initializer.initiate_chats(
         [
             {
@@ -93,7 +86,11 @@ def eval_strategies(user, user_message):
             },
             {
                 "recipient": strategy_formatter,
-                "message": "Please reformat the strategies we have recognised.",
+                "message": """
+                Reformat the learning strategies to JSON. Output only an array of strategies, with each 
+                strategy given in the format delimited by `````. Include no other content in your message. `````
+                {{"index": <index as number>, "strategy": <name of strategy>}}.
+                """,
                 "max_turns": 1,
                 "summary_method": "last_msg",
             },
@@ -101,8 +98,10 @@ def eval_strategies(user, user_message):
     )
     print(chat_results)
     print("***********************")
+    print(chat_results[0].summary)
+    print(chat_results[1].summary)
     print(chat_results[-1].summary)
-    return json.loads(chat_results[-1].summary)
+    return chat_results[0].summary, json.loads(chat_results[1].summary)
 
 
 def eval_frequencies(user, user_message):
@@ -116,23 +115,16 @@ def eval_frequencies(user, user_message):
         if response.message_time >= most_recent_response.message_time:
             most_recent_response = response
 
-    config_list_read = [
+    config_list = [
         {
-            "model": "mistralai/mixtral-8x22b",
-            "base_url": OPENROUTER_HOST,
-            "api_key": OPENROUTER_KEY,
-        }
-    ]
-    config_list_code = [
-        {
-            "model": "mistralai/codestral-mamba",
+            "model": MODEL,
             "base_url": OPENROUTER_HOST,
             "api_key": OPENROUTER_KEY,
         }
     ]
     frequency_eval = AssistantAgent(
         name="Evaluate_frequency",
-        llm_config={"config_list": config_list_code},
+        llm_config={"config_list": config_list},
         system_message=f"""You are a JSON generator. Evaluate the user's answer. Determine whether the answer mentions a 
         number between 1 and 4 and reply with that number as the frequency number and the number of 
         the strategy from context in the following format: {{"strategy": <Index of strategy>, "frequency": <Frequency number>}}.
@@ -140,7 +132,7 @@ def eval_frequencies(user, user_message):
     )
     context_eval = AssistantAgent(
         name="Evaluate_context",
-        llm_config={"config_list": config_list_read},
+        llm_config={"config_list": config_list},
         system_message=f"""Extract strategy information. Give back the index of the strategy this message talks about 
         based on the following list: {strategies}. Your response should be a single number.""",
     )

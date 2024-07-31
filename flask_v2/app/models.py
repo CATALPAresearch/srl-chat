@@ -84,6 +84,9 @@ class InterviewAnswer(db.Model):
     strategy: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Strategy.id))
     frequency: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=True)
     message: so.Mapped[str] = so.mapped_column(sa.String())
+    message_time: so.Mapped[datetime.datetime] = so.mapped_column(
+        nullable=False, server_default=sa.func.CURRENT_TIMESTAMP()
+    )
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
                                               [User.id, User.client]), {})
 

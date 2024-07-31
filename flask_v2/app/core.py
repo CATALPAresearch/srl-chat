@@ -1,4 +1,6 @@
+from collections import OrderedDict
 import json
+import os
 from xml.sax.saxutils import escape as xmlescape
 from html import escape as htmlescape
 
@@ -21,6 +23,7 @@ from .db_utils.crud import (
     store_llm_answer
 )
 
+MODEL = os.getenv("MODEL")
 
 def start_conversation_core(language, client, userid) -> tuple[str, int]:
     """
@@ -90,7 +93,8 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
 
     match user.conversation_state.most_recent_response:
         case "getstrategies":
-            identified_strategy_array = eval_strategies(user, user_message)
+            (analysis, identified_strategy_array) = eval_strategies(user, user_message)
+            store_llm_answer(user, analysis)
             # Identify ID of "other" strategy (corresponding to no concrete strategy mentioned)
             no_strategy_mentioned = []
             # Store user's answer(s)
@@ -105,7 +109,7 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                 # Probe further if only "other" strategy identified
                 probe_prompt = get_probe_prompt(current_context.context, user)
                 update_most_recent_response(user, "probe")
-                llm_message = get_llm_response_openai("mistralai/mixtral-8x22b-instruct", probe_prompt, "", 0.0)
+                llm_message = get_llm_response_openai(MODEL, probe_prompt, "", 0.0)
             else:
                 # retrieve all interview answers for current context
                 answers = get_answers_for_context(user, current_context_id)
@@ -123,17 +127,19 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                         strategy = get_strategy_by_id(answer.strategy)
                         frequency_prompt = get_frequency_prompt(user, context.context, strategy.strategy)
                         update_most_recent_response(user, "frequency")
-                        llm_message = get_llm_response_openai("mistralai/mixtral-8x22b-instruct", frequency_prompt, "", 0.0)
+                        conversation_so_far = retrieve_full_conversation(user)
+                        llm_message = get_llm_response_openai(MODEL, frequency_prompt, "", 0.0, conversation_so_far)
                         break
                 # if all answers have frequency, move to next context
                 else:
                     next_context = set_current_context_complete(user, current_context_id)
                     context_prompt = get_context_prompt(next_context.context, user)
                     update_most_recent_response(user, "getstrategies")
-                    llm_message = get_llm_response_openai("mistralai/mixtral-8x22b-instruct", context_prompt, "", 0.0)
+                    llm_message = get_llm_response_openai(MODEL, context_prompt, "", 0.0)
 
         case "probe":
-            identified_strategy_array = eval_strategies(user, user_message)
+            (analysis, identified_strategy_array) = eval_strategies(user, user_message)
+            store_llm_answer(user, analysis)
             # Identify ID of "other" strategy (corresponding to no concrete strategy mentioned)
             no_strategy_mentioned = []
             # Store user's answer(s)
@@ -147,11 +153,11 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                 next_context = set_current_context_complete(user, current_context_id)
                 context_prompt = get_context_prompt(next_context.context, user)
                 update_most_recent_response(user, "getstrategies")
-                llm_message = get_llm_response_openai("mistralai/mixtral-8x22b-instruct", context_prompt, "", 0.0)
+                llm_message = get_llm_response_openai(MODEL, context_prompt, "", 0.0)
             else:
                 frequency_prompt = get_frequency_prompt(user, current_context.context, identified_strategy_array)
                 update_most_recent_response(user, "frequency")
-                llm_message = get_llm_response_openai("mistralai/mixtral-8x22b-instruct", frequency_prompt, "", 0.0)
+                llm_message = get_llm_response_openai(MODEL, frequency_prompt, "", 0.0)
 
         case "frequency":
             # evaluate and store indicated frequency of strategy use
@@ -282,3 +288,18 @@ def start_conversation(language, client, userid):
     llm_message = get_llm_response_openai("mistralai/mixtral-8x22b-instruct", start_prompt, "", 0.1)
 
     return llm_message
+
+
+def retrieve_full_conversation(user):
+    conversation = {}
+    for response in user.llm_responses:
+        conversation[response.message_time] = {"role": "assistant", "content": response.message}
+    for response in user.interview_answers:
+        conversation[response.message_time] = {"role": "user", "content": response.message}
+    ordered_conversation = OrderedDict(sorted(conversation.items()))
+
+    messages = []
+    for timestamp, data in ordered_conversation.items():
+        messages.append(data)
+
+    return messages
