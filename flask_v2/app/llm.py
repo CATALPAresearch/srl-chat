@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import requests
 from openai import OpenAI
 from autogen import AssistantAgent, UserProxyAgent
@@ -8,9 +9,17 @@ import logging
 
 OLLAMA_API_URL = "http://132.176.10.80/api"
 OLLAMA_HOST = "http://132.176.10.80/v1"
-OPENROUTER_HOST = "https://openrouter.ai/api/v1"
-OPENROUTER_KEY = os.getenv("OPENROUTER_KEY")
+
+BASE_URL = os.getenv("BASE_URL")
+API_KEY = os.getenv("API_KEY")
 MODEL = os.getenv("MODEL")
+CONFIG_LIST = [
+        {
+            "model": MODEL,
+            "base_url": BASE_URL,
+            "api_key": API_KEY,
+        }
+    ]
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +36,8 @@ def get_llm_message(model, prompt, temperature):
 
 def get_llm_response_openai(model, system_prompt, user_prompt, temperature, prev_conversation=[]):
     client = OpenAI(
-        base_url=OPENROUTER_HOST,
-        api_key=OPENROUTER_KEY
+        base_url=BASE_URL,
+        api_key=API_KEY
     )
 
     messages = [{"role": "system", "content": system_prompt}]
@@ -52,22 +61,16 @@ def eval_strategies(user, user_message):
     Evaluate if user response mentions any strategies.
     """
     strategies = get_strategies(user.language_id)
-    config_list = [
-        {
-            "model": MODEL,
-            "base_url": OPENROUTER_HOST,
-            "api_key": OPENROUTER_KEY,
-        }
-    ]
+
     strategy_recogniser = AssistantAgent(
         name="Recognise_strategy",
-        llm_config={"config_list": config_list},
+        llm_config={"config_list": CONFIG_LIST},
         system_message=f"""Read the user message and decide whether they have mentioned one or several strategies from 
         the following list: {strategies}, then state the strategy and its index in the list.""",
     )
     strategy_formatter = AssistantAgent(
         name="Reformat_strategy",
-        llm_config={"config_list": config_list},
+        llm_config={"config_list": CONFIG_LIST},
         system_message=f"""You generate JSON code. Respond with a valid JSON array only.""",
     )
 
@@ -101,7 +104,9 @@ def eval_strategies(user, user_message):
     print(chat_results[0].summary)
     print(chat_results[1].summary)
     print(chat_results[-1].summary)
-    return chat_results[0].summary, json.loads(chat_results[1].summary)
+    regex = r"\[[\s\S]*\]"
+    strategy_json = re.search(regex, chat_results[1].summary).group()
+    return chat_results[0].summary, json.loads(strategy_json)
 
 
 def eval_frequencies(user, user_message):
@@ -115,26 +120,21 @@ def eval_frequencies(user, user_message):
         if response.message_time >= most_recent_response.message_time:
             most_recent_response = response
 
-    config_list = [
-        {
-            "model": MODEL,
-            "base_url": OPENROUTER_HOST,
-            "api_key": OPENROUTER_KEY,
-        }
-    ]
-    frequency_eval = AssistantAgent(
-        name="Evaluate_frequency",
-        llm_config={"config_list": config_list},
-        system_message=f"""You are a JSON generator. Evaluate the user's answer. Determine whether the answer mentions a 
-        number between 1 and 4 and reply with that number as the frequency number and the number of 
-        the strategy from context in the following format: {{"strategy": <Index of strategy>, "frequency": <Frequency number>}}.
-        """,
-    )
     context_eval = AssistantAgent(
         name="Evaluate_context",
-        llm_config={"config_list": config_list},
-        system_message=f"""Extract strategy information. Give back the index of the strategy this message talks about 
-        based on the following list: {strategies}. Your response should be a single number.""",
+        llm_config={"config_list": CONFIG_LIST},
+        system_message=f"""Extract strategy information. Give back the index of the strategy mentioned in the 
+                message delimited by ###, based on the following list: {strategies}You are a number generator. 
+                Do not suggest any code to execute. Respond with a single number only.""",
+    )
+    frequency_eval = AssistantAgent(
+        name="Evaluate_frequency",
+        llm_config={"config_list": CONFIG_LIST},
+        system_message=f"""You generate JSON code. Respond with a valid JSON object only. Evaluate the user's message.
+         Determine whether the answer mentions a number between 1 and 4 and reply with that number as the frequency 
+         number and the number of the strategy from context in the following format: {{"strategy": <Index of strategy>,
+         "frequency": <Frequency number>}}. Don't include any Python code to execute in your answer, just return JSON 
+         output.""",
     )
 
     initializer = UserProxyAgent(
@@ -145,13 +145,13 @@ def eval_frequencies(user, user_message):
         [
             {
                 "recipient": context_eval,
-                "message": most_recent_response.message,
+                "message": f"""{most_recent_response.message}""",
                 "max_turns": 1,
                 "summary_method": "last_msg",
             },
             {
                 "recipient": frequency_eval,
-                "message": user_message,
+                "message": f"""{user_message}""",
                 "max_turns": 1,
                 "summary_method": "last_msg",
             },
@@ -160,4 +160,7 @@ def eval_frequencies(user, user_message):
     print(chat_results)
     print("***********************")
     print(chat_results[-1].summary)
-    return json.loads(chat_results[-1].summary)
+    regex = r"{[\s\S]*}"
+    frequency_json = re.search(regex, chat_results[1].summary).group()
+    print(frequency_json)
+    return json.loads(frequency_json)

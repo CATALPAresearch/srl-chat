@@ -103,7 +103,7 @@ def set_current_context(user, context):
     db.session.commit()
 
 
-def update_most_recent_response(user, response):
+def update_most_recent_conversation_state(user, response):
     user.conversation_state.most_recent_response = response
     db.session.commit()
 
@@ -121,6 +121,12 @@ def store_answer(user, context, strategy, message):
         sa.select(InterviewAnswer).where(InterviewAnswer.id == answer_id)
     )
     return created_answer
+
+
+def update_answer(interview_answer, context_id, strategy_id):
+    interview_answer.context = context_id
+    interview_answer.strategy = strategy_id
+    db.session.commit()
 
 
 def store_llm_answer(user, message):

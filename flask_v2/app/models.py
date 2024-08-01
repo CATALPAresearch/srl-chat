@@ -80,8 +80,8 @@ class InterviewAnswer(db.Model):
     user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
     user: so.Mapped["User"] = so.relationship(back_populates="interview_answers")
-    context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id))
-    strategy: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Strategy.id))
+    context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), nullable=True)
+    strategy: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Strategy.id), nullable=True)
     frequency: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=True)
     message: so.Mapped[str] = so.mapped_column(sa.String())
     message_time: so.Mapped[datetime.datetime] = so.mapped_column(

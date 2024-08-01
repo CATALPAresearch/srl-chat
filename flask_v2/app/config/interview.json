@@ -51,7 +51,7 @@
       },
       {
         "name": "reviewing previously compiled records, e.g. tests, notes or course material/textbooks",
-        "description": "Statements indicating student-initiated efforts to reread tests (12) notes (13), or textbooks (14) to prepare for class or further testing, e.g., \"When preparing for a test, I review my notes.\""
+        "description": "Statements indicating student-initiated efforts to reread tests, notes, or textbooks to prepare for class or further testing, e.g., \"When preparing for a test, I review my notes.\""
       },
       {
         "name": "keeping records and monitoring",
@@ -116,7 +116,7 @@
       },
       {
         "name": "Notizen, frühere Prüfungen oder Kursmaterial wiederholen",
-        "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, Tests (12), Notizen (13) oder Lehrbücher (14) erneut durchzulesen, um sich auf den Unterricht oder weitere Prüfungen vorzubereiten, z.B.: 'Wenn ich mich auf eine Prüfung vorbereite, schaue ich mir meine Notizen noch einmal an.'"
+        "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, Tests, Notizen oder Lehrbücher erneut durchzulesen, um sich auf den Unterricht oder weitere Prüfungen vorzubereiten, z.B.: 'Wenn ich mich auf eine Prüfung vorbereite, schaue ich mir meine Notizen noch einmal an.'"
       },
       {
         "name": "Notizen machen und Fehler festhalten",

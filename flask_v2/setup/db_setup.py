@@ -2,14 +2,14 @@ from app import app, db
 from app.models import Language, Context, Strategy
 import json
 import uuid
-from db_utils.crud import get_language
+from app.db_utils.crud import get_language
 
 app.app_context().push()
 
 
 def populate_contexts():
     print("Populating contexts and strategies into DB")
-    with open("config/interview.json") as file:
+    with open("app/config/interview.json", "r", encoding="utf-8") as file:
         interview_context = json.load(file)
     for lang_code in interview_context:
         print(lang_code)

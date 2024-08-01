@@ -95,6 +95,7 @@ flask db upgrade
 - Delete *.db file
 
 ```shell
+cd flask_v2
 flask db upgrade
 python
 
