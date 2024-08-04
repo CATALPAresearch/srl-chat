@@ -4,6 +4,7 @@ from flask import request, jsonify
 import json
 
 from .core import start_conversation_core, reply_core
+from .db_utils.crud import get_user, get_language_by_id
 
 
 @app.route('/')
@@ -31,13 +32,18 @@ def start_conversation_flask():
         "userid": Discord user ID
     }
     """
-    content = request.json
-    language = content["language"]
-    client = content["client"]
-    userid = content["userid"]
+    try:
+        content = request.json
+        language = content["language"]
+        client = content["client"]
+        userid = content["userid"]
 
-    return start_conversation_core(language, client, userid)
-
+        return start_conversation_core(language, client, userid)
+    except Exception as e:
+        print(e)
+        with open("app/config/translations.json", "r", encoding="utf-8") as file:
+            translations = json.load(file)
+        return translations["translations"][language]["create_error"], 200
 
 @app.route("/reply", methods=['POST'])
 def reply():
@@ -49,9 +55,21 @@ def reply():
         "message": message
     }
     """
-    content = request.json
-    client = content["client"]
-    userid = content["userid"]
-    user_message = content["message"]
+    try:
+        content = request.json
+        client = content["client"]
+        userid = content["userid"]
+        user_message = content["message"]
 
-    return reply_core(client, userid, user_message)
+        return reply_core(client, userid, user_message)
+    except Exception as e:
+        print(e)
+        with open("app/config/translations.json", "r", encoding="utf-8") as file:
+            translations = json.load(file)
+        user = get_user(userid, client)
+        if user:
+            user_lang = get_language_by_id(user.language_id)
+            return translations["translations"][user_lang.lang_code]["reply_error"], 200
+        else:
+            return translations["translations"]["en"]["create_error"], 500
+

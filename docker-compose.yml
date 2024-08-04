@@ -10,6 +10,7 @@ services:
       - bot-net
     volumes:
       - ./flask_v2:/flask_v2
+      - ./data:/mnt/azure
   bot:
     build: /discord
     environment:

@@ -18,10 +18,11 @@ from .db_utils.crud import (
     set_context_completed,
     get_completed_contexts,
     update_most_recent_conversation_state,
-    update_answer_with_frequency,
-    get_answers_for_context,
+    update_strategy_with_frequency,
+    get_strategies_for_context,
     store_llm_answer,
-    update_answer
+    set_interview_complete,
+    store_strategy
 )
 
 MODEL = os.getenv("MODEL")
@@ -83,17 +84,18 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
     }
     """
     user = get_user(userid, client)
-    user_answer_db = store_answer(user, None, None, user_message)
     if user is None:
-        language = "en"  # TODO - ask first time
-        return start_conversation(language, client, userid)
-
-    if user.conversation_state.interview_completed:
-        pass
+        raise FileNotFoundError("User not found")
+        # language = "en"  # TODO - ask first time
+        # return start_conversation(language, client, userid)
 
     # Retrieve current context
     current_context_id = user.conversation_state.current_context
     current_context = get_context_by_id(current_context_id)
+    user_answer_db = store_answer(user, current_context.id, user_message)
+
+    if user.conversation_state.interview_completed:
+        return sign_off_interview(user)
 
     match user.conversation_state.most_recent_response:
         case "getstrategies":
@@ -104,7 +106,7 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
             # evaluate and store indicated frequency of strategy use
             frequency_json = eval_frequencies(user, user_message)
             # Store user's answer(s)
-            update_answer_with_frequency(user, current_context_id, frequency_json["strategy"], frequency_json["frequency"])
+            update_strategy_with_frequency(user, current_context_id, frequency_json["strategy"], frequency_json["frequency"])
             # check if further strategies need to be checked for frequency
             llm_message = ask_about_frequency(user, current_context)
         case _:
@@ -122,7 +124,8 @@ def set_current_context_complete(user, current_context):
     completed_contexts = set(get_completed_contexts(user))
     remaining_contexts = contexts.difference(completed_contexts)
     if remaining_contexts == set():
-        return "Interview complete"
+        set_interview_complete(user)
+        return None
 
     next_context = list(remaining_contexts)[0]
     set_current_context(user, next_context)
@@ -232,7 +235,7 @@ def evaluate_strategies(user, user_message, current_context, user_answer_db, pro
     if not type(identified_strategy_array) == list:
         identified_strategy_array = [identified_strategy_array]
     for identified_strategy in identified_strategy_array:
-        update_answer(user_answer_db, current_context.id, identified_strategy["index"])
+        store_strategy(user, user_answer_db, current_context.id, identified_strategy["index"])
         if identified_strategy["strategy"] == "other":
             no_strategy_mentioned.append(1)
 
@@ -255,7 +258,7 @@ def evaluate_strategies(user, user_message, current_context, user_answer_db, pro
 
 def ask_about_frequency(user, current_context):
     # retrieve all interview answers for current context
-    answers = get_answers_for_context(user, current_context.id)
+    answers = get_strategies_for_context(user, current_context.id)
     system_prompt = get_system_prompt(user)
 
     def list_filter(a):
@@ -277,18 +280,27 @@ def ask_about_frequency(user, current_context):
             break
     # if all answers have frequency, move to next context
     else:
-        next_context = set_current_context_complete(user, current_context.id)
-        context_prompt = get_context_prompt(next_context.context, user)
-        update_most_recent_conversation_state(user, "getstrategies")
-        llm_message = get_llm_response_openai(MODEL, system_prompt + " " + context_prompt, "", 0.0)
+        llm_message = move_to_next_context(user, current_context)
     return llm_message
 
 
 def move_to_next_context(user, current_context):
     next_context = set_current_context_complete(user, current_context.id)
-    context_prompt = get_context_prompt(next_context.context, user)
-    update_most_recent_conversation_state(user, "getstrategies")
     conversation_so_far = retrieve_full_conversation(user)
     system_prompt = get_system_prompt(user)
-    llm_message = get_llm_response_openai(MODEL, system_prompt + " " + context_prompt, "", 0.0, conversation_so_far)
+    if next_context:
+        prompt = get_context_prompt(next_context.context, user)
+        update_most_recent_conversation_state(user, "getstrategies")
+        llm_message = get_llm_response_openai(MODEL, system_prompt + " " + prompt, "", 0.0, conversation_so_far)
+    else:
+        update_most_recent_conversation_state(user, "complete")
+        llm_message = sign_off_interview(user)
+
+    return llm_message
+
+
+def sign_off_interview(user):
+    prompt = get_prompt(user, "interview_complete")
+    system_prompt = get_system_prompt(user)
+    llm_message = get_llm_response_openai(MODEL, system_prompt + " " + prompt, "", 0.0)
     return llm_message

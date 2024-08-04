@@ -51,6 +51,7 @@ def get_llm_response_openai(model, system_prompt, user_prompt, temperature, prev
         messages=messages,
         temperature=temperature
     )
+    print(system_prompt, user_prompt)
     print(response)
     response_content = response.choices[0].message.content
     return response_content
@@ -90,8 +91,8 @@ def eval_strategies(user, user_message):
             {
                 "recipient": strategy_formatter,
                 "message": """
-                Reformat the learning strategies to JSON. Output only an array of strategies, with each 
-                strategy given in the format delimited by `````. Include no other content in your message. `````
+                Reformat the strategies mentioned in the user response to JSON. Output only an array of strategies, with
+                each strategy given in the format delimited by `````. Include no other content in your message. `````
                 {{"index": <index as number>, "strategy": <name of strategy>}}.
                 """,
                 "max_turns": 1,
@@ -104,7 +105,7 @@ def eval_strategies(user, user_message):
     print(chat_results[0].summary)
     print(chat_results[1].summary)
     print(chat_results[-1].summary)
-    regex = r"\[[\s\S]*\]"
+    regex = r"(\[\s*)({\s*\"index\":\s?[\d]+,\s*\"strategy\":\s?[\s\S]+(\s*},?)\s*)+(\s*\])"
     strategy_json = re.search(regex, chat_results[1].summary).group()
     return chat_results[0].summary, json.loads(strategy_json)
 
@@ -124,15 +125,15 @@ def eval_frequencies(user, user_message):
         name="Evaluate_context",
         llm_config={"config_list": CONFIG_LIST},
         system_message=f"""Extract strategy information. Give back the index of the strategy mentioned in the 
-                message delimited by ###, based on the following list: {strategies}You are a number generator. 
-                Do not suggest any code to execute. Respond with a single number only.""",
+                message delimited by ###, based on the following list: {strategies}. Do not suggest any code to execute.
+                Respond with a sentence in the following format: The strategy number is <number>.""",
     )
     frequency_eval = AssistantAgent(
         name="Evaluate_frequency",
         llm_config={"config_list": CONFIG_LIST},
-        system_message=f"""You generate JSON code. Respond with a valid JSON object only. Evaluate the user's message.
+        system_message=f"""You generate JSON code. Respond with a valid JSON object only.
          Determine whether the answer mentions a number between 1 and 4 and reply with that number as the frequency 
-         number and the number of the strategy from context in the following format: {{"strategy": <Index of strategy>,
+         number and the number of the strategy in the following format: {{"strategy": <Index of strategy>,
          "frequency": <Frequency number>}}. Don't include any Python code to execute in your answer, just return JSON 
          output.""",
     )
@@ -160,7 +161,7 @@ def eval_frequencies(user, user_message):
     print(chat_results)
     print("***********************")
     print(chat_results[-1].summary)
-    regex = r"{[\s\S]*}"
+    regex = r"{\s*\"strategy\":\s?[\d]+,\s*\"frequency\":\s?[\d]\s*}"
     frequency_json = re.search(regex, chat_results[1].summary).group()
     print(frequency_json)
     return json.loads(frequency_json)

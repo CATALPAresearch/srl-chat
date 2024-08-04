@@ -19,6 +19,10 @@ class User(db.Model):
     client: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
     message_history: so.Mapped[Optional[str]] = so.mapped_column(sa.String())
+    strategies: so.Mapped[List["UserStrategy"]] = so.relationship(
+        back_populates="user",
+        cascade="all, delete",
+        passive_deletes=True, )
     interview_answers: so.Mapped[List["InterviewAnswer"]] = so.relationship(
         back_populates="user",
         cascade="all, delete",
@@ -54,8 +58,10 @@ class ConversationState(db.Model):
         cascade="all, delete",
         passive_deletes=True,
     )
-    most_recent_response: so.Mapped[str] = so.mapped_column(sa.String(32), sa.CheckConstraint(
-        "most_recent_response IN ('getstrategies', 'probe', 'frequency')", name="response_check"), nullable=True)
+    most_recent_response: so.Mapped[str] = so.mapped_column(sa.String(32),
+                                                            sa.CheckConstraint(
+        "most_recent_response IN ('getstrategies', 'probe', 'frequency', 'complete')", name="response_check"),
+                                                            nullable=True)
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
                                               [User.id, User.client]), {})
 
@@ -80,13 +86,29 @@ class InterviewAnswer(db.Model):
     user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
     user: so.Mapped["User"] = so.relationship(back_populates="interview_answers")
-    context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), nullable=True)
-    strategy: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Strategy.id), nullable=True)
-    frequency: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=True)
+    context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id))
     message: so.Mapped[str] = so.mapped_column(sa.String())
+    strategies: so.Mapped[List["UserStrategy"]] = so.relationship(
+        back_populates="interview_answer",
+        cascade="all, delete",
+        passive_deletes=True, )
     message_time: so.Mapped[datetime.datetime] = so.mapped_column(
         nullable=False, server_default=sa.func.CURRENT_TIMESTAMP()
     )
+    __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
+                                              [User.id, User.client]), {})
+
+
+class UserStrategy(db.Model):
+    id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
+    user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
+    user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
+    user: so.Mapped["User"] = so.relationship(back_populates="strategies")
+    interview_answer_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(InterviewAnswer.id))
+    interview_answer: so.Mapped["InterviewAnswer"] = so.relationship(back_populates="strategies")
+    context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id))
+    strategy: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Strategy.id))
+    frequency: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=True)
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
                                               [User.id, User.client]), {})
 

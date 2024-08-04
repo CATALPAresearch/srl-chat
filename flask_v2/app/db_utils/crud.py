@@ -1,5 +1,15 @@
 from app import app, db
-from app.models import User, Language, LlmResponse, ConversationState, Strategy, Context, InterviewAnswer, ConversationCompletedContexts
+from app.models import (
+    User,
+    Language,
+    LlmResponse,
+    ConversationState,
+    Strategy,
+    Context,
+    InterviewAnswer,
+    ConversationCompletedContexts,
+    UserStrategy
+)
 import sqlalchemy as sa
 import uuid
 
@@ -75,11 +85,11 @@ def get_strategies(lang_id):
     return strats
 
 
-def get_answers_for_context(user, context_id):
+def get_strategies_for_context(user, context_id):
     answers = db.session.scalars(
-        sa.select(InterviewAnswer)
-        .where(InterviewAnswer.user == user)
-        .where(InterviewAnswer.context == context_id)
+        sa.select(UserStrategy)
+        .where(UserStrategy.user == user)
+        .where(UserStrategy.context == context_id)
     ).all()
     return answers
 
@@ -108,12 +118,11 @@ def update_most_recent_conversation_state(user, response):
     db.session.commit()
 
 
-def store_answer(user, context, strategy, message):
+def store_answer(user, context, message):
     answer_id = str(uuid.uuid4())
     answer = InterviewAnswer(id=answer_id,
                              user=user,
                              context=context,
-                             strategy=strategy,
                              message=message)
     db.session.add(answer)
     db.session.commit()
@@ -123,9 +132,30 @@ def store_answer(user, context, strategy, message):
     return created_answer
 
 
-def update_answer(interview_answer, context_id, strategy_id):
-    interview_answer.context = context_id
-    interview_answer.strategy = strategy_id
+def store_strategy(user, interview_answer, context_id, strategy_id):
+    user_strategy_id = str(uuid.uuid4())
+    user_strategy = UserStrategy(id=user_strategy_id,
+                                 user=user,
+                                 context=context_id,
+                                 strategy=strategy_id,
+                                 interview_answer=interview_answer)
+    db.session.add(user_strategy)
+    db.session.commit()
+    created_user_strategy = db.session.scalar(
+        sa.select(UserStrategy).where(UserStrategy.id == user_strategy_id)
+    )
+    return created_user_strategy
+
+
+def update_strategy_with_frequency(user, context_id, strategy_id, frequency):
+    strategy = db.session.scalar(
+        sa.select(UserStrategy)
+        .where(UserStrategy.user == user)
+        .where(UserStrategy.context == context_id)
+        .where(UserStrategy.strategy == strategy_id)
+    )
+    print(context_id, strategy_id)
+    strategy.frequency = frequency
     db.session.commit()
 
 
@@ -142,12 +172,6 @@ def store_llm_answer(user, message):
     return created_answer
 
 
-def update_answer_with_frequency(user, context_id, strategy_id, frequency):
-    answer = db.session.scalar(
-        sa.select(InterviewAnswer)
-        .where(InterviewAnswer.user == user)
-        .where(InterviewAnswer.context == context_id)
-        .where(InterviewAnswer.strategy == strategy_id)
-    )
-    answer.frequency = frequency
+def set_interview_complete(user):
+    user.conversation_state.interview_completed = True
     db.session.commit()
