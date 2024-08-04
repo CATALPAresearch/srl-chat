@@ -23,8 +23,12 @@ spec:
       labels:
         io.kompose.service: api
     spec:
+      volumes:
+        - name: volume
+          persistentVolumeClaim:
+            claimName: azure-managed-volume
       containers:
-      - image: studybotregistry.azurecr.io/studybotpy-api:v1.0
+      - image: studybotregistry.azurecr.io/studybotpy-api:v4.0
         env:
           - name: PYTHONUNBUFFERED
             value: "1"
@@ -33,4 +37,8 @@ spec:
         ports:
           - containerPort: 5000
             protocol: TCP
+        volumeMounts:
+          - name: volume
+            mountPath: '/mnt/azure'
+            readOnly: false
       restartPolicy: Always

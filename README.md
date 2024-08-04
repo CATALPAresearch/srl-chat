@@ -37,7 +37,10 @@ docker build -t studybotpy-bot:v1.0 ..\discord
 kubectl apply -f .\namespace.yaml
 kubectl -n study-bot apply -f .
 ```
-
+### Copy initialised DB without user data to persistent volume
+```shell
+kubectl cp -n study-bot ..\flask_v2\srl_chat_empty.db <pod_name>:/mnt/azure/srl_chat.db
+```
 ### Verifying deployment
 ```shell
 kubectl -n study-bot get pods
