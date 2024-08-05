@@ -1,10 +1,31 @@
-from app import app
+from app import app, db
 
 from flask import request, jsonify
 import json
 
 from .core import start_conversation_core, reply_core
 from .db_utils.crud import get_user, get_language_by_id
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    print(error)
+    db.session.rollback()
+    with open("app/config/translations.json", "r", encoding="utf-8") as file:
+        translations = json.load(file)
+    return translations["translations"]["en"]["create_error"], 500
+
+
+@app.teardown_request
+def teardown_request(exception):
+    if exception:
+        db.session.rollback()
+        print("rollback")
+        print("Exception: ", exception)
+    else:
+        db.session.commit()
+        print("commit")
+    db.session.remove()
 
 
 @app.route('/')
@@ -41,9 +62,12 @@ def start_conversation_flask():
         return start_conversation_core(language, client, userid)
     except Exception as e:
         print(e)
+        print("Rolling back DB changes")
+        db.session.rollback()
         with open("app/config/translations.json", "r", encoding="utf-8") as file:
             translations = json.load(file)
-        return translations["translations"][language]["create_error"], 200
+        return translations["translations"][language]["create_error"], 500
+
 
 @app.route("/reply", methods=['POST'])
 def reply():
@@ -64,6 +88,8 @@ def reply():
         return reply_core(client, userid, user_message)
     except Exception as e:
         print(e)
+        print("Rolling back DB changes")
+        db.session.rollback()
         with open("app/config/translations.json", "r", encoding="utf-8") as file:
             translations = json.load(file)
         user = get_user(userid, client)

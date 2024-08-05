@@ -10,7 +10,7 @@
                 "text": "You are a study advisor. Your task is to ask students to describe their study processes. Reply with a friendly greeting and a single question asking to describe their favourite study method."
             },
             "reply_error": "Sorry, something seems to have gone wrong. Please try sending your message again. If the problem persists, please contact <@565256380727164949> or email elisabeth.wetchy@gmail.com",
-            "create_error": "Sorry, something seems to have gone wrong. Please try starting the conversation again from the Discord server. If the problem persists, please contact <@565256380727164949> or email elisabeth.wetchy@gmail.com",
+            "create_error": "Sorry, something seems to have gone wrong. Please try starting the conversation again from the Discord server. If the problem persists, please contact <@565256380727164949> or email elisabeth.wetchy@gmail.com"
         },
         "de": {
             "command_response": "Du bekommst gleich eine persönliche Nachricht von mir.",
@@ -20,7 +20,7 @@
                 "text": "Du bist ein Studienberater an einer deutschen Universität. Deine Aufgabe ist es, Studenten und Studentinnen nach ihren bevorzugten Lernmethoden zu fragen. Beginne das Gespräch mit einer freundlichen Begrüßung und einer Aufforderung, eine Lernmethode zu beschreiben, die die Person selbst oft einsetzt. Antworte stets auf Deutsch und duze deinen Gesprächspartner. Sende keine englische Übersetzung."
             },
             "reply_error": "Es tut mir leid, da ist was schiefgegangen. Bitte sende deine Nachricht noch einmal. Wenn das Problem bestehen bleibt, wende dich bitte an <@565256380727164949> oder schicke eine email an elisabeth.wetchy@gmail.com.",
-            "create_error": "Es tut mir leid, da ist was schiefgegangen. Bitte probiere, das Gespräch vom Discord-Server aus neu zu beginnen. Wenn das Problem bestehen bleibt, wende dich bitte an <@565256380727164949> oder schicke eine email an elisabeth.wetchy@gmail.com.",
+            "create_error": "Es tut mir leid, da ist was schiefgegangen. Bitte probiere, das Gespräch vom Discord-Server aus neu zu beginnen. Wenn das Problem bestehen bleibt, wende dich bitte an <@565256380727164949> oder schicke eine email an elisabeth.wetchy@gmail.com."
         }
     }
 }

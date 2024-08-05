@@ -42,10 +42,28 @@ def get_contexts(lang_id):
     return result
 
 
+def get_contexts_content(lang_id):
+    contexts = db.session.execute(
+        sa.select(Context)
+        .where(Context.language_id == lang_id)
+    ).all()
+    result = [con.context for con, in contexts]
+    return result
+
+
 def get_context_by_id(context_id):
     context = db.session.scalar(
         sa.select(Context).where(Context.id == context_id))
     return context
+
+
+def get_strategies_content(lang_id):
+    strategies = db.session.execute(
+        sa.select(Strategy)
+        .where(Strategy.language_id == lang_id)
+    ).all()
+    result = [strat.strategy for strat, in strategies]
+    return result
 
 
 def get_strategy_by_id(strategy_id):
@@ -60,7 +78,7 @@ def set_context_completed(user, context):
         completed_context_id=context
     )
     db.session.add(completed_contexts)
-    db.session.commit()
+    db.session.flush()
 
 
 def get_completed_contexts(user):
@@ -100,7 +118,7 @@ def first_time_setup(userid, client, language):
                 message_history="",
                 conversation_state=ConversationState(id=str(uuid.uuid4())))
     db.session.add(user)
-    db.session.commit()
+    db.session.flush()
     created_user = db.session.scalar(
         sa.select(User)
         .where(User.id == userid)
@@ -110,12 +128,12 @@ def first_time_setup(userid, client, language):
 
 def set_current_context(user, context):
     user.conversation_state.current_context = context.id
-    db.session.commit()
+    db.session.flush()
 
 
 def update_most_recent_conversation_state(user, response):
     user.conversation_state.most_recent_response = response
-    db.session.commit()
+    db.session.flush()
 
 
 def store_answer(user, context, message):
@@ -125,7 +143,7 @@ def store_answer(user, context, message):
                              context=context,
                              message=message)
     db.session.add(answer)
-    db.session.commit()
+    db.session.flush()
     created_answer = db.session.scalar(
         sa.select(InterviewAnswer).where(InterviewAnswer.id == answer_id)
     )
@@ -140,7 +158,7 @@ def store_strategy(user, interview_answer, context_id, strategy_id):
                                  strategy=strategy_id,
                                  interview_answer=interview_answer)
     db.session.add(user_strategy)
-    db.session.commit()
+    db.session.flush()
     created_user_strategy = db.session.scalar(
         sa.select(UserStrategy).where(UserStrategy.id == user_strategy_id)
     )
@@ -156,7 +174,7 @@ def update_strategy_with_frequency(user, context_id, strategy_id, frequency):
     )
     print(context_id, strategy_id)
     strategy.frequency = frequency
-    db.session.commit()
+    db.session.flush()
 
 
 def store_llm_answer(user, message):
@@ -165,7 +183,7 @@ def store_llm_answer(user, message):
                          user=user,
                          message=message)
     db.session.add(answer)
-    db.session.commit()
+    db.session.flush()
     created_answer = db.session.scalar(
         sa.select(LlmResponse).where(LlmResponse.id == answer_id)
     )
@@ -174,4 +192,4 @@ def store_llm_answer(user, message):
 
 def set_interview_complete(user):
     user.conversation_state.interview_completed = True
-    db.session.commit()
+    db.session.flush()

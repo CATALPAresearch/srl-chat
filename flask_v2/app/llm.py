@@ -4,7 +4,7 @@ import re
 import requests
 from openai import OpenAI
 from autogen import AssistantAgent, UserProxyAgent
-from .db_utils.crud import get_strategies
+from .db_utils.crud import get_strategies, get_language_by_id, get_contexts_content, get_strategies_content
 import logging
 
 OLLAMA_API_URL = "http://132.176.10.80/api"
@@ -34,7 +34,7 @@ def get_llm_message(model, prompt, temperature):
     return response_json["response"]
 
 
-def get_llm_response_openai(model, system_prompt, user_prompt, temperature, prev_conversation=[]):
+def get_llm_response_openai(model, system_prompt, user_prompt=None, temperature=0.0, prev_conversation=[]):
     client = OpenAI(
         base_url=BASE_URL,
         api_key=API_KEY
@@ -44,7 +44,8 @@ def get_llm_response_openai(model, system_prompt, user_prompt, temperature, prev
     if prev_conversation:
         for message in prev_conversation:
             messages.append(message)
-    messages.append({"role": "user", "content": user_prompt})
+    if user_prompt:
+        messages.append({"role": "user", "content": user_prompt})
 
     response = client.chat.completions.create(
         model=model,
@@ -54,6 +55,8 @@ def get_llm_response_openai(model, system_prompt, user_prompt, temperature, prev
     print(system_prompt, user_prompt)
     print(response)
     response_content = response.choices[0].message.content
+    if not response_content:
+        raise AssertionError("Received empty response from LLM.")
     return response_content
 
 
@@ -66,13 +69,12 @@ def eval_strategies(user, user_message):
     strategy_recogniser = AssistantAgent(
         name="Recognise_strategy",
         llm_config={"config_list": CONFIG_LIST},
-        system_message=f"""Read the user message and decide whether they have mentioned one or several strategies from 
-        the following list: {strategies}, then state the strategy and its index in the list.""",
+        system_message=get_prompt(user, "sys_recognise_strategy").replace("${strategies}", str(strategies)),
     )
     strategy_formatter = AssistantAgent(
         name="Reformat_strategy",
         llm_config={"config_list": CONFIG_LIST},
-        system_message=f"""You generate JSON code. Respond with a valid JSON array only.""",
+        system_message=get_prompt(user, "sys_format_strategy"),
     )
 
     initializer = UserProxyAgent(
@@ -90,11 +92,7 @@ def eval_strategies(user, user_message):
             },
             {
                 "recipient": strategy_formatter,
-                "message": """
-                Reformat the strategies mentioned in the user response to JSON. Output only an array of strategies, with
-                each strategy given in the format delimited by `````. Include no other content in your message. `````
-                {{"index": <index as number>, "strategy": <name of strategy>}}.
-                """,
+                "message": get_prompt(user, "format_strategy"),
                 "max_turns": 1,
                 "summary_method": "last_msg",
             },
@@ -124,35 +122,30 @@ def eval_frequencies(user, user_message):
     context_eval = AssistantAgent(
         name="Evaluate_context",
         llm_config={"config_list": CONFIG_LIST},
-        system_message=f"""Extract strategy information. Give back the index of the strategy mentioned in the 
-                message delimited by ###, based on the following list: {strategies}. Do not suggest any code to execute.
-                Respond with a sentence in the following format: The strategy number is <number>.""",
+        system_message=get_prompt(user, "sys_extract_strategy_for_frequency").replace("${strategies}", str(strategies)),
     )
     frequency_eval = AssistantAgent(
         name="Evaluate_frequency",
         llm_config={"config_list": CONFIG_LIST},
-        system_message=f"""You generate JSON code. Respond with a valid JSON object only.
-         Determine whether the answer mentions a number between 1 and 4 and reply with that number as the frequency 
-         number and the number of the strategy in the following format: {{"strategy": <Index of strategy>,
-         "frequency": <Frequency number>}}. Don't include any Python code to execute in your answer, just return JSON 
-         output.""",
+        system_message=get_prompt(user, "sys_format_frequency"),
     )
 
     initializer = UserProxyAgent(
         name="Init",
         code_execution_config=False
     )
+    print(most_recent_response.message)
     chat_results = initializer.initiate_chats(
         [
             {
                 "recipient": context_eval,
-                "message": f"""{most_recent_response.message}""",
+                "message": most_recent_response.message,
                 "max_turns": 1,
                 "summary_method": "last_msg",
             },
             {
                 "recipient": frequency_eval,
-                "message": f"""{user_message}""",
+                "message": user_message,
                 "max_turns": 1,
                 "summary_method": "last_msg",
             },
@@ -165,3 +158,42 @@ def eval_frequencies(user, user_message):
     frequency_json = re.search(regex, chat_results[1].summary).group()
     print(frequency_json)
     return json.loads(frequency_json)
+
+
+def get_prompt(user, prompt_name):
+    with open("app/config/prompts.json", "r", encoding="utf-8") as file:
+        prompts = json.load(file)
+    user_lang = get_language_by_id(user.language_id)
+    prompt = prompts[user_lang.lang_code][prompt_name]
+    return prompt
+
+
+def get_probe_prompt(context, user):
+    prompt = get_prompt(user, "probe")
+    prompt = prompt.replace("${context}", context)
+    return prompt
+
+
+def get_context_prompt(context, user):
+    prompt = get_prompt(user, "context")
+    prompt = prompt.replace("${context}", context)
+    return prompt
+
+
+def get_system_prompt(user):
+    contexts = get_contexts_content(user.language_id)
+    strategies = get_strategies_content(user.language_id)
+    prompt = get_prompt(user, "system").replace("${contexts}", str(contexts)).replace("${strategies}", str(strategies))
+    return prompt
+
+
+def get_start_prompt(context, user):
+    prompt = get_prompt(user, "start")
+    prompt = prompt.replace("${context}", str(context))
+    return prompt
+
+
+def get_frequency_prompt(user, context, strategy):
+    prompt = get_prompt(user, "frequency")
+    prompt = prompt.replace("${strategy}", str(strategy)).replace("${context}", context)
+    return prompt
