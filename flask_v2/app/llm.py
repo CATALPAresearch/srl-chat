@@ -14,12 +14,12 @@ BASE_URL = os.getenv("BASE_URL")
 API_KEY = os.getenv("API_KEY")
 MODEL = os.getenv("MODEL")
 CONFIG_LIST = [
-        {
-            "model": MODEL,
-            "base_url": BASE_URL,
-            "api_key": API_KEY,
-        }
-    ]
+    {
+        "model": MODEL,
+        "base_url": BASE_URL,
+        "api_key": API_KEY,
+    }
+]
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +54,14 @@ def get_llm_response_openai(model, system_prompt, user_prompt=None, temperature=
     )
     print(system_prompt, user_prompt)
     print(response)
+    if response.choices[0].message.content == "":
+        print("Retrying LLM call")
+        response = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=temperature + 0.1
+        )
+        print(response)
     response_content = response.choices[0].message.content
     if not response_content:
         raise AssertionError("Received empty response from LLM.")
@@ -196,4 +204,13 @@ def get_start_prompt(context, user):
 def get_frequency_prompt(user, context, strategy):
     prompt = get_prompt(user, "frequency")
     prompt = prompt.replace("${strategy}", str(strategy)).replace("${context}", context)
+    return prompt
+
+
+def get_complete_prompt(user, most_contexts_strat, const_strategy, avg_freq, total_strat, const_strategies):
+    prompt = get_prompt(user, "interview_complete")
+    prompt = prompt.replace("${most_contexts}", most_contexts_strat).replace("${const_strategy}",
+                                                                             const_strategy).replace("${avg_freq}",
+                                                                                                     str(avg_freq)).replace(
+        "${total_strat}", str(total_strat)).replace("${const_strategies}", str(const_strategies))
     return prompt

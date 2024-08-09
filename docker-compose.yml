@@ -5,7 +5,7 @@ services:
       - PYTHONUNBUFFERED=1
     ports:
       - 5000:5000
-    command: ["gunicorn", "app:app", "-b", "0.0.0.0:5000", "--reload"]
+    command: ["gunicorn", "app:app", "-b", "0.0.0.0:5000", "--timeout", "300", "--reload"]
     networks:
       - bot-net
     volumes:

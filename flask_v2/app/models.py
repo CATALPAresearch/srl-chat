@@ -19,6 +19,10 @@ class User(db.Model):
     client: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
     message_history: so.Mapped[Optional[str]] = so.mapped_column(sa.String())
+    evaluation: so.Mapped["StrategyEvaluation"] = so.relationship(
+        back_populates="user",
+        cascade="all, delete",
+        passive_deletes=True, )
     strategies: so.Mapped[List["UserStrategy"]] = so.relationship(
         back_populates="user",
         cascade="all, delete",
@@ -122,5 +126,18 @@ class LlmResponse(db.Model):
     message_time: so.Mapped[datetime.datetime] = so.mapped_column(
         nullable=False, server_default=sa.func.CURRENT_TIMESTAMP()
     )
+    __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
+                                              [User.id, User.client]), {})
+
+
+class StrategyEvaluation(db.Model):
+    id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
+    user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
+    user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
+    user: so.Mapped["User"] = so.relationship(back_populates="evaluation")
+    strategy: so.Mapped["strategy"] = so.mapped_column(sa.ForeignKey(Strategy.id))
+    SU: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=0)
+    SF: so.Mapped[float] = so.mapped_column(sa.Float())
+    SC: so.Mapped[float] = so.mapped_column(sa.Float())
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
                                               [User.id, User.client]), {})

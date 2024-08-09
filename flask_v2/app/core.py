@@ -13,7 +13,7 @@ from .llm import (
     get_probe_prompt,
     get_frequency_prompt,
     get_context_prompt,
-    get_prompt)
+    get_complete_prompt)
 from .db_utils.crud import (
     get_language,
     get_user,
@@ -30,7 +30,10 @@ from .db_utils.crud import (
     get_strategies_for_context,
     store_llm_answer,
     set_interview_complete,
-    store_strategy
+    store_strategy,
+    get_strategies,
+    get_strategy_mentions_for_user,
+    save_evaluation_for_strategy
 )
 
 MODEL = os.getenv("MODEL")
@@ -238,7 +241,53 @@ def move_to_next_context(user, current_context):
 
 
 def sign_off_interview(user):
-    prompt = get_prompt(user, "interview_complete")
+    summary = evaluate(user)
+    return summary
+
+
+def evaluate(user):
+    evaluations = []
+    strategy_scores = {}
+    for strategy in get_strategies(user.language_id):
+        strategy_scores[strategy.id] = {"contexts": []}
+        mentions = get_strategy_mentions_for_user(user, strategy)
+        SU = 0
+        SF = 0
+        SC = 0
+        if mentions:
+            SU = (len(mentions) != 0)
+            SF = len(mentions)
+            for mention in mentions:
+                SC += mention.frequency
+                strategy_scores[strategy.id]["contexts"].append(mention.context)
+        evaluation = save_evaluation_for_strategy(user, strategy, SU, SF, SC)
+        strategy_scores[strategy.id]["SU"] = SU
+        strategy_scores[strategy.id]["SF"] = SF
+        strategy_scores[strategy.id]["SC"] = SC
+        if SF != 0:
+            strategy_scores[strategy.id]["RC"] = SC/SF
+        else:
+            strategy_scores[strategy.id]["RC"] = 0
+        evaluations.append(evaluation)
+    summary = generate_summary(user, strategy_scores)
+    return summary
+
+
+def generate_summary(user, strategy_scores):
+    most_contexts = list(sorted(strategy_scores.items(), key=lambda item: len(item[1]["contexts"]), reverse=True))
+    most_consistently = list(sorted(strategy_scores.items(), key=lambda item: item[1]["RC"], reverse=True))
+    strategies_used = list({strategy: item for strategy, item in strategy_scores.items() if len(item["contexts"]) > 0})
+    consistently_used = list({strategy: item for strategy, item in strategy_scores.items() if item["RC"] > 2.5})
+
+    most_contexts_strat = get_strategy_by_id(most_contexts[0][0]).strategy
+    const_strategy = get_strategy_by_id(most_consistently[0][0]).strategy
+    avg_freq = most_consistently[0][1]["RC"]
+    total_strat = len(strategies_used)
+    const_strategies = []
+    for strat in consistently_used:
+        const_strategies.append(get_strategy_by_id(strat).strategy)
+    conversation_so_far = retrieve_full_conversation(user)
     system_prompt = get_system_prompt(user)
-    llm_message = get_llm_response_openai(MODEL, system_prompt + " " + prompt, "", 0.0)
+    prompt = get_complete_prompt(user, most_contexts_strat, const_strategy, avg_freq, total_strat, const_strategies)
+    llm_message = get_llm_response_openai(MODEL, system_prompt + " " + prompt, prev_conversation=conversation_so_far)
     return llm_message

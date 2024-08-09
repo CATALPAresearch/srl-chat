@@ -8,7 +8,8 @@ from app.models import (
     Context,
     InterviewAnswer,
     ConversationCompletedContexts,
-    UserStrategy
+    UserStrategy,
+    StrategyEvaluation
 )
 import sqlalchemy as sa
 import uuid
@@ -112,6 +113,15 @@ def get_strategies_for_context(user, context_id):
     return answers
 
 
+def get_strategy_mentions_for_user(user, strategy):
+    strategy_mentions = db.session.scalars(
+        sa.select(UserStrategy)
+        .where(UserStrategy.user == user)
+        .where(UserStrategy.strategy == strategy.id)
+    ).all()
+    return strategy_mentions
+
+
 def first_time_setup(userid, client, language):
     language_db = get_language(language)
     user = User(id=userid, client=client, language_id=language_db.id,
@@ -172,7 +182,6 @@ def update_strategy_with_frequency(user, context_id, strategy_id, frequency):
         .where(UserStrategy.context == context_id)
         .where(UserStrategy.strategy == strategy_id)
     )
-    print(context_id, strategy_id)
     strategy.frequency = frequency
     db.session.flush()
 
@@ -193,3 +202,20 @@ def store_llm_answer(user, message):
 def set_interview_complete(user):
     user.conversation_state.interview_completed = True
     db.session.flush()
+
+
+def save_evaluation_for_strategy(user, strategy, SU, SF, SC):
+    evaluation_id = str(uuid.uuid4())
+    evaluation = StrategyEvaluation(id=evaluation_id,
+                                    user_id=user.id,
+                                    user_client=user.client,
+                                    strategy=strategy.id,
+                                    SU=SU,
+                                    SF=SF,
+                                    SC=SC)
+    db.session.add(evaluation)
+    db.session.flush()
+    created_evaluation = db.session.scalar(
+        sa.select(StrategyEvaluation).where(StrategyEvaluation.id == evaluation_id)
+    )
+    return created_evaluation
