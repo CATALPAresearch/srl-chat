@@ -8,6 +8,9 @@ services:
     command: ["gunicorn", "app:app", "-b", "0.0.0.0:5000", "--timeout", "300", "--reload"]
     networks:
       - bot-net
+    depends_on:
+      postgres:
+        condition: service_healthy
     volumes:
       - ./flask_v2:/flask_v2
       - ./data:/mnt/azure
@@ -16,6 +19,23 @@ services:
     environment:
       - API_URL=http://api:5000
       - DISCORD_SERVER_ID=1243870532407922740
+    networks:
+      - bot-net
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: chat
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: srl_chat
+    volumes:
+      - ./data_pg:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d srl_chat -U chat"]
+      interval: 1s
+      timeout: 20s
+      retries: 10
     networks:
       - bot-net
 networks:

@@ -13,3 +13,4 @@ class Config:
 
 # 'sqlite:///' + os.path.join(basedir, 'srl_chat.db')
 # 'sqlite:////mnt/azure/srl_chat.db'
+# DATABASE_URL=postgresql://postgres:chat@postgres:5432/srl_chat

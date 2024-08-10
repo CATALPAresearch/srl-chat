@@ -8,6 +8,7 @@ app.app_context().push()
 
 
 def populate_contexts():
+    db.create_all()
     print("Populating contexts and strategies into DB")
     with open("app/config/interview.json", "r", encoding="utf-8") as file:
         interview_context = json.load(file)

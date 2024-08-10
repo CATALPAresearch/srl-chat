@@ -17,7 +17,7 @@ import uuid
 
 def get_user(userid, client) -> User | None:
     user = db.session.scalar(
-        sa.select(User).where(User.id == userid).where(User.client == client)
+        sa.select(User).where(User.id == str(userid)).where(User.client == client)
         .join(User.conversation_state))
     return user
 
@@ -131,7 +131,7 @@ def first_time_setup(userid, client, language):
     db.session.flush()
     created_user = db.session.scalar(
         sa.select(User)
-        .where(User.id == userid)
+        .where(User.id == str(userid))
         .where(User.client == client))
     return created_user
 
