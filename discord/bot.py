@@ -3,6 +3,7 @@ from discord import Client, Intents, Interaction, Object, app_commands, DMChanne
 import json
 import requests
 import os
+from aiohttp import ClientSession
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -13,6 +14,7 @@ token = os.getenv('BOT_TOKEN')
 
 CLIENT_NAME = "discord"
 API_URL = os.getenv('API_URL', "http://127.0.0.1:5000")
+session = None
 
 
 async def clear_messages(user, channel):
@@ -24,7 +26,7 @@ async def clear_messages(user, channel):
             await msg.delete()
 
 
-def start_conversation(language, userid):
+async def start_conversation(language, userid):
     url = f"{API_URL}/startConversation"
 
     payload = json.dumps({
@@ -36,11 +38,12 @@ def start_conversation(language, userid):
         'Content-Type': 'application/json'
     }
 
-    response = requests.request("POST", url, headers=headers, data=payload)
-    return response.text
+    async with session.post(url, headers=headers, data=payload) as response:
+        data = await response.text()  # or json()
+        return data
 
 
-def reply(message, userid):
+async def reply(message, userid):
     url = f"{API_URL}/reply"
 
     payload = json.dumps({
@@ -51,10 +54,9 @@ def reply(message, userid):
     headers = {
         'Content-Type': 'application/json'
     }
-
-    response = requests.request("POST", url, headers=headers, data=payload)
-
-    return response.text
+    async with session.post(url, headers=headers, data=payload) as response:
+        data = await response.text()  # or json()
+        return data
 
 
 class MyClient(Client):
@@ -78,7 +80,12 @@ class MyClient(Client):
         await self.tree.sync(guild=MY_GUILD)
 
     async def on_ready(self):
+        global session
+        session = ClientSession()
         print("Logged in as {0.user}".format(client))
+
+    async def on_disconnect(self):
+        await session.close()
 
     # on message in user DM:
     # read user messages and surround with [INST] [/INST]
@@ -95,7 +102,7 @@ class MyClient(Client):
 
         channel = message.channel
         async with channel.typing():
-            response = reply(message.content, message.author.id)
+            response = await reply(message.content, message.author.id)
 
         await channel.send(response)
 
@@ -109,7 +116,7 @@ async def talk_in_user_channel(user, language, translations):
     await user_channel.send(translations['conversation_start'])
 
     async with user_channel.typing():
-        message = start_conversation(language, user.id)
+        message = await start_conversation(language, user.id)
         print(message)
 
     await user_channel.send(message)
