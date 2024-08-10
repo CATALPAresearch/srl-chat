@@ -3,26 +3,24 @@ services:
     build: /api
     environment:
       - PYTHONUNBUFFERED=1
-      - PG_HOST=${PG_HOST}
-      - PG_USER=${PG_USER}
-      - PG_PASSWORD=${PG_PASSWORD}
-      - PG_DB=${PG_DB}
-    expose:
-      - "5000"
+    ports:
+      - 5000:5000
     command: >
-      sh -c "python -m setup.db_setup &&
-             gunicorn app:app -b 0.0.0.0:5000 --timeout 300"
+      sh -c "python ./setup/sb_setup.py &&
+             gunicorn app:app -b 0.0.0.0:5000 --timeout 300 --reload"
     networks:
       - bot-net
     depends_on:
       postgres:
         condition: service_healthy
+    volumes:
+      - ./flask_v2:/flask_v2
+      - ./data:/mnt/azure
   bot:
     build: /discord
     environment:
       - API_URL=http://api:5000
-      - DISCORD_SERVER_ID=${DISCORD_SERVER_ID}
-      - BOT_TOKEN=${BOT_TOKEN}
+      - DISCORD_SERVER_ID=1243870532407922740
     networks:
       - bot-net
   postgres:
@@ -31,10 +29,10 @@ services:
       POSTGRES_USER: chat
       POSTGRES_PASSWORD: ${PG_PASSWORD}
       POSTGRES_DB: srl_chat
+    volumes:
+      - ./data_pg:/var/lib/postgresql/data
     ports:
       - 5432:5432
-    volumes:
-      - /data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d srl_chat -U chat"]
       interval: 1s

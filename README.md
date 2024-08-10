@@ -27,6 +27,7 @@ Prerequisites: A system with Docker and Kubernetes (e.g. minikube) installed
 ### Building app images
 ```shell
 cd .\kubernetes
+minikube start
 & minikube -p minikube docker-env --shell powershell | Invoke-Expression
 docker build -t studybotpy-api:v1.0 ..
 docker build -t studybotpy-bot:v1.0 ..\discord
@@ -128,7 +129,7 @@ The following steps need to be completed before the app is ready for user testin
 | ✓     | Create API endpoint to send first response and perform initial setup for users in database                                                                                               |
 | ✓     | Create API endpoint to reply to user message based on previous messages                                                                                                                  |
 | ✓     | Populate learning contexts and strategies in database                                                                                                                                    |                                                    |
-|       | Implement dialogue loop with chained LLM prompts to ask about strategies for each learning context in turn, evaluate answers' mention of strategies and ask required follow-up questions |
-|       | Implement prediction of learner achievement and SRL skill based on interview responses                                                                                                   |
-|       | Store results in database                                                                                                                                                                |
+| ✓     | Implement dialogue loop with chained LLM prompts to ask about strategies for each learning context in turn, evaluate answers' mention of strategies and ask required follow-up questions |
+| ✓     | Implement evaluation of learner SRL strategy use based on interview responses                                                                                                            |
+| ✓     | Store results in database                                                                                                                                                                |
 |       | Make answers and drawn conclusions viewable by users (including authentication; may be done after user testing has started)                                                              |
