@@ -12,8 +12,8 @@ class Config:
     PG_USER = os.environ.get("PG_USER")
     PG_PASSWORD = os.environ.get("PG_PASSWORD")
     PG_DB = os.environ.get("PG_DB")
-    # ...
-    SQLALCHEMY_DATABASE_URI = f"postgresql://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DB}"
+    DB_URL = f"postgresql://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DB}"
+    SQLALCHEMY_DATABASE_URI = DB_URL
 
 # 'sqlite:///' + os.path.join(basedir, 'srl_chat.db')
 # 'sqlite:////mnt/azure/srl_chat.db'

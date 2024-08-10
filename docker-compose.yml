@@ -1,6 +1,6 @@
 services:
   api:
-    build: /api
+    build: ./api
     environment:
       - PYTHONUNBUFFERED=1
       - PG_HOST=${PG_HOST}
@@ -18,7 +18,7 @@ services:
       postgres:
         condition: service_healthy
   bot:
-    build: /discord
+    build: ./discord
     environment:
       - API_URL=http://api:5000
       - DISCORD_SERVER_ID=${DISCORD_SERVER_ID}
