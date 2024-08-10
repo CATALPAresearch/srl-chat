@@ -3,6 +3,9 @@ services:
     build: ./api
     environment:
       - PYTHONUNBUFFERED=1
+      - BASE_URL=${BASE_URL}
+      - API_KEY=${API_KEY}
+      - MODEL=${MODEL}
       - PG_HOST=${PG_HOST}
       - PG_PORT=${PG_PORT}
       - PG_USER=${PG_USER}

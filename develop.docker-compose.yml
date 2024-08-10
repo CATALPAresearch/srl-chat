@@ -1,8 +1,16 @@
 services:
   api:
-    build: /api
+    build: ./api
     environment:
       - PYTHONUNBUFFERED=1
+      - BASE_URL=${BASE_URL}
+      - API_KEY=${API_KEY}
+      - MODEL=${MODEL}
+      - PG_HOST=${PG_HOST}
+      - PG_PORT=${PG_PORT}
+      - PG_USER=${PG_USER}
+      - PG_PASSWORD=${PG_PASSWORD}
+      - PG_DB=${PG_DB}
     ports:
       - 5000:5000
     command: >
@@ -15,12 +23,12 @@ services:
         condition: service_healthy
     volumes:
       - ./flask_v2:/flask_v2
-      - ./data:/mnt/azure
   bot:
-    build: /discord
+    build: ./discord
     environment:
       - API_URL=http://api:5000
-      - DISCORD_SERVER_ID=1243870532407922740
+      - DISCORD_SERVER_ID=${DISCORD_SERVER_ID}
+      - BOT_TOKEN=${BOT_TOKEN}
     networks:
       - bot-net
   postgres:
