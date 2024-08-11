@@ -85,6 +85,17 @@ Content-Type: application/json
     "userid": "56"
 }
 ```
+## DB backup
+```shell
+sudo docker container exec -it studybotpy-postgres-1 bash
+mkdir /backup
+pg_dump srl_chat /backup/pg_backup_<date>.txt
+exit
+mkdir /backup
+sudo docker container cp studybotpy-postgres-1:/backup/pg_backup_<date>.txt /backup/pg_backup_<date>.txt
+exit
+scp user@VM:/backup/pg_backup_<date>.txt .
+```
 
 ## Making changes to the DB
 

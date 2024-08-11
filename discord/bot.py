@@ -84,6 +84,11 @@ class MyClient(Client):
         session = ClientSession()
         print("Logged in as {0.user}".format(client))
 
+    async def on_resumed(self):
+        global session
+        session = ClientSession()
+        print("Resumed session as {0.user}".format(client))
+
     async def on_disconnect(self):
         await session.close()
 
