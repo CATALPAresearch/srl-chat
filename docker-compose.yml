@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3"
 services:
   api:
     build: ./api
@@ -20,8 +20,7 @@ services:
     networks:
       - bot-net
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
   bot:
     build: ./discord
     environment:
