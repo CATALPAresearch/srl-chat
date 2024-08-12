@@ -89,12 +89,12 @@ Content-Type: application/json
 ```shell
 sudo docker container exec -it studybotpy-postgres-1 bash
 mkdir /backup
-pg_dump srl_chat /backup/pg_backup_<date>.txt
+pg_dump srl_chat /backup/pg_backup_<date>.sql
 exit
 mkdir /backup
-sudo docker container cp studybotpy-postgres-1:/backup/pg_backup_<date>.txt /backup/pg_backup_<date>.txt
+sudo docker container cp studybotpy-postgres-1:/backup/pg_backup_<date>.txt /backup/pg_backup_<date>.sql
 exit
-scp user@VM:/backup/pg_backup_<date>.txt .
+scp user@VM:/backup/pg_backup_<date>.sql .
 ```
 
 ## Making changes to the DB

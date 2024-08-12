@@ -176,6 +176,7 @@ def evaluate_strategies(user, user_message, current_context, user_answer_db, pro
         store_strategy(user, user_answer_db, current_context.id, identified_strategy["index"])
         if identified_strategy["strategy"] == "other":
             no_strategy_mentioned.append(1)
+            update_strategy_with_frequency(user, current_context.id, identified_strategy["index"], 0)
 
     if no_strategy_mentioned == [1]:
         if probe:
