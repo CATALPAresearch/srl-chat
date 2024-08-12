@@ -1,5 +1,5 @@
 services:
-  api:
+  api-dev:
     build: ./api
     environment:
       - PYTHONUNBUFFERED=1
@@ -14,16 +14,16 @@ services:
     ports:
       - 5000:5000
     command: >
-      sh -c "python ./setup/sb_setup.py &&
+      sh -c "python -m setup.db_setup &&
              gunicorn app:app -b 0.0.0.0:5000 --timeout 300 --reload"
     networks:
       - bot-net
     depends_on:
-      postgres:
+      postgres-dev:
         condition: service_healthy
     volumes:
-      - ./flask_v2:/flask_v2
-  bot:
+      - ./api:/api
+  bot-dev:
     build: ./discord
     environment:
       - API_URL=http://api:5000
@@ -31,14 +31,12 @@ services:
       - BOT_TOKEN=${BOT_TOKEN}
     networks:
       - bot-net
-  postgres:
+  postgres-dev:
     image: postgres
     environment:
       POSTGRES_USER: chat
       POSTGRES_PASSWORD: ${PG_PASSWORD}
       POSTGRES_DB: srl_chat
-    volumes:
-      - ./data_pg:/var/lib/postgresql/data
     ports:
       - 5432:5432
     healthcheck:
