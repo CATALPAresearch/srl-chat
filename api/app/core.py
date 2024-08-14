@@ -176,11 +176,12 @@ def evaluate_strategies(user, user_message, current_context, user_answer_db, ask
     for identified_strategy in identified_strategy_array:
         if asking_first_time:
             store_strategy(user, user_answer_db, current_context.id, identified_strategy["index"])
-            update_strategy_with_frequency(user, current_context.id, identified_strategy["index"], 0)
         if not asking_first_time and identified_strategy["index"] not in (13, 26):
             store_strategy(user, user_answer_db, current_context.id, identified_strategy["index"])
         if identified_strategy["index"] in (13, 26):
             no_strategy_mentioned.append(1)
+            if asking_first_time:
+                update_strategy_with_frequency(user, current_context.id, identified_strategy["index"], 0)
 
     if no_strategy_mentioned == [1]:
         if asking_first_time:

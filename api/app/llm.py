@@ -123,6 +123,15 @@ def eval_frequencies(user, user_message):
     """
     strategies = get_strategies(user.language_id)
     strategy_for_frequency = user.conversation_state.strategy_for_frequency
+    most_recent_response = user.llm_responses[0]
+    for response in user.llm_responses:
+        if response.message_time >= most_recent_response.message_time:
+            most_recent_response = response
+
+    if not strategy_for_frequency:
+        message_to_evaluate = most_recent_response.message
+    else:
+        message_to_evaluate = f"We've most recently asked about strategy number {strategy_for_frequency}"
 
     context_eval = AssistantAgent(
         name="Evaluate_context",
@@ -143,7 +152,7 @@ def eval_frequencies(user, user_message):
         [
             {
                 "recipient": context_eval,
-                "message": f"We've most recently asked about strategy number {strategy_for_frequency}",
+                "message": message_to_evaluate,
                 "max_turns": 1,
                 "summary_method": "last_msg",
             },
