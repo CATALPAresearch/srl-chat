@@ -146,6 +146,11 @@ def update_most_recent_conversation_state(user, response):
     db.session.flush()
 
 
+def update_most_recent_strategy_for_frequency(user, strategy):
+    user.conversation_state.strategy_for_frequency = strategy.id
+    db.session.flush()
+
+
 def store_answer(user, context, message):
     answer_id = str(uuid.uuid4())
     answer = InterviewAnswer(id=answer_id,
@@ -183,6 +188,7 @@ def update_strategy_with_frequency(user, context_id, strategy_id, frequency):
         .where(UserStrategy.strategy == strategy_id)
     )
     strategy.frequency = frequency
+    print(context_id, strategy_id, frequency)
     db.session.flush()
 
 

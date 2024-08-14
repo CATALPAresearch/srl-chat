@@ -23,7 +23,7 @@ Prerequisites: A system with Docker installed.
 - The other settings can stay as they are. There should be no need to set BOT_TOKEN, API_URL or DISCORD_SERVER_ID as these are required for the Discord bot which is not required for local testing
 - Run the following command:
 ```shell
-docker compose up -f develop.docker-compose.yml postgres-dev api-dev
+docker compose -f develop.docker-compose.yml up postgres-dev api-dev
 ```
 
 The following endpoints will then be available:

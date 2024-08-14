@@ -44,6 +44,13 @@ class Context(db.Model):
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
 
 
+class Strategy(db.Model):
+    id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True)
+    strategy: so.Mapped[str] = so.mapped_column(sa.String())
+    description: so.Mapped[str] = so.mapped_column(sa.String())
+    language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
+
+
 class ConversationState(db.Model):
     __tablename__ = "state"
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
@@ -52,6 +59,7 @@ class ConversationState(db.Model):
     user: so.Mapped["User"] = so.relationship(back_populates="conversation_state", cascade="all, delete")
     interview_completed: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=0)
     current_context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), nullable=True)
+    strategy_for_frequency: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Strategy.id), nullable=True)
     completed_contexts: so.Mapped[List["ConversationCompletedContexts"]] = so.relationship(
         back_populates="conversation",
         cascade="all, delete")
@@ -70,13 +78,6 @@ class ConversationCompletedContexts(db.Model):
     completed_context_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), primary_key=True)
     conversation: so.Mapped["ConversationState"] = so.relationship(
         back_populates="completed_contexts", cascade="all, delete")
-
-
-class Strategy(db.Model):
-    id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True)
-    strategy: so.Mapped[str] = so.mapped_column(sa.String())
-    description: so.Mapped[str] = so.mapped_column(sa.String())
-    language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
 
 
 class InterviewAnswer(db.Model):

@@ -33,7 +33,8 @@ from .db_utils.crud import (
     store_strategy,
     get_strategies,
     get_strategy_mentions_for_user,
-    save_evaluation_for_strategy
+    save_evaluation_for_strategy,
+    update_most_recent_strategy_for_frequency
 )
 
 MODEL = os.getenv("MODEL")
@@ -114,9 +115,9 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
 
         match user.conversation_state.most_recent_response:
             case "getstrategies":
-                llm_message = evaluate_strategies(user, user_message, current_context, user_answer_db)
+                llm_message = evaluate_strategies(user, user_message, current_context, user_answer_db, asking_first_time=True)
             case "probe":
-                llm_message = evaluate_strategies(user, user_message, current_context, user_answer_db, probe=False)
+                llm_message = evaluate_strategies(user, user_message, current_context, user_answer_db, asking_first_time=False)
             case "frequency":
                 # evaluate and store indicated frequency of strategy use
                 frequency_json = eval_frequencies(user, user_message)
@@ -164,7 +165,7 @@ def retrieve_full_conversation(user):
     return messages
 
 
-def evaluate_strategies(user, user_message, current_context, user_answer_db, probe=True):
+def evaluate_strategies(user, user_message, current_context, user_answer_db, asking_first_time=True):
     (analysis, identified_strategy_array) = eval_strategies(user, user_message)
     store_llm_answer(user, analysis)
     # Identify ID of "other" strategy (corresponding to no concrete strategy mentioned)
@@ -173,13 +174,16 @@ def evaluate_strategies(user, user_message, current_context, user_answer_db, pro
     if not type(identified_strategy_array) == list:
         identified_strategy_array = [identified_strategy_array]
     for identified_strategy in identified_strategy_array:
-        store_strategy(user, user_answer_db, current_context.id, identified_strategy["index"])
+        if asking_first_time:
+            store_strategy(user, user_answer_db, current_context.id, identified_strategy["index"])
+            update_strategy_with_frequency(user, current_context.id, identified_strategy["index"], 0)
+        if not asking_first_time and identified_strategy["index"] not in (13, 26):
+            store_strategy(user, user_answer_db, current_context.id, identified_strategy["index"])
         if identified_strategy["index"] in (13, 26):
             no_strategy_mentioned.append(1)
-            update_strategy_with_frequency(user, current_context.id, identified_strategy["index"], 0)
 
     if no_strategy_mentioned == [1]:
-        if probe:
+        if asking_first_time:
             # Probe further if only "other" strategy identified
             probe_prompt = get_probe_prompt(current_context.context, user)
             update_most_recent_conversation_state(user, "probe")
@@ -215,6 +219,7 @@ def ask_about_frequency(user, current_context):
             strategy = get_strategy_by_id(answer.strategy)
             frequency_prompt = get_frequency_prompt(user, context.context, strategy.strategy)
             update_most_recent_conversation_state(user, "frequency")
+            update_most_recent_strategy_for_frequency(user, strategy)
             conversation_so_far = retrieve_full_conversation(user)
             llm_message = get_llm_response_openai(MODEL, system_prompt + " " + frequency_prompt,
                                                   prev_conversation=conversation_so_far)
