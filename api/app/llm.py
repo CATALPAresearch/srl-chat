@@ -1,14 +1,10 @@
 import json
 import os
 import re
-import requests
 from openai import OpenAI
 from autogen import AssistantAgent, UserProxyAgent
 from .db_utils.crud import get_strategies, get_language_by_id, get_contexts_content, get_strategies_content
 import logging
-
-OLLAMA_API_URL = "http://132.176.10.80/api"
-OLLAMA_HOST = "http://132.176.10.80/v1"
 
 BASE_URL = os.getenv("BASE_URL")
 API_KEY = os.getenv("API_KEY")
@@ -22,16 +18,6 @@ CONFIG_LIST = [
 ]
 
 logger = logging.getLogger(__name__)
-
-
-def get_llm_message(model, prompt, temperature):
-    data = dict(model=model, prompt=prompt, stream=False, options={
-        "temperature": temperature
-    })
-    response = requests.post(f"{OLLAMA_API_URL}/generate", data=json.dumps(data))
-    print(response.content)
-    response_json = json.loads(response.content.decode('utf8'))
-    return response_json["response"]
 
 
 def get_llm_response_openai(model, system_prompt, user_prompt=None, temperature=0.0, prev_conversation=[]):

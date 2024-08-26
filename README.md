@@ -16,8 +16,8 @@ Prerequisites: A system with Docker installed.
 
 - Clone the git repository
 - Copy the env.example file, renaming the new file .env
-- Set BASE_URL=http://132.176.10.80/v1 to use the university hosted Ollama server, or to the URL of any other OpenAPI compatible endpoint
-- Set API_KEY=ollama or the required API key for the BASE_URL. If no API key is required this field must still be set to any dummy value
+- Set BASE_URL=https://chat-impact.fernuni-hagen.de/ollama/v1 to use the university hosted Ollama server, or to the URL of any other OpenAPI compatible endpoint
+- Set API_KEY to the required API key (Bearer token starting with sk-...) for the BASE_URL. If no API key is required, this field must still be set to any dummy value
 - Set PG_HOST=postgres-dev
 - Set MODEL to one that is available under the BASE_URL instance (for example meta-llama/llama-3.1-8b-instruct or mistralai/mixtral-8x22b-instruct)
 - The other settings can stay as they are. There should be no need to set BOT_TOKEN, API_URL or DISCORD_SERVER_ID as these are required for the Discord bot which is not required for local testing
