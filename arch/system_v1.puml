@@ -1,0 +1,34 @@
+@startuml
+[Frontend - Discord Client] as fe
+
+[Backend] as be
+
+cloud {
+    [LLM] as llm
+}
+database "Data Store" as ds {
+    folder "Background information" {
+        [contexts]
+        [strategies]
+        [languages]
+    }
+    folder "Signed up user" {
+        [Language] #pink
+        [User ID] #pink
+        [Client] #pink
+        [Conversation state] #orange
+        [LLM responses] #orange
+        [User responses] #orange
+        [Identified strategies] #orange
+        [Completed contexts] #orange
+        [Strategy evaluation] #orange
+    }
+}
+
+fe -down-> be : 1 user message
+be --> ds : 2 store user language +\n store start prompt
+be -down-> llm : 3 send prompt(s)
+llm ..> be : 4 generated response(s)
+be --> be : 5 evaluate response
+be --> fe : 6 send next message
+@enduml

@@ -62,14 +62,12 @@ scp user@VM:/backup/pg_backup_<date>.sql .
 ```
 
 ## App Structure
-### _Needs updating!_
 
-![system_arch.png](arch/system_arch.png)
+![system_arch_v1.png](arch/system_arch_v1.png)
 
 ## Dialogue Flow
-### _Needs updating!_
 
-![interview.png](arch/interview.png)
+![interview_v1.png](arch/interview_v1.png)
 
 ## Current status
 
