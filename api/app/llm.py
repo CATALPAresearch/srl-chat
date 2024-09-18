@@ -55,6 +55,30 @@ def get_llm_response_openai(model, system_prompt, user_prompt=None, temperature=
     return response_content
 
 
+def classify_answer(user_message, conversation_so_far):
+    """
+        Classify the type of user answer to trigger the correct conversation flow.
+    """
+    system_prompt = """Only answer in valid json format with the following fields: 
+    - 'category' (category the user's statement falls into), the only possible values:
+        - 'strategy_answer' - if the user is describing a learning strategy they use
+        - 'reflection' - if the user is self-reflecting on an issue or behaviour
+        - 'frequency_answer' - if the user is responding to a question about how frequently they use a certain 
+           learning strategy on a scale from 1 (rarely) to 4 (most of the time)
+        - 'conversation_feedback' - if the user is commenting on or asking a question about the conversation flow
+        - 'context_feedback' - if the user is providing feedback on or asking a question about the last message 
+          sent by the assistant
+        - 'multiple' - if the user answer contains more than one category
+        - 'invalid' - if the user answer is nonsensical in the context of describing learning strategies and 
+           rating their frequency on a scale from 1 to 4"""
+    conversation_so_far.append({"role": "user", "content": user_message})
+    llm_message = get_llm_response_openai(MODEL, system_prompt, prev_conversation=conversation_so_far)
+    print(llm_message)
+    regex = r"({\s*\"category\":\s?[\s\S]+(\s*},?)\s*)"
+    category_json = re.search(regex, llm_message).group()
+    return json.loads(category_json)
+
+
 def eval_strategies(user, user_message):
     """
     Evaluate if user response mentions any strategies.

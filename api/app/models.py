@@ -64,9 +64,9 @@ class ConversationState(db.Model):
     completed_contexts: so.Mapped[List["ConversationCompletedContexts"]] = so.relationship(
         back_populates="conversation",
         cascade="all, delete")
-    most_recent_response: so.Mapped[str] = so.mapped_column(sa.String(32),
+    current_conversation_step: so.Mapped[str] = so.mapped_column(sa.String(32),
                                                             sa.CheckConstraint(
-        "most_recent_response IN ('getstrategies', 'probe', 'frequency', 'complete')", name="response_check"),
+        "most_recent_response IN ('strategy', 'probe', 'frequency', 'complete')", name="response_check"),
                                                             nullable=True)
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
                                               [User.id, User.client]), {})

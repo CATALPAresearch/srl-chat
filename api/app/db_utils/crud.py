@@ -141,8 +141,8 @@ def set_current_context(user, context):
     db.session.flush()
 
 
-def update_most_recent_conversation_state(user, response):
-    user.conversation_state.most_recent_response = response
+def update_current_conversation_step(user, response):
+    user.conversation_state.current_conversation_step = response
     db.session.flush()
 
 
