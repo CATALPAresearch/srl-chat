@@ -26,6 +26,7 @@ from .db_utils.crud import (
     set_context_completed,
     get_completed_contexts,
     update_most_recent_conversation_state,
+    update_current_turn,
     update_strategy_with_frequency,
     get_strategies_for_context,
     store_llm_answer,
@@ -83,7 +84,8 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
         update_most_recent_conversation_state(user, "getstrategies")
 
         llm_message = get_llm_response_openai(MODEL, system_prompt + " " + start_prompt, "Hi!", 0.1)
-        store_llm_answer(user, llm_message)
+        turn = update_current_turn(user)
+        store_llm_answer(user, llm_message, turn)
         return llm_message, 200
     except Exception as e:
         raise Exception(e)
@@ -108,7 +110,8 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
         # Retrieve current context
         current_context_id = user.conversation_state.current_context
         current_context = get_context_by_id(current_context_id)
-        user_answer_db = store_answer(user, current_context.id, user_message)
+        turn = update_current_turn(user)
+        user_answer_db = store_answer(user, current_context.id, user_message, turn)
 
         if user.conversation_state.interview_completed:
             return sign_off_interview(user)
@@ -128,7 +131,8 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
             case _:
                 pass
 
-        store_llm_answer(user, llm_message)
+        turn = update_current_turn(user)
+        store_llm_answer(user, llm_message, turn)
         return llm_message, 200
     except Exception as e:
         raise Exception(e)
@@ -167,7 +171,8 @@ def retrieve_full_conversation(user):
 
 def evaluate_strategies(user, user_message, current_context, user_answer_db, asking_first_time=True):
     (analysis, identified_strategy_array) = eval_strategies(user, user_message)
-    store_llm_answer(user, analysis)
+    turn = update_current_turn(user)
+    store_llm_answer(user, analysis, turn)
     # Identify ID of "other" strategy (corresponding to no concrete strategy mentioned)
     no_strategy_mentioned = []
     # Store user's answer(s)

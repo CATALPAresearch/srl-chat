@@ -58,6 +58,7 @@ class ConversationState(db.Model):
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
     user: so.Mapped["User"] = so.relationship(back_populates="conversation_state", cascade="all, delete")
     interview_completed: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=0)
+    current_turn: so.Mapped[int] = so.mapped_column(sa.Integer, default=0)
     current_context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), nullable=True)
     strategy_for_frequency: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Strategy.id), nullable=True)
     completed_contexts: so.Mapped[List["ConversationCompletedContexts"]] = so.relationship(
@@ -86,6 +87,7 @@ class InterviewAnswer(db.Model):
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
     user: so.Mapped["User"] = so.relationship(back_populates="interview_answers", cascade="all, delete")
     context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id))
+    turn: so.Mapped[int] = so.mapped_column(sa.Integer)
     message: so.Mapped[str] = so.mapped_column(sa.String())
     strategies: so.Mapped[List["UserStrategy"]] = so.relationship(
         back_populates="interview_answer",
@@ -119,6 +121,7 @@ class LlmResponse(db.Model):
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
     user: so.Mapped["User"] = so.relationship(back_populates="llm_responses", cascade="all, delete")
     message: so.Mapped[str] = so.mapped_column(sa.String())
+    turn: so.Mapped[int] = so.mapped_column(sa.Integer)
     message_time: so.Mapped[datetime.datetime] = so.mapped_column(
         nullable=False, server_default=sa.func.CURRENT_TIMESTAMP()
     )

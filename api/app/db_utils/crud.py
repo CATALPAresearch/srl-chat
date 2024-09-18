@@ -146,17 +146,23 @@ def update_most_recent_conversation_state(user, response):
     db.session.flush()
 
 
+def update_current_turn(user):
+    user.conversation_state.current_turn += 1
+    db.session.flush()
+    return user.conversation_state.current_turn
+
 def update_most_recent_strategy_for_frequency(user, strategy):
     user.conversation_state.strategy_for_frequency = strategy.id
     db.session.flush()
 
 
-def store_answer(user, context, message):
+def store_answer(user, context, message, turn):
     answer_id = str(uuid.uuid4())
     answer = InterviewAnswer(id=answer_id,
                              user=user,
                              context=context,
-                             message=message)
+                             message=message,
+                             turn=turn)
     db.session.add(answer)
     db.session.flush()
     created_answer = db.session.scalar(
@@ -192,11 +198,12 @@ def update_strategy_with_frequency(user, context_id, strategy_id, frequency):
     db.session.flush()
 
 
-def store_llm_answer(user, message):
+def store_llm_answer(user, message, turn):
     answer_id = str(uuid.uuid4())
     answer = LlmResponse(id=answer_id,
                          user=user,
-                         message=message)
+                         message=message,
+                         turn=turn)
     db.session.add(answer)
     db.session.flush()
     created_answer = db.session.scalar(
