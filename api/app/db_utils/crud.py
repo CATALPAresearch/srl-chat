@@ -76,7 +76,7 @@ def get_strategy_by_id(strategy_id):
 def set_context_completed(user, context):
     completed_contexts = ConversationCompletedContexts(
         conversation_id=user.conversation_state.id,
-        completed_context_id=context
+        completed_context_id=context.id
     )
     db.session.add(completed_contexts)
     db.session.flush()
@@ -151,6 +151,7 @@ def update_current_turn(user):
     db.session.flush()
     return user.conversation_state.current_turn
 
+
 def update_most_recent_strategy_for_frequency(user, strategy):
     user.conversation_state.strategy_for_frequency = strategy.id
     db.session.flush()
@@ -198,11 +199,16 @@ def update_strategy_with_frequency(user, context_id, strategy_id, frequency):
     db.session.flush()
 
 
-def store_llm_answer(user, message, turn):
+def store_llm_answer(user, message, context, turn):
     answer_id = str(uuid.uuid4())
+    if context:
+        context_id = context.id
+    else:
+        context_id = None
     answer = LlmResponse(id=answer_id,
                          user=user,
                          message=message,
+                         context=context_id,
                          turn=turn)
     db.session.add(answer)
     db.session.flush()

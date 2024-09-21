@@ -66,7 +66,7 @@ class ConversationState(db.Model):
         cascade="all, delete")
     current_conversation_step: so.Mapped[str] = so.mapped_column(sa.String(32),
                                                             sa.CheckConstraint(
-        "most_recent_response IN ('strategy', 'probe', 'frequency', 'complete')", name="response_check"),
+        "current_conversation_step IN ('strategy', 'probe', 'frequency', 'complete')", name="response_check"),
                                                             nullable=True)
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
                                               [User.id, User.client]), {})
@@ -121,6 +121,7 @@ class LlmResponse(db.Model):
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
     user: so.Mapped["User"] = so.relationship(back_populates="llm_responses", cascade="all, delete")
     message: so.Mapped[str] = so.mapped_column(sa.String())
+    context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), nullable=True)
     turn: so.Mapped[int] = so.mapped_column(sa.Integer)
     message_time: so.Mapped[datetime.datetime] = so.mapped_column(
         nullable=False, server_default=sa.func.CURRENT_TIMESTAMP()

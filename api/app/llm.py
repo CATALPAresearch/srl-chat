@@ -1,10 +1,10 @@
 import json
 import os
-import re
-from openai import OpenAI
-from autogen import AssistantAgent, UserProxyAgent
+import time
 
-from .db_utils.crud import get_strategies, get_language_by_id, get_contexts_content, get_strategies_content
+from openai import OpenAI
+
+from .db_utils.crud import get_language_by_id, get_contexts_content, get_strategies_content
 import logging
 
 BASE_URL = os.getenv("BASE_URL")
@@ -21,7 +21,7 @@ CONFIG_LIST = [
 logger = logging.getLogger(__name__)
 
 
-def get_llm_response_openai(model, system_prompt, user_prompt=None, temperature=0.0, prev_conversation=[]):
+def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, prev_conversation=[]):
     client = OpenAI(
         base_url=BASE_URL,
         api_key=API_KEY
@@ -35,153 +35,32 @@ def get_llm_response_openai(model, system_prompt, user_prompt=None, temperature=
         messages.append({"role": "user", "content": user_prompt})
 
     response = client.chat.completions.create(
-        model=model,
+        model=MODEL,
         messages=messages,
         temperature=temperature
     )
-    print(system_prompt, user_prompt)
-    print(response)
-    if response.choices[0].message.content == "":
-        print("Retrying LLM call")
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            temperature=temperature + 0.1
-        )
-        print(response)
+    # print(system_prompt, user_prompt)
+    # print(response)
+    attempts = 5
+    timeout = 3
+    while attempts > 0:
+        if response.choices[0].message.content == "":
+            print("Retrying LLM call")
+            response = client.chat.completions.create(
+                model=MODEL,
+                messages=messages,
+                temperature=temperature + 0.1
+            )
+            print(response)
+            time.sleep(timeout)
+            attempts -= 1
+            timeout *= 2
+        else:
+            break
     response_content = response.choices[0].message.content
     if not response_content:
         raise AssertionError("Received empty response from LLM.")
     return response_content
-
-
-def classify_answer(user_message, conversation_so_far):
-    """
-        Classify the type of user answer to trigger the correct conversation flow.
-    """
-    system_prompt = """Only answer in valid json format with the following fields: 
-    - 'category' (category the user's statement falls into), the only possible values:
-        - 'strategy_answer' - if the user is describing a learning strategy they use
-        - 'reflection' - if the user is self-reflecting on an issue or behaviour
-        - 'frequency_answer' - if the user is responding to a question about how frequently they use a certain 
-           learning strategy on a scale from 1 (rarely) to 4 (most of the time)
-        - 'conversation_feedback' - if the user is commenting on or asking a question about the conversation flow
-        - 'context_feedback' - if the user is providing feedback on or asking a question about the last message 
-          sent by the assistant
-        - 'multiple' - if the user answer contains more than one category
-        - 'invalid' - if the user answer is nonsensical in the context of describing learning strategies and 
-           rating their frequency on a scale from 1 to 4"""
-    conversation_so_far.append({"role": "user", "content": user_message})
-    llm_message = get_llm_response_openai(MODEL, system_prompt, prev_conversation=conversation_so_far)
-    print(llm_message)
-    regex = r"({\s*\"category\":\s?[\s\S]+(\s*},?)\s*)"
-    category_json = re.search(regex, llm_message).group()
-    return json.loads(category_json)
-
-
-def eval_strategies(user, user_message):
-    """
-    Evaluate if user response mentions any strategies.
-    """
-    strategies = get_strategies(user.language_id)
-
-    strategy_recogniser = AssistantAgent(
-        name="Recognise_strategy",
-        llm_config={"config_list": CONFIG_LIST},
-        system_message=get_prompt(user, "sys_recognise_strategy").replace("${strategies}", str(strategies)),
-    )
-    strategy_formatter = AssistantAgent(
-        name="Reformat_strategy",
-        llm_config={"config_list": CONFIG_LIST},
-        system_message=get_prompt(user, "sys_format_strategy"),
-    )
-
-    initializer = UserProxyAgent(
-        name="Init",
-        code_execution_config=False
-    )
-
-    chat_results = initializer.initiate_chats(
-        [
-            {
-                "recipient": strategy_recogniser,
-                "message": user_message,
-                "max_turns": 1,
-                "summary_method": "last_msg",
-            },
-            {
-                "recipient": strategy_formatter,
-                "message": get_prompt(user, "format_strategy"),
-                "max_turns": 1,
-                "summary_method": "last_msg",
-            },
-        ]
-    )
-    print(chat_results)
-    print("***********************")
-    print(chat_results[0].summary)
-    print(chat_results[1].summary)
-    print(chat_results[-1].summary)
-    regex = r"(\[\s*)({\s*\"index\":\s?[\d]+,\s*\"strategy\":\s?[\s\S]+(\s*},?)\s*)+(\s*\])"
-    strategy_json = re.search(regex, chat_results[1].summary).group()
-    return chat_results[0].summary, json.loads(strategy_json)
-
-
-def eval_frequencies(user, user_message):
-    """
-    Evaluate frequency of strategy use mentioned in most recent user response
-    for context asked for in most recent LLM message.
-    """
-    strategies = get_strategies(user.language_id)
-    strategy_for_frequency = user.conversation_state.strategy_for_frequency
-    most_recent_response = user.llm_responses[0]
-    for response in user.llm_responses:
-        if response.message_time >= most_recent_response.message_time:
-            most_recent_response = response
-
-    if not strategy_for_frequency:
-        message_to_evaluate = most_recent_response.message
-    else:
-        message_to_evaluate = f"We've most recently asked about strategy number {strategy_for_frequency}"
-
-    context_eval = AssistantAgent(
-        name="Evaluate_context",
-        llm_config={"config_list": CONFIG_LIST},
-        system_message=get_prompt(user, "sys_extract_strategy_for_frequency").replace("${strategies}", str(strategies)),
-    )
-    frequency_eval = AssistantAgent(
-        name="Evaluate_frequency",
-        llm_config={"config_list": CONFIG_LIST},
-        system_message=get_prompt(user, "sys_format_frequency"),
-    )
-
-    initializer = UserProxyAgent(
-        name="Init",
-        code_execution_config=False
-    )
-    chat_results = initializer.initiate_chats(
-        [
-            {
-                "recipient": context_eval,
-                "message": message_to_evaluate,
-                "max_turns": 1,
-                "summary_method": "last_msg",
-            },
-            {
-                "recipient": frequency_eval,
-                "message": user_message,
-                "max_turns": 1,
-                "summary_method": "last_msg",
-            },
-        ]
-    )
-    print(chat_results)
-    print("***********************")
-    print(chat_results[-1].summary)
-    regex = r"{\s*\"strategy\":\s?[\d]+,\s*\"frequency\":\s?[\d]\s*}"
-    frequency_json = re.search(regex, chat_results[1].summary).group()
-    print(frequency_json)
-    return json.loads(frequency_json)
 
 
 def get_prompt(user, prompt_name):
@@ -189,12 +68,6 @@ def get_prompt(user, prompt_name):
         prompts = json.load(file)
     user_lang = get_language_by_id(user.language_id)
     prompt = prompts[user_lang.lang_code][prompt_name]
-    return prompt
-
-
-def get_probe_prompt(context, user):
-    prompt = get_prompt(user, "probe")
-    prompt = prompt.replace("${context}", context)
     return prompt
 
 
