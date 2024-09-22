@@ -33,7 +33,7 @@ from .db_utils.crud import (
     save_evaluation_for_strategy,
     update_most_recent_strategy_for_frequency
 )
-from .steps import strategy_step, frequency_step, probe_step, format_strategy
+from .steps import strategy_step, frequency_step, format_strategy
 
 MODEL = os.getenv("MODEL")
 
@@ -119,26 +119,18 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
             case "strategy":
                 strategies_mentioned, status, llm_message = strategy_step(user, str(current_context.context),
                                                                           conversation_for_current_context)
-                if status == "completed":
+                if status in ("completed", "abandon"):
                     update_current_conversation_step(user, "frequency")
                     for mentioned_strategy in strategies_mentioned:
                         strategy_index = format_strategy(user, mentioned_strategy)
                         store_strategy(user, user_answer_db, current_context.id, strategy_index)
+                        if strategy_index in (13, 26):
+                            update_strategy_with_frequency(user, current_context.id, strategy_index, 0)
                     llm_message, current_context = ask_about_frequency(user, current_context)
-                elif status == "in_progress" and strategies_mentioned == ["other"]:
-                    update_current_conversation_step(user, "probe")
-            case "probe":
-                strategies_mentioned, status = probe_step(user, conversation_for_current_context)
-                for mentioned_strategy in strategies_mentioned:
-                    strategy_index = format_strategy(user, mentioned_strategy)
-                    store_strategy(user, user_answer_db, current_context.id, strategy_index)
-                    if strategy_index in (13, 26):
-                        update_strategy_with_frequency(user, current_context.id, strategy_index, 0)
-                llm_message, current_context = ask_about_frequency(user, current_context)
             case "frequency":
                 strategy_rated, rated_frequency, status, llm_message = frequency_step(user,
                                                                                       conversation_for_current_context)
-                if status == "completed":
+                if status in ("completed", "abandon"):
                     # Store user's answer(s)
                     update_strategy_with_frequency(user, current_context_id, strategy_rated,
                                                    rated_frequency)
@@ -157,21 +149,15 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
 def set_current_context_complete(user, current_context):
     # Set context completed and move to next context
     contexts = set(get_contexts(user.language_id))
-    print(current_context, current_context.id)
     set_context_completed(user, current_context)
-    print("w")
     completed_contexts = set(get_completed_contexts(user))
-    print("aaaa")
     remaining_contexts = contexts.difference(completed_contexts)
-    print(remaining_contexts)
     if remaining_contexts == set():
         set_interview_complete(user)
         return None
 
-    print(list(remaining_contexts))
     next_context = list(remaining_contexts)[0]
     set_current_context(user, next_context)
-    print(next_context)
     return next_context
 
 
@@ -225,13 +211,14 @@ def ask_about_frequency(user, current_context):
 
 def move_to_next_context(user, current_context):
     next_context = set_current_context_complete(user, current_context)
-
+    conversation_so_far = retrieve_full_conversation(user)
     system_prompt = """You are an interviewer conducting an interview that will be evaluated scientifically. 
     Your tone should be friendly but neutral. """
     if next_context:
         prompt = get_context_prompt(next_context.context, user)
         update_current_conversation_step(user, "strategy")
-        llm_message = get_llm_response_openai(system_prompt + " " + prompt)
+        llm_message = get_llm_response_openai(system_prompt + " " + prompt,
+                                              prev_conversation=conversation_so_far)
     else:
         update_current_conversation_step(user, "complete")
         llm_message = sign_off_interview(user)
