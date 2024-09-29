@@ -130,7 +130,7 @@ def get_strategy_mentions_for_user(user, strategy):
     strategy_mentions = db.session.scalars(
         sa.select(UserStrategy)
         .where(UserStrategy.user == user)
-        .where(UserStrategy.strategy == strategy.id)
+        .where(UserStrategy.strategy == strategy.strategy)
     ).all()
     return strategy_mentions
 
@@ -241,7 +241,7 @@ def save_evaluation_for_strategy(user, strategy, SU, SF, SC):
     evaluation = StrategyEvaluation(id=evaluation_id,
                                     user_id=user.id,
                                     user_client=user.client,
-                                    strategy=strategy.id,
+                                    strategy=strategy.strategy,
                                     SU=SU,
                                     SF=SF,
                                     SC=SC)

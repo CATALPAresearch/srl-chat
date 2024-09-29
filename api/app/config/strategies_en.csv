@@ -1,46 +1,31 @@
 ﻿strategy,example
-retrieval_practice,rehearsing and memorising
-retrieval_practice,practice testing
-retrieval_practice,quizzing with flashcards
-retrieval_practice,freely recalling material
-retrieval_practice,"recalling key terms, ideas, and concepts"
-retrieval_practice,cued recall of material
-retrieval_practice,self-testing
-distributed_practice,spacing study over time
-distributed_practice,reviewing material studied in earlier sessions later
-distributed_practice,distributing items like questions or practice problems within a study session
-interleaved_practice,"Mixing together different types of items, questions, or problems"
-rereading,rereading
-rereading,highlighting
-organisation,summaries/excerpts
-organisation,creating flashcards
-organisation,outlines
-organisation,table of contents
-organisation,keyword mnemonies
-organisation,restating main ideas of a lesson in own words
-organisation,"creating mind maps/knowledge maps, content maps or graphic organisers"
-organisation,"converting spoken text into spatial arrangements (diagrams, tables)"
-organisation,creating explanative or organisational drawings to illustrate lesson contents
-organisation,imagining/forming mental images of lesson content 
-elaboration,producing explanations by answering 'why' questions
-elaboration,teaching and preparing to teach
-elaboration,self-explanation to make sense of the material
-elaboration,self-explanation to relate knewly learned information to prior knowledge
-elaboration,thinking aloud
-elaboration,asking and answering questions about the material
-elaboration,reasoning
-elaboration,peer tutoring
-elaboration,group discussions
-metacognitive,goal setting
-metacognitive,planning
-metacognitive,self-evaluation
-metacognitive,regulations
-metacognitive,preparing
-resources,environmental structuring
-resources,self-consequences
-resources,seeking and selecting information
-resources,"social assistance (peers, tutors, others)"
-resources,managing demand and attention
-resources,time management
-resources,self-commitment
-resources,literature
+retrieval_practice,"Rehearsing and memorising: repeatedly working though lists of words or fact, memorising key terms to help with recalling important content"
+retrieval_practice,Practice Testing: Self-testing or taking practice tests over to-be-learned material; Quizzing with flashcards
+retrieval_practice,"Recalling material such as key terms, ideas, and concepts, either freely or based on clues; recalling anything remembered about the material"
+distributed_practice,Spacing study over time; Implementing a schedule of practice that spreads out study activities over time
+distributed_practice,Reviewing material studied in earlier sessions later
+distributed_practice,Distributing items like questions or practice problems within a study session
+interleaved_practice,"Mixing together different types of items, questions, or problems; Implementing a schedule of practice that mixes different kinds of problems, or a schedule of study that mixes different kinds of material, within a single study session"
+rereading,Rereading: Restudying text material again after an initial reading
+rereading,Marking potentially important portions of to-be-learned materials while reading by highlighting or underlining
+organisation,Writing summaries (of various lengths) of to-be-learned texts; writing down the main points from a text; creating outlines of the to-be-learner material; creating flashcards
+organisation,Keyword mnemonies: Using keywords and mental imagery to associate verbal materials when studying vocabulary or facts
+organisation,Restating main ideas of a lesson in own words
+organisation,"Creating mind maps/knowledge maps, content maps or graphic organisers; converting spoken text into spatial arrangements (diagrams, tables)"
+organisation,Creating explanative or organisational drawings to illustrate lesson contents
+organisation,"Imagining/forming mental images of lesson content; While studying, creating a mental image of the learning material"
+elaboration,Producing explanations by answering 'why' questions; asking and answering questions about the material
+elaboration,Teaching and preparing to teach/explain the to-be-learned material to someone else; peer tutoring
+elaboration,"Self-explanation to make sense of the material, explaining how new information is related to known information"
+elaboration,Thinking aloud: explaining steps taken during problem solving
+elaboration,Discussing to-be-learned material in a group
+metacognitive,"Goal setting: Breaking down a learning goal inte steps required to reach it, prioritising, creating to-do lists"
+metacognitive,Self-evaluation or self-questioning: checking in on one's own understanding during learning
+metacognitive,"Regulation: monitoring, controlling, and making predictions; checking for mistakes and ensuring the process is successful; reflecting on one's own learning processes and adjusting them if necessary. Adapting learning strategy use to the desired goal and to personal preferences."
+resources,"Environmental structuring and preparation: picking a suitable environment, e.g. desk at home or at the library; adjusting the learning environment to be as optimal as possible, eliminating distractions, clutter, noise etc., ensuring that required material is within easy reach"
+resources,Self-consequences or rewards. Taking regular breaks; Decreasing stress by using relaxation or exercise.
+resources,"Seeking and selecting information: Seeking out further literature and sources of information such as books, online resources"
+resources,"Seeking social assistance: asking for help from peers, tutors, or others such as family and friends. Making use of online forums."
+resources,"Managing demand and attention: switching between memorising and trying to understand depending on the context, e.g. to construct understanding later based on facts that have been memorised."
+resources,"Planning and time management. Making plans or to-do lists, taking other commitments into account. Using Pomodoro-Technique, interspersing working periods with breaks. Reducing interruptions."
+resources,Self-commitment: Committing to regular study times alongside relaxation breaks

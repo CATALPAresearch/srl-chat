@@ -236,9 +236,9 @@ def sign_off_interview(user):
 def evaluate(user):
     evaluations = []
     strategy_scores = {}
-    for strategy in get_strategies(user.language_id):
-        strategy_scores[strategy.id] = {"contexts": []}
-        mentions = get_strategy_mentions_for_user(user, strategy)
+    for strategy_translation in get_strategies(user.language_id):
+        strategy_scores[strategy_translation.strategy] = {"contexts": []}
+        mentions = get_strategy_mentions_for_user(user, strategy_translation)
         SU = 0
         SF = 0
         SC = 0
@@ -247,15 +247,15 @@ def evaluate(user):
             SF = len(mentions)
             for mention in mentions:
                 SC += mention.frequency
-                strategy_scores[strategy.id]["contexts"].append(mention.context)
-        evaluation = save_evaluation_for_strategy(user, strategy, SU, SF, SC)
-        strategy_scores[strategy.id]["SU"] = SU
-        strategy_scores[strategy.id]["SF"] = SF
-        strategy_scores[strategy.id]["SC"] = SC
+                strategy_scores[strategy_translation.strategy]["contexts"].append(mention.context)
+        evaluation = save_evaluation_for_strategy(user, strategy_translation, SU, SF, SC)
+        strategy_scores[strategy_translation.strategy]["SU"] = SU
+        strategy_scores[strategy_translation.strategy]["SF"] = SF
+        strategy_scores[strategy_translation.strategy]["SC"] = SC
         if SF != 0:
-            strategy_scores[strategy.id]["RC"] = SC / SF
+            strategy_scores[strategy_translation.strategy]["RC"] = SC / SF
         else:
-            strategy_scores[strategy.id]["RC"] = 0
+            strategy_scores[strategy_translation.strategy]["RC"] = 0
         evaluations.append(evaluation)
     summary = generate_summary(user, strategy_scores)
     return summary
@@ -273,7 +273,7 @@ def generate_summary(user, strategy_scores):
     total_strat = len(strategies_used)
     const_strategies = []
     for strat in consistently_used:
-        const_strategies.append(user, get_strategy_translation_by_id(strat).description)
+        const_strategies.append(get_strategy_translation_by_id(user, strat).description)
     conversation_so_far = retrieve_full_conversation(user)
     system_prompt = get_system_prompt(user)
     prompt = get_complete_prompt(user, most_contexts_strat, const_strategy, avg_freq, total_strat, const_strategies)
