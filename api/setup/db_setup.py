@@ -1,12 +1,13 @@
-from app import app, db
-from app.models import Language, Context, Strategy, StrategyTranslation, StrategyVector
 import json
 import uuid
 import os
 import pandas as pd
-import requests
 from sqlalchemy import select, text
+
+from app import app, db
+from app.models import Language, Context, Strategy, StrategyTranslation, StrategyVector
 from app.db_utils.crud import get_language
+from app.llm import query_embeddings
 
 app.app_context().push()
 
@@ -18,7 +19,7 @@ EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM
 def embed_strategy_data(lang_code, lang_id):
     print("Reading strategy file for language", lang_code)
     try:
-        df = pd.read_csv(f"app/config/strategies_test_{lang_code}.csv")
+        df = pd.read_csv(f"app/config/strategies_{lang_code}.csv")
         df.head()
 
         for i in range(len(df.index)):
@@ -31,14 +32,6 @@ def embed_strategy_data(lang_code, lang_id):
             db.session.commit()
     except FileNotFoundError:
         print("ERROR: Strategies file not found for language", lang_code)
-
-
-def query_embeddings(text_to_embed):
-    api_url = f"{EMBEDDING_URL}{EMBEDDING_MODEL}"
-    headers = {"Authorization": f"Bearer {EMBEDDING_TOKEN}"}
-    response = requests.post(api_url, headers=headers,
-                             json={"inputs": text_to_embed, "options": {"wait_for_model": True}})
-    return response.json()
 
 
 def populate_contexts():
@@ -77,14 +70,14 @@ def populate_contexts():
                 db.session.add(strategy_db)
                 db.session.commit()
 
-        vectors_exist = db.session.execute(
-            select(StrategyVector).where(StrategyVector.language_id == language_db.id)
-        ).fetchone()
-        if not vectors_exist:
-            print("Creating vector embeddings for strategies")
-            embed_strategy_data(lang_code, language_db.id)
-        else:
-            print("Vector embeddings data for strategies exists; skip embedding step")
+            vectors_exist = db.session.execute(
+                select(StrategyVector).where(StrategyVector.language_id == language_db.id)
+            ).fetchone()
+            if not vectors_exist:
+                print("Creating vector embeddings for strategies")
+                embed_strategy_data(lang_code, language_db.id)
+            else:
+                print("Vector embeddings data for strategies exists; skip embedding step")
 
 
 if __name__ == "__main__":

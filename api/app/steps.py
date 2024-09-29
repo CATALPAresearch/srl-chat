@@ -1,19 +1,25 @@
 import re
 import json
 
-from .db_utils.crud import get_strategies
-from .llm import get_llm_response_openai
+from .db_utils.crud import get_strategies, get_all_strategies, retrieve_similar_docs_vector
+from .llm import get_llm_response_openai, query_embeddings
 from .models import User
 
 
-def strategy_step(user: User, context: str, prev_conversation: list[str]):
-    strategies = get_strategies(user.language_id)
+def strategy_step(user: User, context: str, prev_conversation: list[str], user_message):
+    user_answer_embedding = query_embeddings(user_message)
+    related_docs = retrieve_similar_docs_vector(user_answer_embedding)
+    strategy_candidates = []
+    for doc in related_docs:
+        strategy_candidates.append({"id": doc.strategy, "description": doc.description})
+    print(strategy_candidates)
+
     system_prompt = f"""Only answer in valid json format with the following fields:
-        - 'strategies' (strategies the user already shared). If the answer does not mention a clearly identifiable 
+        - 'strategies' (IDs of the strategies the user already shared). If the answer does not mention a clearly identifiable 
         strategy, use the strategy name 'other'.
         - 'status', the possible values:
             - 'completed' when the user has described at least one valid strategy. Mark the step as complete when you 
-            can recognise one or more strategies from the following list in their answer: {strategies}.
+            can recognise one or more strategies from the following list in their answer: {strategy_candidates}.
             - 'in_progress' if the user has not yet provided a clear strategy. If the answer does not mention a clearly 
             identifiable strategy, ask the user to clarify.
             - 'abandon', if the user has not described a clearly identifiable strategy after 10 exchanged messages.
@@ -62,15 +68,13 @@ def complete():
     pass
 
 
-def format_strategy(user, message):
-    strategies = get_strategies(user.language_id)
-    system_prompt = f"""Only answer in valid json format. The output should be an array containing objects
-                       with the following fields:
-                            - 'index' (index as number),
-                            - 'strategy' (name of strategy)
-                       The only possible values are the indices and strategy names of this list: {strategies}"""
-    json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, system_prompt, user_prompt=message)
-    return json_output["index"]
+def validate_strategies(user_strategies):
+    all_strategies = get_all_strategies()
+    valid_strategies = []
+    for strategy in user_strategies:
+        if strategy in all_strategies:
+            valid_strategies.append(strategy)
+    return valid_strategies
 
 
 def try_get_json_completion(

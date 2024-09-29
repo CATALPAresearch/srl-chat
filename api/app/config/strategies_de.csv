@@ -1,48 +1,46 @@
 ﻿strategy,example
-retrieval practice,rehearsing and memorising
-retrieval practice,practice testing
-retrieval practice,quizzing
-retrieval practice,practicing with flashcards
-retrieval practice,freely recalling material
-retrieval practice,"recalling key terms, ideas, and concepts"
-retrieval practice,cued recall of material
-retrieval practice,self-testing
-distributed practice,spacing study over time
-distributed practice,reviewing material studied in earlier sessions later
-distributed practice,distributing items like questions or practice problems within a study session
-interleaved practice,"Mixing together different types of items, questions, or problems"
-rereading,rereading
-rereading,highlighting
-"selecting, organising and transforming key pieces of information",summaries/excerpts
-"selecting, organising and transforming key pieces of information",creating flashcards
-"selecting, organising and transforming key pieces of information",outlines
-"selecting, organising and transforming key pieces of information",table of contents
-"selecting, organising and transforming key pieces of information",mental imagery
-"selecting, organising and transforming key pieces of information",keyword mnemonies
-"selecting, organising and transforming key pieces of information",restating main ideas of a lesson in own words
-"selecting, organising and transforming key pieces of information","creating mind maps/knowledge maps, content maps or graphic organisers"
-"selecting, organising and transforming key pieces of information","converting spoken text into spatial arrangements (diagrams, tables)"
-"selecting, organising and transforming key pieces of information",creating explanative or organisational drawings to illustrate lesson contents
-"selecting, organising and transforming key pieces of information",imagining/forming mental images of lesson content 
-elaborating,producing explanations by answering 'why' questions
-elaborating,teaching and preparing to teach
-elaborating,self-explanation to make sense of the material
-elaborating,self-explanation to relate knewly learned information to prior knowledge
-elaborating,thinking aloud
-elaborating,asking and answering questions about the material
-elaborating,reasoning
-elaborating,peer tutoring
-elaborating,group discussions
-metacognitive,goal setting
-metacognitive,planning
-metacognitive,self-evaluation
-metacognitive,regulations
-metacognitive,preparing
-resources,environmental structuring
-resources,self-consequences
-resources,seeking and selecting information
-resources,"social assistance (peers, tutors, others)"
-resources,managing demand and attention
-resources,time management
-resources,self-commitment
-resources,literature
+retrieval_practice,Üben und Auswendiglernen
+retrieval_practice,Übungstest
+retrieval_practice,Quizzen mit Karteikarten oder Lernkarten
+retrieval_practice,freies Abrufen von Material
+retrieval_practice,"Abrufen von Schlüsselbegriffen, Ideen und Konzepten"
+retrieval_practice,Abrufen von Material anhand von Hinweisen
+retrieval_practice,Selbsttest
+distributed_practice,Lernen über einen bestimmten Zeitraum verteilen
+distributed_practice,späteres Wiederholen von in früheren Sitzungen gelerntem Material
+distributed_practice,Verteilen von Elementen wie Fragen oder Übungsaufgaben innerhalb einer Lernsitzung
+interleaved_practice,"Vermischen verschiedener Arten von Aufgaben, Fragen oder Problemen"
+rereading,Erneutes Lesen
+rereading,"Markieren, hervorheben oder unterstreichen"
+organisation,Zusammenfassungen oder Auszüge erstellen
+organisation,Karteikarten oder Lernkarten erstellen
+organisation,Gliederung erstellen
+organisation,Inhaltsverzeichnis erstellen
+organisation,Stichwort-Mnemonik
+organisation,Wiedergabe der Hauptideen einer Unterrichtseinheit in eigenen Worten
+organisation,"Erstellen von Mindmaps/knowledge graphs oder grafischen Organisationsstrukturen"
+organisation,"Gesprochenen Text in räumliche Anordnungen umwandeln (Diagramme, Tabellen)"
+organisation,Erstellen erklärender oder organisierender Zeichnungen zur Veranschaulichung von Unterrichtsinhalten
+organisation,Vorstellen/Bilden mentaler Bilder von Unterrichtsinhalten
+elaboration,Erstellen von Erklärungen durch Beantworten von 'Warum'-Fragen
+elaboration,Unterrichten und Unterrichtsvorbereitung
+elaboration,"Selbsterklärung, um den Stoff zu verstehen"
+elaboration,"Selbsterklärung, um bereits gelernte Informationen mit Vorwissen in Beziehung zu setzen"
+elaboration,lautes Denken
+elaboration,Stellen und Beantworten von Fragen zum Stoff
+elaboration,Argumentation
+elaboration,Peer-Tutoring
+elaboration,Gruppendiskussionen
+metacognitive,Lernziele setzen
+metacognitive,Lernplan erstellen
+metacognitive,Selbstevaluation
+metacognitive,Selbstregulierung
+metacognitive,Vorbereitung
+resources,"Räumliche Rahmenbedingungen setzen, z.B. Arbeitsplatz strukturieren"
+resources,Selbstbelohnung oder -strafe
+resources,"Weitere Informationsquellen aufsuchen, z.B. Bücher oder anderes Material"
+resources,"Hilfe bei anderen Personen suchen (Kommilitonen, Lehrpersonal oder andere)"
+resources,Management von Anstrengung und Aufmerksamkeit
+resources,Zeitmanagement
+resources,Selbstverpflichtung
+resources,Literatur

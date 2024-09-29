@@ -1,5 +1,6 @@
 import json
 import os
+import requests
 import time
 
 from openai import OpenAI
@@ -17,8 +18,19 @@ CONFIG_LIST = [
         "api_key": API_KEY,
     }
 ]
+EMBEDDING_URL = os.getenv("EMBEDDING_URL", "https://api-inference.huggingface.co/pipeline/feature-extraction/")
+EMBEDDING_TOKEN = os.getenv("EMBEDDING_TOKEN", "")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 
 logger = logging.getLogger(__name__)
+
+
+def query_embeddings(text_to_embed):
+    api_url = f"{EMBEDDING_URL}{EMBEDDING_MODEL}"
+    headers = {"Authorization": f"Bearer {EMBEDDING_TOKEN}"}
+    response = requests.post(api_url, headers=headers,
+                             json={"inputs": text_to_embed, "options": {"wait_for_model": True}})
+    return response.json()
 
 
 def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, prev_conversation=[]):

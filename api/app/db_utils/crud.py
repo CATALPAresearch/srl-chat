@@ -1,3 +1,4 @@
+import numpy as np
 from app import app, db
 from app.models import (
     User,
@@ -5,6 +6,8 @@ from app.models import (
     LlmResponse,
     ConversationState,
     Strategy,
+    StrategyTranslation,
+    StrategyVector,
     Context,
     InterviewAnswer,
     ConversationCompletedContexts,
@@ -58,18 +61,27 @@ def get_context_by_id(context_id):
     return context
 
 
-def get_strategies_content(lang_id):
+def get_all_strategies():
     strategies = db.session.execute(
         sa.select(Strategy)
-        .where(Strategy.language_id == lang_id)
+    ).all()
+    result = [strat.id for strat, in strategies]
+    return result
+
+
+def get_strategies_content(lang_id):
+    strategies = db.session.execute(
+        sa.select(StrategyTranslation)
+        .where(StrategyTranslation.language_id == lang_id)
     ).all()
     result = [strat.strategy for strat, in strategies]
     return result
 
 
-def get_strategy_by_id(strategy_id):
+def get_strategy_translation_by_id(user, strategy_id):
     strategy = db.session.scalar(
-        sa.select(Strategy).where(Strategy.id == strategy_id))
+        sa.select(StrategyTranslation).where(StrategyTranslation.strategy == strategy_id).where(
+            StrategyTranslation.language_id == user.language_id))
     return strategy
 
 
@@ -98,8 +110,9 @@ def get_completed_contexts(user):
 
 def get_strategies(lang_id):
     strats = db.session.execute(
-        sa.select(Strategy.id, Strategy.strategy, Strategy.description)
-        .where(Strategy.language_id == lang_id)
+        sa.select(StrategyTranslation.id, StrategyTranslation.strategy,
+                  StrategyTranslation.name, StrategyTranslation.description)
+        .where(StrategyTranslation.language_id == lang_id)
     ).all()
     return strats
 
@@ -153,7 +166,7 @@ def update_current_turn(user):
 
 
 def update_most_recent_strategy_for_frequency(user, strategy):
-    user.conversation_state.strategy_for_frequency = strategy.id
+    user.conversation_state.strategy_for_frequency = strategy.strategy
     db.session.flush()
 
 
@@ -238,3 +251,10 @@ def save_evaluation_for_strategy(user, strategy, SU, SF, SC):
         sa.select(StrategyEvaluation).where(StrategyEvaluation.id == evaluation_id)
     )
     return created_evaluation
+
+
+def retrieve_similar_docs_vector(query_embedding):
+    embedding_array = np.array(query_embedding)
+    query = sa.select(StrategyVector).order_by(StrategyVector.embedding.cosine_distance(embedding_array))
+    result = db.session.scalars(query.limit(3)).fetchall()
+    return result

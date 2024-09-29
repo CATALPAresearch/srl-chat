@@ -1,38 +1,36 @@
 ﻿strategy,example
-retrieval practice,rehearsing and memorising
-retrieval practice,practice testing
-retrieval practice,quizzing
-retrieval practice,practicing with flashcards
-retrieval practice,freely recalling material
-retrieval practice,"recalling key terms, ideas, and concepts"
-retrieval practice,cued recall of material
-retrieval practice,self-testing
-distributed practice,spacing study over time
-distributed practice,reviewing material studied in earlier sessions later
-distributed practice,distributing items like questions or practice problems within a study session
-interleaved practice,"Mixing together different types of items, questions, or problems"
+retrieval_practice,rehearsing and memorising
+retrieval_practice,practice testing
+retrieval_practice,quizzing with flashcards
+retrieval_practice,freely recalling material
+retrieval_practice,"recalling key terms, ideas, and concepts"
+retrieval_practice,cued recall of material
+retrieval_practice,self-testing
+distributed_practice,spacing study over time
+distributed_practice,reviewing material studied in earlier sessions later
+distributed_practice,distributing items like questions or practice problems within a study session
+interleaved_practice,"Mixing together different types of items, questions, or problems"
 rereading,rereading
 rereading,highlighting
-"selecting, organising and transforming key pieces of information",summaries/excerpts
-"selecting, organising and transforming key pieces of information",creating flashcards
-"selecting, organising and transforming key pieces of information",outlines
-"selecting, organising and transforming key pieces of information",table of contents
-"selecting, organising and transforming key pieces of information",mental imagery
-"selecting, organising and transforming key pieces of information",keyword mnemonies
-"selecting, organising and transforming key pieces of information",restating main ideas of a lesson in own words
-"selecting, organising and transforming key pieces of information","creating mind maps/knowledge maps, content maps or graphic organisers"
-"selecting, organising and transforming key pieces of information","converting spoken text into spatial arrangements (diagrams, tables)"
-"selecting, organising and transforming key pieces of information",creating explanative or organisational drawings to illustrate lesson contents
-"selecting, organising and transforming key pieces of information",imagining/forming mental images of lesson content 
-elaborating,producing explanations by answering 'why' questions
-elaborating,teaching and preparing to teach
-elaborating,self-explanation to make sense of the material
-elaborating,self-explanation to relate knewly learned information to prior knowledge
-elaborating,thinking aloud
-elaborating,asking and answering questions about the material
-elaborating,reasoning
-elaborating,peer tutoring
-elaborating,group discussions
+organisation,summaries/excerpts
+organisation,creating flashcards
+organisation,outlines
+organisation,table of contents
+organisation,keyword mnemonies
+organisation,restating main ideas of a lesson in own words
+organisation,"creating mind maps/knowledge maps, content maps or graphic organisers"
+organisation,"converting spoken text into spatial arrangements (diagrams, tables)"
+organisation,creating explanative or organisational drawings to illustrate lesson contents
+organisation,imagining/forming mental images of lesson content 
+elaboration,producing explanations by answering 'why' questions
+elaboration,teaching and preparing to teach
+elaboration,self-explanation to make sense of the material
+elaboration,self-explanation to relate knewly learned information to prior knowledge
+elaboration,thinking aloud
+elaboration,asking and answering questions about the material
+elaboration,reasoning
+elaboration,peer tutoring
+elaboration,group discussions
 metacognitive,goal setting
 metacognitive,planning
 metacognitive,self-evaluation

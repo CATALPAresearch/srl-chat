@@ -16,7 +16,7 @@ from .db_utils.crud import (
     first_time_setup,
     get_contexts,
     get_context_by_id,
-    get_strategy_by_id,
+    get_strategy_translation_by_id,
     store_answer,
     set_current_context,
     set_context_completed,
@@ -33,7 +33,7 @@ from .db_utils.crud import (
     save_evaluation_for_strategy,
     update_most_recent_strategy_for_frequency
 )
-from .steps import strategy_step, frequency_step, format_strategy
+from .steps import strategy_step, frequency_step, validate_strategies
 
 MODEL = os.getenv("MODEL")
 
@@ -118,14 +118,15 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
         match user.conversation_state.current_conversation_step:
             case "strategy":
                 strategies_mentioned, status, llm_message = strategy_step(user, str(current_context.context),
-                                                                          conversation_for_current_context)
+                                                                          conversation_for_current_context,
+                                                                          user_message)
                 if status in ("completed", "abandon"):
                     update_current_conversation_step(user, "frequency")
-                    for mentioned_strategy in strategies_mentioned:
-                        strategy_index = format_strategy(user, mentioned_strategy)
-                        store_strategy(user, user_answer_db, current_context.id, strategy_index)
-                        if strategy_index in (13, 26):
-                            update_strategy_with_frequency(user, current_context.id, strategy_index, 0)
+                    valid_strategies = validate_strategies(strategies_mentioned)
+                    for mentioned_strategy in valid_strategies:
+                        store_strategy(user, user_answer_db, current_context.id, mentioned_strategy)
+                        if mentioned_strategy == "other":
+                            update_strategy_with_frequency(user, current_context.id, mentioned_strategy, 0)
                     llm_message, current_context = ask_about_frequency(user, current_context)
             case "frequency":
                 strategy_rated, rated_frequency, status, llm_message = frequency_step(user,
@@ -194,8 +195,9 @@ def ask_about_frequency(user, current_context):
     if len(answers_without_frequency):
         for answer in answers_without_frequency:
             context = get_context_by_id(answer.context)
-            strategy = get_strategy_by_id(answer.strategy)
-            frequency_prompt = get_frequency_prompt(user, context.context, strategy.strategy)
+            strategy = get_strategy_translation_by_id(user, answer.strategy)
+            frequency_prompt = get_frequency_prompt(user, context.context,
+                                                    (strategy.strategy + ": " + strategy.description))
             update_current_conversation_step(user, "frequency")
             update_most_recent_strategy_for_frequency(user, strategy)
             conversation_so_far = retrieve_full_conversation(user)
@@ -265,13 +267,13 @@ def generate_summary(user, strategy_scores):
     strategies_used = list({strategy: item for strategy, item in strategy_scores.items() if len(item["contexts"]) > 0})
     consistently_used = list({strategy: item for strategy, item in strategy_scores.items() if item["RC"] > 2.5})
 
-    most_contexts_strat = get_strategy_by_id(most_contexts[0][0]).strategy
-    const_strategy = get_strategy_by_id(most_consistently[0][0]).strategy
+    most_contexts_strat = get_strategy_translation_by_id(user, most_contexts[0][0]).description
+    const_strategy = get_strategy_translation_by_id(user, most_consistently[0][0]).description
     avg_freq = most_consistently[0][1]["RC"]
     total_strat = len(strategies_used)
     const_strategies = []
     for strat in consistently_used:
-        const_strategies.append(get_strategy_by_id(strat).strategy)
+        const_strategies.append(user, get_strategy_translation_by_id(strat).description)
     conversation_so_far = retrieve_full_conversation(user)
     system_prompt = get_system_prompt(user)
     prompt = get_complete_prompt(user, most_contexts_strat, const_strategy, avg_freq, total_strat, const_strategies)

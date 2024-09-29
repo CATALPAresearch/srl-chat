@@ -20,6 +20,11 @@
         "description": "Spacing study over time."
       },
       {
+        "id": "interleaved_practice",
+        "name": "Interleaved Practice",
+        "description": "Mixing together different types of items, questions, or problems"
+      },
+      {
         "id": "rereading",
         "name": "Rereading",
         "description": "Rereading and highlighting."
@@ -70,6 +75,11 @@
         "id": "distributed_practice",
         "name": "Distributed Practice",
         "description": "Lernen über einen bestimmten Zeitraum verteilen."
+      },
+      {
+        "id": "interleaved_practice",
+        "name": "Interleaved Practice",
+        "description": "Mischen verschiedener Arten von Aufgaben, Fragen oder Problemen."
       },
       {
         "id": "rereading",
