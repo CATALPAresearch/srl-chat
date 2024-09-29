@@ -76,7 +76,7 @@ class ConversationState(db.Model):
     interview_completed: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=0)
     current_turn: so.Mapped[int] = so.mapped_column(sa.Integer, default=0)
     current_context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), nullable=True)
-    strategy_for_frequency: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Strategy.id), nullable=True)
+    strategy_for_frequency: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Strategy.id), nullable=True)
     completed_contexts: so.Mapped[List["ConversationCompletedContexts"]] = so.relationship(
         back_populates="conversation",
         cascade="all, delete")
@@ -125,7 +125,7 @@ class UserStrategy(db.Model):
     interview_answer: so.Mapped["InterviewAnswer"] = so.relationship(
         back_populates="strategies", cascade="all, delete")
     context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id))
-    strategy: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Strategy.id))
+    strategy: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Strategy.id))
     frequency: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=True)
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
                                               [User.id, User.client]), {})
