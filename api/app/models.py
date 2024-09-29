@@ -12,7 +12,8 @@ class Language(db.Model):
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     lang_code: so.Mapped[str] = so.mapped_column(sa.String(2), index=True, unique=True)
     contexts: so.Mapped[List["Context"]] = so.relationship()
-    strategies: so.Mapped[List["Strategy"]] = so.relationship()
+    strategies: so.Mapped[List["StrategyTranslation"]] = so.relationship()
+    strategy_vectors: so.Mapped[List["StrategyVector"]] = so.relationship()
 
 
 class User(db.Model):
@@ -47,17 +48,23 @@ class Context(db.Model):
 
 
 class Strategy(db.Model):
-    id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True)
-    strategy: so.Mapped[str] = so.mapped_column(sa.String())
+    id: so.Mapped[str] = so.mapped_column(sa.String(), primary_key=True)
+
+
+class StrategyTranslation(db.Model):
+    id: so.Mapped[str] = so.mapped_column(sa.String(), primary_key=True)
+    strategy: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Strategy.id))
+    name: so.Mapped[str] = so.mapped_column(sa.String())
     description: so.Mapped[str] = so.mapped_column(sa.String())
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
 
 
 class StrategyVector(db.Model):
     id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True, autoincrement=True)
-    strategy: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Strategy.id))
+    strategy: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Strategy.id))
     description: so.Mapped[str] = so.mapped_column(sa.String())
     embedding: so.Mapped[np.array] = so.mapped_column(Vector(384))
+    language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
 
 
 class ConversationState(db.Model):
