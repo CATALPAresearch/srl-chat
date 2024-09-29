@@ -1,6 +1,8 @@
 from typing import List, Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
+from pgvector.sqlalchemy import Vector
+import numpy as np
 import datetime
 from app import db
 
@@ -49,6 +51,13 @@ class Strategy(db.Model):
     strategy: so.Mapped[str] = so.mapped_column(sa.String())
     description: so.Mapped[str] = so.mapped_column(sa.String())
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
+
+
+class StrategyVector(db.Model):
+    id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True, autoincrement=True)
+    strategy: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Strategy.id))
+    description: so.Mapped[str] = so.mapped_column(sa.String())
+    embedding: so.Mapped[np.array] = so.mapped_column(Vector(384))
 
 
 class ConversationState(db.Model):
