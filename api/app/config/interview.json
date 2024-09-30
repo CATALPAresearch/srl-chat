@@ -11,48 +11,43 @@
     "strategies": [
       {
         "id": "retrieval_practice",
-        "name": "Retrieval Practice",
-        "description": "Actively retrieving information from memory by using practice tests or flashcards (quizzing)."
+        "name": "Retrieval practice",
+        "description": "Retrieval Practice involves actively recalling information from memory without the use of external aids such as books or notes. Common methods include practice tests, self-testing, or using flashcards (quizzing). This strategy strengthens long-term memory by promoting the repeated retrieval of information. Regular testing not only improves knowledge retention but also helps identify gaps in understanding early on."
       },
       {
         "id": "distributed_practice",
-        "name": "Distributed Practice",
-        "description": "Spacing study over time."
+        "name": "Distributed practice",
+        "description": "Distributed Practice refers to spreading learning over a longer period of time rather than cramming all the material in one sitting. This strategy helps improve long-term retention of knowledge by allowing the brain to process and consolidate information across multiple sessions. By revisiting the material regularly, learners can retain the information more effectively and reduce forgetting."
       },
       {
         "id": "interleaved_practice",
-        "name": "Interleaved Practice",
-        "description": "Mixing together different types of items, questions, or problems"
+        "name": "Interleaved practice",
+        "description": "Interleaved Practice involves mixing different types of tasks, questions, or problem-solving strategies during learning sessions. Instead of focusing on just one topic or method, the learner switches between various subjects. This trains the brain to adapt to different challenges and helps to build deeper connections between topics. By alternating between different kinds of material, learners become better at applying knowledge across diverse contexts."
       },
       {
         "id": "rereading",
         "name": "Rereading",
-        "description": "Rereading and highlighting."
+        "description": "Rereading involves going over text or learning materials multiple times to enhance understanding and retention. Often, this is accompanied by highlighting or underlining key passages to mark essential concepts or information. This strategy helps focus attention on critical information and reinforces what was previously learned by engaging with the material again."
       },
       {
         "id": "organisation",
         "name": "Selecting, organising and transforming key pieces of information",
-        "description": "Selecting, organising and transforming key pieces of information."
+        "description": "Organisation involves selecting, arranging, and transforming important information into a structured format to better understand and remember it. This can be done through creating summaries, mind maps, diagrams, or keyword lists. By reorganizing the material, learners develop a deeper understanding of the relationships between concepts, making it easier to recall the information later. This strategy also helps to make complex topics more manageable and digestible."
       },
       {
         "id": "elaboration",
         "name": "Elaboration",
-        "description": "Connecting new knowledge to existing."
+        "description": "Elaboration means actively linking new information to existing knowledge to foster deeper understanding. This can be done by asking 'why' questions, explaining relationships between ideas, or thinking about the meaning behind the material. By connecting new concepts with what is already known, learners build a network of information that helps them retain and apply the material. This strategy also encourages critical thinking as it requires learners to engage deeply with the content."
       },
       {
         "id": "metacognitive",
         "name": "Metacognitive strategies",
-        "description": "Improving the learning process including goal setting, planning and evaluating."
+        "description": "Metacognitive strategies involve the conscious management and reflection on one's own learning process. This includes setting learning goals, planning study sessions, monitoring progress, and evaluating whether the strategies used are effective. Learners who use this strategy regularly reflect on their methods and adjust them to work more efficiently and purposefully. This helps them regulate their own learning and continually improve their approach."
       },
       {
         "id": "resources",
         "name": "Resources",
-        "description": "Using resources such as time, literature and help from others."
-      },
-      {
-        "id": "other",
-        "name": "other",
-        "description": "Statements indicating learning behavior that is initiated by other persons such as teachers or parents, and all unclear verbal responses, e.g., \"I just do what the teacher says.\""
+        "description": "The use of resources refers to effectively managing external tools to support the learning process. This includes planning and managing time, accessing additional sources of information such as books or online materials, and seeking help from others like peers, tutors, or family members. This strategy aims to optimize learning by leveraging resources and overcoming barriers such as time constraints or missing information."
       }
     ]
   },
@@ -69,48 +64,44 @@
       {
         "id": "retrieval_practice",
         "name": "Retrieval Practice",
-        "description": "Aktives Abrufen von Informationen aus dem Gedächtnis mithilfe von Übungstests oder Karteikarten (Quizzing)."
+        "description": "Retrieval Practice bezeichnet das aktive Abrufen von Informationen aus dem Gedächtnis ohne den Einsatz von Hilfsmitteln wie Büchern oder Notizen. Zu den häufig verwendeten Methoden gehören Übungstests, Selbsttests oder das Lernen mit Karteikarten (Quizzing). Diese Strategie stärkt das Langzeitgedächtnis, indem sie den Abruf von Informationen durch wiederholte Übung fördert. Regelmäßige Tests verbessern nicht nur das Behalten von Wissen, sondern helfen auch dabei, Lücken im Verständnis frühzeitig zu erkennen."
       },
       {
         "id": "distributed_practice",
         "name": "Distributed Practice",
-        "description": "Lernen über einen bestimmten Zeitraum verteilen."
+        "description": "Distributed Practice beschreibt das Lernen über einen längeren Zeitraum hinweg, anstatt alles in einer einzigen Sitzung zu erarbeiten (Cramming). Diese Strategie hilft dabei, das Gelernte über einen längeren Zeitraum zu behalten, indem es dem Gehirn ermöglicht wird, Informationen über mehrere Sitzungen hinweg zu verarbeiten und zu konsolidieren. Durch die wiederholte Auseinandersetzung mit dem Stoff in regelmäßigen Abständen können Lernende effektiver lernen und das Vergessen reduzieren."
       },
       {
         "id": "interleaved_practice",
         "name": "Interleaved Practice",
-        "description": "Mischen verschiedener Arten von Aufgaben, Fragen oder Problemen."
+        "description": "Interleaved Practice bezieht sich auf das Mischen unterschiedlicher Arten von Aufgaben, Fragen oder Problemlösungsstrategien während des Lernens. Statt sich auf ein einziges Thema oder eine Methode zu konzentrieren, wechselt man zwischen verschiedenen Inhalten. Dies trainiert das Gehirn, flexibler auf unterschiedliche Probleme zu reagieren, und hilft, tiefere Verbindungen zwischen den Themen herzustellen. Durch diesen Wechsel lernt der/die Lernende, sich schneller an neue Aufgaben anzupassen und Wissen aus verschiedenen Bereichen zu verknüpfen."
       },
       {
         "id": "rereading",
         "name": "Rereading",
-        "description": "Rereading und Hervorheben."
+        "description": "Rereading ist das wiederholte Durchlesen von Texten oder Lernmaterialien, um ein besseres Verständnis und ein tieferes Behalten zu erreichen. Ergänzend dazu wird oft das Hervorheben wichtiger Passagen oder das Unterstreichen verwendet, um zentrale Konzepte oder Informationen zu markieren. Diese Strategie hilft dabei, den Fokus auf Schlüsselinformationen zu lenken und das zuvor Gelesene zu festigen, indem man sich erneut mit dem Material auseinandersetzt."
       },
       {
         "id": "organisation",
-        "name": "Wichtige Informationen auswählen, organisieren und transformieren",
-        "description": "Wichtige Informationen auswählen, organisieren und transformieren."
+        "name": "Auswählen, Ordnen und Strukturieren wichtiger Informationen",
+        "description": "Organisation bezieht sich auf das Auswählen, Ordnen und Umwandeln von wichtigen Informationen in eine strukturierte Form, um sie besser zu verstehen und sich langfristig zu merken. Dies kann durch das Erstellen von Zusammenfassungen, Mindmaps, Diagrammen oder Stichwortlisten geschehen. Indem Lernende den Stoff neu organisieren, schaffen sie ein tieferes Verständnis der Zusammenhänge und erleichtern das spätere Abrufen der Informationen. Diese Strategie hilft auch, komplexe Inhalte übersichtlicher und greifbarer zu machen."
       },
       {
         "id": "elaboration",
         "name": "Elaboration",
-        "description": "Neues Wissen mit vorhandenem verknüpfen."
+        "description": "Elaboration bedeutet, neues Wissen aktiv mit vorhandenem Wissen zu verknüpfen, um ein tieferes Verständnis zu fördern. Dies kann durch das Stellen von 'Warum'-Fragen, das Erklären von Zusammenhängen oder das Nachdenken über die Bedeutung von Informationen geschehen. Indem Lernende neue Konzepte mit bereits bekanntem Wissen verknüpfen, schaffen sie ein Netzwerk von Informationen, das ihnen hilft, das Gelernte zu behalten und anzuwenden. Diese Strategie fördert auch das kritische Denken, da man sich mit dem Lernstoff intensiv auseinandersetzt."
       },
       {
         "id": "metacognitive",
         "name": "Metakognitive Strategien",
-        "description": "Verbesserung des Lernprozesses, einschließlich Zielsetzung, Planung und Auswertung."
+        "description": "Metakognitive Strategien umfassen die bewusste Steuerung und Reflexion des eigenen Lernprozesses. Dazu gehören das Setzen von Lernzielen, das Planen des Lernens, die Überwachung des eigenen Fortschritts sowie die Auswertung, ob die eingesetzten Lernstrategien effektiv waren. Lernende, die diese Strategie nutzen, reflektieren regelmäßig über ihre Lernmethoden und passen sie an, um effizienter und zielgerichteter zu arbeiten. Dies hilft dabei, sich selbst zu regulieren und den Lernprozess kontinuierlich zu verbessern."
       },
       {
         "id": "resources",
         "name": "Ressourcen",
-        "description": "Nutzung von Ressourcen wie Zeit, Literatur und Hilfe von anderen."
-      },
-      {
-        "id": "other",
-        "name": "andere",
-        "description": "Aussagen, die auf Lernverhalten hinweisen, das von anderen Personen wie Lehrern oder Eltern initiiert wird, und alle unklaren verbalen Antworten, z. B. \"Ich mache einfach, was der Lehrer sagt.\""
+        "description": "Die Nutzung von Ressourcen bezieht sich auf die effektive Verwaltung von externen Hilfsmitteln, um den Lernprozess zu unterstützen. Dazu gehören die Planung und Einteilung der Zeit, der Zugang zu zusätzlichen Informationsquellen wie Büchern oder Online-Materialien sowie das Einholen von Hilfe von anderen, beispielsweise durch Peers, Tutoren oder Familienmitglieder. Diese Strategie zielt darauf ab, das Lernen durch den geschickten Einsatz von Ressourcen zu optimieren und Hindernisse wie Zeitdruck oder fehlende Informationen zu minimieren."
       }
     ]
-  }
+}
+
 }
