@@ -19,17 +19,15 @@ EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM
 def embed_strategy_data(lang_code, lang_id):
     print("Reading strategy file for language", lang_code)
     try:
-        df = pd.read_csv(f"app/config/strategies_{lang_code}.csv")
-        df.head()
-
-        for i in range(len(df.index)):
-            print("Embedding example:", df['example'][i])
-            strategy_example = df['example'][i]
-            embedding = query_embeddings(strategy_example)
-            vector_emb = StrategyVector(strategy=df['strategy'][i], description=df['example'][i], embedding=embedding,
-                                        language_id=lang_id)
-            db.session.add(vector_emb)
-            db.session.commit()
+        with open(f"app/config/behaviours_{lang_code}.json", "r", encoding="utf-8") as file:
+            behaviour_examples = json.load(file)
+        for strategy in behaviour_examples:
+            for example in behaviour_examples[strategy]:
+                embedding = query_embeddings(example)
+                vector_emb = StrategyVector(strategy=strategy, description=example,
+                                            embedding=embedding, language_id=lang_id)
+                db.session.add(vector_emb)
+                db.session.commit()
     except FileNotFoundError:
         print("ERROR: Strategies file not found for language", lang_code)
 
