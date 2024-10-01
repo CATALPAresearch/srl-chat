@@ -23,14 +23,14 @@
             "id": "practice_testing",
             "name": "Practice testing",
             "description": "Statements indicating student-initiated efforts to practice recalling the material by working through questions, e.g. \"I use exams from previous years to practice.\" \"I quiz myself using flashcards.\""
-          },
+          }
         ]
       },
       {
         "id": "distributed_practice",
         "name": "Distributed practice",
         "description": "Distributed Practice refers to spreading learning over a longer period of time rather than cramming all the material in one sitting. This strategy helps improve long-term retention of knowledge by allowing the brain to process and consolidate information across multiple sessions. By revisiting the material regularly, learners can retain the information more effectively and reduce forgetting. Reviewing material studied in earlier sessions at later times allows for reinforcement of the information. Spacing study over time involves spreading out learning activities across different sessions instead of cramming all material at once. This method helps with better retention of knowledge by giving the brain time to process and consolidate information. Returning to concepts after a break encourages long-term retention by re-engaging with the material multiple times. Distributing items like questions or practice problems within a study session means breaking up the content into smaller chunks or rotating through different topics during a single session. This variety helps maintain engagement and strengthens understanding of the material.",
-        "behaviours": [
+        "strategies": [
           {
             "id": "repetition",
             "name": "Repetition over time",
@@ -47,7 +47,7 @@
             "id": "rereading",
             "name": "reviewing previously compiled records, e.g. tests, notes or course material/textbooks",
             "description": "Statements indicating student-initiated efforts to reread tests, notes, or textbooks to prepare for class or further testing, e.g., \"When preparing for a test, I review my notes.\""
-          },
+          }
         ]
       },
       {
@@ -74,7 +74,7 @@
               "id": "imagery",
               "name": "Visualisation",
               "description": "Statements indicating student-initiated efforts to create explanative or organizational drawings to illustrate lesson contents or forming mental images of the material, e.g., \"I try to imagine what this would look like.\""
-            },
+            }
         ]
       },
       {
@@ -91,7 +91,7 @@
             "id": "self_explanation",
             "name": "Self Explanation",
             "description": "Statements indicating student-initiated efforts to understand material by verbally or mentally explaining how new information is related to previously learned material, e.g., \"I think out loud when I work through a task.\""
-          },
+          }
         ]
       },
       {
@@ -108,7 +108,7 @@
             "id": "self_evaluation",
             "name": "Self-evaluating and regulation",
             "description": "Statements indicating student-initiated evaluations of the quality or progress of their work and their own level of understanding, e.g., \"I check over my work to make sure I did it right.\""
-          },
+          }
         ]
       },
       {
@@ -140,18 +140,18 @@
             "id": "time",
             "name": "Time and attention management",
             "description": "Statements indicating student-initiated efforts to structure their work periods and break times taking into account other commitments, motivation and focus, e.g., \"I use the Pomodoro Technique to intersperse work periods with short breaks.\" \"I commit to regular study times\" \"When I can't focus I go for a walk and get back to studying after.\""
-          },
+          }
         ]
       },
       {
         "id": "other",
         "name": "other",
-        "description": "Statements indicating learning behavior that is initiated by other persons such as teachers or parents, and all unclear verbal responses, e.g., \"I just do what the teacher says.\"",
+        "description": "Statements indicating learning behaviour that is initiated by other persons such as teachers or parents, and all unclear verbal responses, e.g., \"I just do what the teacher says.\"",
         "strategies": [
           {
             "id": "other",
             "name": "other",
-            "description": "Statements indicating learning behavior that is initiated by other persons such as teachers or parents, and all unclear verbal responses, e.g., \"I just do what the teacher says.\""
+            "description": "Statements indicating learning behaviour that is initiated by other persons such as teachers or parents, and all unclear verbal responses, e.g., \"I just do what the teacher says.\""
           }
         ]
       }
@@ -181,7 +181,7 @@
             "id": "practice_testing",
             "name": "Wissenstest",
             "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, sich den Stoff durch das Durcharbeiten von Fragen einzuprägen, z. B. \"Ich verwende Prüfungen aus früheren Jahren zum Üben.\" \"Ich teste mich selbst mithilfe von Karteikarten.\""
-          },
+          }
         ]
       },
       {
@@ -205,7 +205,7 @@
             "id": "rereading",
             "name": "Lesen von bereits erstellten Aufzeichnungen, z. B. Tests, Notizen oder Kursmaterial/Lehrbücher",
             "description": "Aussagen, die auf von Studenten initiierte Bemühungen hinweisen, Tests, Notizen oder Lehrbücher zur Vorbereitung auf den Unterricht oder weitere Tests erneut zu lesen, z. B. \"Wenn ich mich auf einen Test vorbereite, gehe ich meine Notizen noch einmal durch.\""
-          },
+          }
         ]
       },
       {
@@ -232,7 +232,7 @@
               "id": "imagery",
               "name": "Visualisierung",
               "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, erklärende oder strukturierende Zeichnungen zu erstellen, um Unterrichtsinhalte zu veranschaulichen oder sich ein Bild vom Material zu machen, z. B. \"Ich versuche mir vorzustellen, wie das aussehen würde.\""
-            },
+            }
         ]
       },
       {
@@ -249,7 +249,7 @@
             "id": "self_explanation",
             "name": "Selbsterklärung",
             "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, den Stoff zu verstehen, indem sie verbal oder gedanklich erklären, wie neue Informationen mit zuvor gelerntem Stoff zusammenhängen, z. B. \"Ich denke laut, wenn ich eine Aufgabe durcharbeite.\""
-          },
+          }
         ]
       },
       {
@@ -266,7 +266,7 @@
             "id": "self_evaluation",
             "name": "Selbstbewertung und -regulierung",
             "description": "Aussagen, die darauf hinweisen, dass Studierende die Qualität oder den Fortschritt ihrer Arbeit und ihr eigenes Verständnisniveau bewerten, z. B. \"Ich überprüfe meine Arbeit, um sicherzustellen, dass ich sie richtig gemacht habe.\""
-          },
+          }
         ]
       },
       {
@@ -298,7 +298,7 @@
             "id": "time",
             "name": "Zeit- und Aufmerksamkeitsmanagement",
             "description": "Aussagen, die auf von Studierenden initiierte Bemühungen hinweisen, ihre Arbeitszeiten und Pausenzeiten unter Berücksichtigung anderer Verpflichtungen, Motivation und Konzentration zu strukturieren, z. B. \"Ich verwende die Pomodoro-Technik, um zwischen den Arbeitsphasen kurze Pausen einzulegen.\" \"Ich lege mir regelmäßige Lernzeiten zu.\" \"Wenn ich mich nicht konzentrieren kann, gehe ich spazieren und fange danach wieder an zu lernen.\""
-          },
+          }
         ]
       },
       {

@@ -47,7 +47,7 @@ def populate_contexts():
 
             if lang_code == "en":
                 for category in interview_context[lang_code]["categories"]:
-                    for strategy in interview_context[lang_code]["categories"][category]["strategies"]:
+                    for strategy in category["strategies"]:
                         strategy_db = Strategy(id=strategy["id"])
                         db.session.add(strategy_db)
                         db.session.commit()
@@ -58,7 +58,7 @@ def populate_contexts():
                 db.session.commit()
 
             for category in interview_context[lang_code]["categories"]:
-                for strategy in interview_context[lang_code]["categories"][category]["strategies"]:
+                for strategy in category["strategies"]:
                     translation_id = str(uuid.uuid4())
                     strategy_db = StrategyTranslation(id=translation_id, strategy=strategy["id"], name=strategy["name"],
                                                       description=strategy["description"], language_id=language_db.id)
@@ -66,7 +66,6 @@ def populate_contexts():
                     db.session.commit()
 
                     if not vectors_exist:
-                        print("Creating vector embeddings for strategies")
                         embed_strategy_data(strategy, language_db.id)
 
 

@@ -25,7 +25,9 @@ def strategy_step(user: User, context: str, prev_conversation: list[str], user_m
     with open("app/config/interview.json", "r", encoding="utf-8") as file:
         interview_context = json.load(file)
     user_lang = get_language_by_id(user.language_id)
-    strat_info = interview_context[user_lang.lang_code]["strategies"]
+    strat_info = []
+    for category in interview_context[user_lang.lang_code]["categories"]:
+        strat_info.append(category["strategies"])
 
     system_prompt = f"""Analyse the user's answer and decide if they are describing one of the strategies in this list:
         {str(strat_info)}. Explain which one and why. If you cannot recognise a clear strategy from their answer,
