@@ -255,6 +255,6 @@ def save_evaluation_for_strategy(user, strategy, SU, SF, SC):
 
 def retrieve_similar_docs_vector(query_embedding):
     embedding_array = np.array(query_embedding)
-    query = sa.select(StrategyVector).order_by(StrategyVector.embedding.cosine_distance(embedding_array))
-    result = db.session.scalars(query.limit(3)).fetchall()
+    query = sa.select(StrategyVector).order_by(StrategyVector.embedding.l2_distance(embedding_array))
+    result = db.session.scalars(query.limit(5)).fetchall()
     return result

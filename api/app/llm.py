@@ -110,8 +110,16 @@ def get_frequency_prompt(user, context, strategy):
 
 def get_complete_prompt(user, most_contexts_strat, const_strategy, avg_freq, total_strat, const_strategies):
     prompt = get_prompt(user, "interview_complete")
-    prompt = prompt.replace("${most_contexts}", most_contexts_strat).replace("${const_strategy}",
-                                                                             const_strategy).replace("${avg_freq}",
-                                                                                                     str(avg_freq)).replace(
-        "${total_strat}", str(total_strat)).replace("${const_strategies}", str(const_strategies))
+    with open("app/config/interview.json", "r", encoding="utf-8") as file:
+        interview_context = json.load(file)
+    user_lang = get_language_by_id(user.language_id)
+    strat_info = interview_context[user_lang.lang_code]["categories"]
+    prompt = prompt.replace(
+        "${most_contexts}", most_contexts_strat).replace(
+        "${const_strategy}", const_strategy).replace(
+        "${avg_freq}", str(avg_freq)).replace(
+        "${total_strat}", str(total_strat)).replace(
+        "${const_strategies}", str(const_strategies)).replace(
+        "${strategies}", str(strat_info)
+    )
     return prompt

@@ -1,7 +1,7 @@
 import re
 import json
 
-from .db_utils.crud import get_strategies, get_all_strategies, retrieve_similar_docs_vector
+from .db_utils.crud import get_language_by_id, get_all_strategies, retrieve_similar_docs_vector
 from .llm import get_llm_response_openai, query_embeddings
 from .models import User
 
@@ -14,17 +14,37 @@ def strategy_step(user: User, context: str, prev_conversation: list[str], user_m
         strategy_candidates.append({"id": doc.strategy, "description": doc.description})
     print(strategy_candidates)
 
+    system_prompt = f"""Analyse the user's answer and decide if they are describing one of the strategies in this list:
+    {str(strategy_candidates)}. Explain which one and why. If you cannot recognise a clear strategy from their answer,
+    explain why and state what additional information would be required to decide if they are using one of the strategies.
+    State 'complete' at the end of your message if you have enough information to categorise the strategy and 'in_progress' if not."""
+    llm_message = get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0,
+                                          prev_conversation=prev_conversation)
+    print("RAG:", llm_message)
+
+    with open("app/config/interview.json", "r", encoding="utf-8") as file:
+        interview_context = json.load(file)
+    user_lang = get_language_by_id(user.language_id)
+    strat_info = interview_context[user_lang.lang_code]["strategies"]
+
+    system_prompt = f"""Analyse the user's answer and decide if they are describing one of the strategies in this list:
+        {str(strat_info)}. Explain which one and why. If you cannot recognise a clear strategy from their answer,
+        explain why and state what additional information would be required to decide if they are using one of the strategies.
+        State 'complete' at the end of your message if you have enough information to categorise the strategy and 'in_progress' if not."""
+    llm_message = get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0,
+                                          prev_conversation=prev_conversation)
+    print("LIST:", llm_message)
+
     system_prompt = f"""Only answer in valid json format with the following fields:
-        - 'strategies' (IDs of the strategies the user already shared). If the answer does not mention a clearly identifiable 
-        strategy, use the strategy name 'other'.
+        - 'strategies' (IDs of the strategies the user already shared in the conversation).
         - 'status', the possible values:
-            - 'completed' when the user has described at least one valid strategy. Mark the step as complete when you 
-            can recognise one or more strategies from the following list in their answer: {strategy_candidates}.
-            - 'in_progress' if the user has not yet provided a clear strategy. If the answer does not mention a clearly 
-            identifiable strategy, ask the user to clarify.
+            - 'completed' if the user has described at least one valid strategy. Mark the step as complete when you 
+            can recognise one or more strategies from the following list in their answer: {strat_info}.
+            - 'in_progress' if the user has given an invalid answer or their answer does not match any of the strategies in the list.
+            Ask the user to clarify, but do not include any suggestions or examples of strategies in your answer.
             - 'abandon', if the user has not described a clearly identifiable strategy after 10 exchanged messages.
             Number of exchanged messages so far: {len(prev_conversation)}
-        - 'comment' (your comment to the user. Do not include any suggestions of strategies as examples in the comment).
+        - 'comment' (your comment to the user. Do not include any suggestions or examples of strategies).
     You are an interviewer conducting an interview that will be evaluated scientifically. 
     Your tone should be friendly but neutral. 
     Find out the user's learning strategies in the following context: {context}."""
@@ -61,6 +81,7 @@ def frequency_step(user: User, prev_conversation: list[str]):
         return [], 0, "in_progress", json_output
     if json_output["status"] == "in_progress" and len(prev_conversation) > 10:
         json_output["status"] = "abandon"
+        json_output["frequency"] = 0
     return json_output["strategy"], json_output["frequency"], json_output["status"], json_output["comment"]
 
 

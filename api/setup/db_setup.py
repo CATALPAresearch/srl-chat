@@ -16,20 +16,12 @@ EMBEDDING_TOKEN = os.getenv("EMBEDDING_TOKEN", "")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 
 
-def embed_strategy_data(lang_code, lang_id):
-    print("Reading strategy file for language", lang_code)
-    try:
-        with open(f"app/config/behaviours_{lang_code}.json", "r", encoding="utf-8") as file:
-            behaviour_examples = json.load(file)
-        for strategy in behaviour_examples:
-            for example in behaviour_examples[strategy]:
-                embedding = query_embeddings(example)
-                vector_emb = StrategyVector(strategy=strategy, description=example,
-                                            embedding=embedding, language_id=lang_id)
-                db.session.add(vector_emb)
-                db.session.commit()
-    except FileNotFoundError:
-        print("ERROR: Strategies file not found for language", lang_code)
+def embed_strategy_data(strategy, lang_id):
+    embedding = query_embeddings(strategy["description"])
+    vector_emb = StrategyVector(strategy=strategy["id"], description=strategy["description"],
+                                embedding=embedding, language_id=lang_id)
+    db.session.add(vector_emb)
+    db.session.commit()
 
 
 def populate_contexts():
@@ -49,33 +41,33 @@ def populate_contexts():
             db.session.add(lang)
             db.session.commit()
             language_db = get_language(lang_code)
+            vectors_exist = db.session.execute(
+                select(StrategyVector).where(StrategyVector.language_id == language_db.id)
+            ).fetchone()
 
             if lang_code == "en":
-                for strategy in interview_context[lang_code]["strategies"]:
-                    strategy_db = Strategy(id=strategy["id"])
-                    db.session.add(strategy_db)
-                    db.session.commit()
+                for category in interview_context[lang_code]["categories"]:
+                    for strategy in interview_context[lang_code]["categories"][category]["strategies"]:
+                        strategy_db = Strategy(id=strategy["id"])
+                        db.session.add(strategy_db)
+                        db.session.commit()
 
             for context in interview_context[lang_code]["contexts"]:
                 context_db = Context(context=context, language_id=language_db.id)
                 db.session.add(context_db)
                 db.session.commit()
 
-            for strategy in interview_context[lang_code]["strategies"]:
-                translation_id = str(uuid.uuid4())
-                strategy_db = StrategyTranslation(id=translation_id, strategy=strategy["id"], name=strategy["name"],
-                                                  description=strategy["description"], language_id=language_db.id)
-                db.session.add(strategy_db)
-                db.session.commit()
+            for category in interview_context[lang_code]["categories"]:
+                for strategy in interview_context[lang_code]["categories"][category]["strategies"]:
+                    translation_id = str(uuid.uuid4())
+                    strategy_db = StrategyTranslation(id=translation_id, strategy=strategy["id"], name=strategy["name"],
+                                                      description=strategy["description"], language_id=language_db.id)
+                    db.session.add(strategy_db)
+                    db.session.commit()
 
-            vectors_exist = db.session.execute(
-                select(StrategyVector).where(StrategyVector.language_id == language_db.id)
-            ).fetchone()
-            if not vectors_exist:
-                print("Creating vector embeddings for strategies")
-                embed_strategy_data(lang_code, language_db.id)
-            else:
-                print("Vector embeddings data for strategies exists; skip embedding step")
+                    if not vectors_exist:
+                        print("Creating vector embeddings for strategies")
+                        embed_strategy_data(strategy, language_db.id)
 
 
 if __name__ == "__main__":
