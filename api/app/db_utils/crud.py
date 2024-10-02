@@ -258,3 +258,16 @@ def retrieve_similar_docs_vector(query_embedding):
     query = sa.select(StrategyVector).order_by(StrategyVector.embedding.l2_distance(embedding_array))
     result = db.session.scalars(query.limit(5)).fetchall()
     return result
+
+
+def delete_latest_answer(userid, client):
+    user = get_user(userid, client)
+    latest_message = db.session.scalars(
+        sa.select(InterviewAnswer).where(InterviewAnswer.user == user).order_by(InterviewAnswer.turn.desc())
+    ).first()
+    deletion_user = sa.delete(InterviewAnswer).where(InterviewAnswer.id == latest_message.id)
+    deletion_llm = sa.delete(LlmResponse).where(LlmResponse.user == user).where(LlmResponse.turn > latest_message.turn)
+    db.session.execute(deletion_user)
+    db.session.execute(deletion_llm)
+    db.session.flush()
+    return "deleted"

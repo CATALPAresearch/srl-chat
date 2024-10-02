@@ -118,9 +118,8 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
         match user.conversation_state.current_conversation_step:
             case "strategy":
                 strategies_mentioned, status, llm_message = strategy_step(user, str(current_context.context),
-                                                                          conversation_for_current_context,
-                                                                          user_message)
-                if status in ("completed", "abandon"):
+                                                                          conversation_for_current_context)
+                if status in ("completed", "complete", "abandon"):
                     update_current_conversation_step(user, "frequency")
                     valid_strategies = validate_strategies(strategies_mentioned)
                     for mentioned_strategy in valid_strategies:
@@ -214,8 +213,7 @@ def ask_about_frequency(user, current_context):
 def move_to_next_context(user, current_context):
     next_context = set_current_context_complete(user, current_context)
     conversation_so_far = retrieve_full_conversation(user)
-    system_prompt = """You are an interviewer conducting an interview that will be evaluated scientifically. 
-    Your tone should be friendly but neutral. """
+    system_prompt = get_system_prompt(user)
     if next_context:
         prompt = get_context_prompt(next_context.context, user)
         update_current_conversation_step(user, "strategy")
@@ -274,8 +272,8 @@ def generate_summary(user, strategy_scores):
     const_strategies = []
     for strat in consistently_used:
         const_strategies.append(get_strategy_translation_by_id(user, strat).description)
-    conversation_so_far = retrieve_full_conversation(user)
+    full_conversation = retrieve_full_conversation(user)
     system_prompt = get_system_prompt(user)
     prompt = get_complete_prompt(user, most_contexts_strat, const_strategy, avg_freq, total_strat, const_strategies)
-    llm_message = get_llm_response_openai(system_prompt + " " + prompt, prev_conversation=conversation_so_far)
+    llm_message = get_llm_response_openai(system_prompt + " " + prompt, prev_conversation=full_conversation)
     return llm_message

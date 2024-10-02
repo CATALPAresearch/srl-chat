@@ -4,7 +4,7 @@ from flask import request, jsonify
 import json
 
 from .core import start_conversation_core, reply_core
-from .db_utils.crud import get_user, get_language_by_id
+from .db_utils.crud import get_user, get_language_by_id, delete_latest_answer
 
 
 @app.errorhandler(500)
@@ -31,6 +31,28 @@ def teardown_request(exception):
 @app.route('/')
 def index():
     return "OK"
+
+
+@app.route("/deletemessage", methods=["POST"])
+def delete_message():
+    try:
+        content = request.json
+        client = content["client"]
+        userid = content["userid"]
+        return delete_latest_answer(userid, client)
+    except Exception as e:
+        print(e)
+        print("Rolling back DB changes")
+        db.session.rollback()
+        with open("app/config/translations.json", "r", encoding="utf-8") as file:
+            translations = json.load(file)
+        user = get_user(userid, client)
+        if user:
+            user_lang = get_language_by_id(user.language_id)
+            return translations["translations"][user_lang.lang_code]["reply_error"], 200
+        else:
+            return translations["translations"]["en"]["create_error"], 500
+
 
 
 @app.route("/translations/<language>", methods=["GET"])

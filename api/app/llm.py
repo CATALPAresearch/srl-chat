@@ -108,6 +108,39 @@ def get_frequency_prompt(user, context, strategy):
     return prompt
 
 
+def get_format_frequency_prompt(user, strategy):
+    prompt = get_prompt(user, "format_frequency")
+    prompt = prompt.replace("${strategy_for_frequency}", str(strategy))
+    return prompt
+
+
+def get_strategy_analysis_prompt(user):
+    with open("app/config/interview.json", "r", encoding="utf-8") as file:
+        interview_context = json.load(file)
+    user_lang = get_language_by_id(user.language_id)
+    strat_info = []
+    for category in interview_context[user_lang.lang_code]["categories"]:
+        strat_info.append(category["strategies"])
+    prompt = get_prompt(user, "recognise_strategy").replace("${strat_info}", str(strat_info))
+    return prompt
+
+
+def get_format_strategy_prompt(user, reasoning_response, conv_length, context, limit):
+    with open("app/config/interview.json", "r", encoding="utf-8") as file:
+        interview_context = json.load(file)
+    user_lang = get_language_by_id(user.language_id)
+    strat_info = []
+    for category in interview_context[user_lang.lang_code]["categories"]:
+        strat_info.append(category["strategies"])
+    prompt = get_prompt(user, "format_strategy").replace(
+        "${reasoning_response}", reasoning_response).replace(
+        "${strat_info}", str(strat_info)).replace(
+        "${len(prev_conversation)}", str(conv_length)).replace(
+        "${context}", context).replace(
+        "${limit}", str(limit))
+    return prompt
+
+
 def get_complete_prompt(user, most_contexts_strat, const_strategy, avg_freq, total_strat, const_strategies):
     prompt = get_prompt(user, "interview_complete")
     with open("app/config/interview.json", "r", encoding="utf-8") as file:
