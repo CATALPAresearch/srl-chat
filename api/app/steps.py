@@ -73,11 +73,9 @@ def try_get_json_completion(
         try:
             llm_message = get_llm_response_openai(system_prompt, user_prompt=user_prompt, temperature=temperature,
                                                   prev_conversation=prev_conversation)
-            print("RESP:", llm_message)
             regex = r"{[\s\S]+}"
             json_string = re.search(regex, llm_message).group()
             json_output = json.loads(json_string)
-            print("JSON:", json_output)
             json_valid = True
             return json_output, json_valid
         except AttributeError:

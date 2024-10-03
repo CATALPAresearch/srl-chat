@@ -9,7 +9,7 @@ from .db_utils.crud import get_user, get_language_by_id, delete_latest_answer
 
 @app.errorhandler(500)
 def internal_error(error):
-    print(error)
+    app.logger.error(error)
     db.session.rollback()
     with open("app/config/translations.json", "r", encoding="utf-8") as file:
         translations = json.load(file)
@@ -20,11 +20,10 @@ def internal_error(error):
 def teardown_request(exception):
     if exception:
         db.session.rollback()
-        print("rollback")
-        print("Exception: ", exception)
+        app.logger.error("Caught error: %s - rolling back", exception)
     else:
         db.session.commit()
-        print("commit")
+        app.logger.info("DB commit successful")
     db.session.remove()
 
 
@@ -39,10 +38,10 @@ def delete_message():
         content = request.json
         client = content["client"]
         userid = content["userid"]
+        app.logger.info("Deleting latest messages for user: %s - %s", userid, client)
         return delete_latest_answer(userid, client)
     except Exception as e:
-        print(e)
-        print("Rolling back DB changes")
+        app.logger.error("Error on delete message: %s - Rolling back DB changes", e)
         db.session.rollback()
         with open("app/config/translations.json", "r", encoding="utf-8") as file:
             translations = json.load(file)
@@ -52,7 +51,6 @@ def delete_message():
             return translations["translations"][user_lang.lang_code]["reply_error"], 200
         else:
             return translations["translations"]["en"]["create_error"], 500
-
 
 
 @app.route("/translations/<language>", methods=["GET"])
@@ -80,11 +78,10 @@ def start_conversation_flask():
         language = content["language"]
         client = content["client"]
         userid = content["userid"]
-
+        app.logger.info("Starting new conversation (%s) for user: %s - %s", language, userid, client)
         return start_conversation_core(language, client, userid)
     except Exception as e:
-        print(e)
-        print("Rolling back DB changes")
+        app.logger.error("Error on start conversation: %s - Rolling back DB changes", e)
         db.session.rollback()
         with open("app/config/translations.json", "r", encoding="utf-8") as file:
             translations = json.load(file)
@@ -109,8 +106,7 @@ def reply():
 
         return reply_core(client, userid, user_message)
     except Exception as e:
-        print(e)
-        print("Rolling back DB changes")
+        app.logger.error("Error on reply: %s - Rolling back DB changes", e)
         db.session.rollback()
         with open("app/config/translations.json", "r", encoding="utf-8") as file:
             translations = json.load(file)

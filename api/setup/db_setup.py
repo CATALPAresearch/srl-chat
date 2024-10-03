@@ -1,7 +1,6 @@
 import json
 import uuid
 import os
-import pandas as pd
 from sqlalchemy import select, text
 
 from app import app, db
@@ -28,14 +27,14 @@ def populate_contexts():
     db.session.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
     db.session.commit()
     db.create_all()
-    print("Populating contexts and strategies into DB")
+    app.logger.info("Populating contexts and strategies into DB")
     with open("app/config/interview.json", "r", encoding="utf-8") as file:
         interview_context = json.load(file)
     for lang_code in interview_context:
         if get_language(lang_code):
-            print(f"Language {lang_code} already exists")
+            app.logger.info(f"Language %s already exists", lang_code)
         else:
-            print(lang_code)
+            app.logger.info("Setting up language %s", lang_code)
             lang_id = str(uuid.uuid4())
             lang = Language(id=lang_id, lang_code=lang_code)
             db.session.add(lang)

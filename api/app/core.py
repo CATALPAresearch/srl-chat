@@ -2,6 +2,7 @@ from collections import OrderedDict
 import json
 import os
 from xml.sax.saxutils import escape as xmlescape
+import logging
 
 from .llm import (
     get_llm_response_openai,
@@ -36,6 +37,7 @@ from .db_utils.crud import (
 from .steps import strategy_step, frequency_step, validate_strategies
 
 MODEL = os.getenv("MODEL")
+logger = logging.getLogger("StudyBot.core")
 
 
 def start_conversation_core(language, client, userid) -> tuple[str, int]:
@@ -65,6 +67,7 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
                 return "An error occurred, please try to restart the conversation", 500
             user = created_user
 
+        logger.info("Created new user (%s): %s - %s", language, user.id, user.client)
         contexts = set(get_contexts(user.language_id))
 
         if get_completed_contexts(user) is not None:
@@ -114,7 +117,8 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
 
         if user.conversation_state.interview_completed:
             return sign_off_interview(user)
-
+        logger.info("Replying to user: %s - %s. Step: %s", user.id, user.client,
+                    user.conversation_state.current_conversation_step)
         match user.conversation_state.current_conversation_step:
             case "strategy":
                 strategies_mentioned, status, llm_message = strategy_step(user, str(current_context.context),
@@ -184,8 +188,7 @@ def ask_about_frequency(user, current_context):
     system_prompt = get_system_prompt(user)
 
     def list_filter(a):
-        other_strategy_indices = [13, 26]
-        if a.frequency is None and a.strategy not in other_strategy_indices:
+        if a.frequency is None and a.strategy != "008-001":
             return True
         else:
             return False
@@ -195,8 +198,8 @@ def ask_about_frequency(user, current_context):
         for answer in answers_without_frequency:
             context = get_context_by_id(answer.context)
             strategy = get_strategy_translation_by_id(user, answer.strategy)
-            frequency_prompt = get_frequency_prompt(user, context.context,
-                                                    (strategy.strategy + ": " + strategy.description))
+            logger.info("Asking about frequency for strategy: %s", strategy.name)
+            frequency_prompt = get_frequency_prompt(user, context.context, strategy.name)
             update_current_conversation_step(user, "frequency")
             update_most_recent_strategy_for_frequency(user, strategy)
             conversation_so_far = retrieve_full_conversation(user)
@@ -212,6 +215,7 @@ def ask_about_frequency(user, current_context):
 
 def move_to_next_context(user, current_context):
     next_context = set_current_context_complete(user, current_context)
+    logger.info("Moving on to context: %s", next_context.context)
     conversation_so_far = retrieve_full_conversation(user)
     system_prompt = get_system_prompt(user)
     if next_context:

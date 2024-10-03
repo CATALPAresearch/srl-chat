@@ -2,11 +2,11 @@ import json
 import os
 import requests
 import time
+import logging
 
 from openai import OpenAI
 
 from .db_utils.crud import get_language_by_id, get_contexts_content, get_strategies_content
-import logging
 
 BASE_URL = os.getenv("BASE_URL")
 API_KEY = os.getenv("API_KEY")
@@ -22,7 +22,7 @@ EMBEDDING_URL = os.getenv("EMBEDDING_URL", "https://api-inference.huggingface.co
 EMBEDDING_TOKEN = os.getenv("EMBEDDING_TOKEN", "")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('StudyBot.LLM')
 
 
 def query_embeddings(text_to_embed):
@@ -51,19 +51,17 @@ def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, pr
         messages=messages,
         temperature=temperature
     )
-    # print(system_prompt, user_prompt)
-    # print(response)
+
     attempts = 5
     timeout = 3
     while attempts > 0:
         if response.choices[0].message.content == "":
-            print("Retrying LLM call")
+            logger.info("Retrying LLM call for prompt: %s\nUser Message: %s", system_prompt, messages[-1])
             response = client.chat.completions.create(
                 model=MODEL,
                 messages=messages,
                 temperature=temperature + 0.1
             )
-            print(response)
             time.sleep(timeout)
             attempts -= 1
             timeout *= 2
@@ -72,6 +70,7 @@ def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, pr
     response_content = response.choices[0].message.content
     if not response_content:
         raise AssertionError("Received empty response from LLM.")
+    logger.info("Generation prompt: %s\nUser Message: %s\nResponse: %s", system_prompt, messages[-1], response_content)
     return response_content
 
 

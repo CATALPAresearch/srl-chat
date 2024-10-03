@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 from app import app, db
 from app.models import (
@@ -16,6 +17,8 @@ from app.models import (
 )
 import sqlalchemy as sa
 import uuid
+
+logger = logging.getLogger("StudyBot.crud")
 
 
 def get_user(userid, client) -> User | None:
@@ -208,7 +211,7 @@ def update_strategy_with_frequency(user, context_id, strategy_id, frequency):
         .where(UserStrategy.strategy == strategy_id)
     )
     strategy.frequency = frequency
-    print(context_id, strategy_id, frequency)
+    logger.info("Updating strategy %s for context %s with frequency %s", strategy_id, context_id, frequency)
     db.session.flush()
 
 
