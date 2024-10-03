@@ -124,7 +124,7 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                     valid_strategies = validate_strategies(strategies_mentioned)
                     for mentioned_strategy in valid_strategies:
                         store_strategy(user, user_answer_db, current_context.id, mentioned_strategy)
-                        if mentioned_strategy == "other":
+                        if mentioned_strategy == "008-001":
                             update_strategy_with_frequency(user, current_context.id, mentioned_strategy, 0)
                     llm_message, current_context = ask_about_frequency(user, current_context)
             case "frequency":
