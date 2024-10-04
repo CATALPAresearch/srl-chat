@@ -6,6 +6,9 @@ services:
       - BASE_URL=${BASE_URL}
       - API_KEY=${API_KEY}
       - MODEL=${MODEL}
+      - EMBEDDING_URL=${EMBEDDING_URL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - EMBEDDING_TOKEN=${EMBEDDING_TOKEN}
       - PG_HOST=${PG_HOST}
       - PG_PORT=${PG_PORT}
       - PG_USER=${PG_USER}
@@ -32,7 +35,7 @@ services:
     networks:
       - bot-net
   postgres-dev:
-    image: postgres
+    image: pgvector/pgvector:pg16
     environment:
       POSTGRES_USER: chat
       POSTGRES_PASSWORD: ${PG_PASSWORD}
