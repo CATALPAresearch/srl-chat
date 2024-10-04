@@ -1,10 +1,12 @@
 import json
 import os
-import re
-from openai import OpenAI
-from autogen import AssistantAgent, UserProxyAgent
-from .db_utils.crud import get_strategies, get_language_by_id, get_contexts_content, get_strategies_content
+import requests
+import time
 import logging
+
+from openai import OpenAI
+
+from .db_utils.crud import get_language_by_id, get_contexts_content, get_strategies_content
 
 BASE_URL = os.getenv("BASE_URL")
 API_KEY = os.getenv("API_KEY")
@@ -16,11 +18,22 @@ CONFIG_LIST = [
         "api_key": API_KEY,
     }
 ]
+EMBEDDING_URL = os.getenv("EMBEDDING_URL", "https://api-inference.huggingface.co/pipeline/feature-extraction/")
+EMBEDDING_TOKEN = os.getenv("EMBEDDING_TOKEN", "")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('StudyBot.LLM')
 
 
-def get_llm_response_openai(model, system_prompt, user_prompt=None, temperature=0.0, prev_conversation=[]):
+def query_embeddings(text_to_embed):
+    api_url = f"{EMBEDDING_URL}{EMBEDDING_MODEL}"
+    headers = {"Authorization": f"Bearer {EMBEDDING_TOKEN}"}
+    response = requests.post(api_url, headers=headers,
+                             json={"inputs": text_to_embed, "options": {"wait_for_model": True}})
+    return response.json()
+
+
+def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, prev_conversation=[]):
     client = OpenAI(
         base_url=BASE_URL,
         api_key=API_KEY
@@ -34,129 +47,31 @@ def get_llm_response_openai(model, system_prompt, user_prompt=None, temperature=
         messages.append({"role": "user", "content": user_prompt})
 
     response = client.chat.completions.create(
-        model=model,
+        model=MODEL,
         messages=messages,
         temperature=temperature
     )
-    print(system_prompt, user_prompt)
-    print(response)
-    if response.choices[0].message.content == "":
-        print("Retrying LLM call")
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            temperature=temperature + 0.1
-        )
-        print(response)
+
+    attempts = 5
+    timeout = 3
+    while attempts > 0:
+        if response.choices[0].message.content == "":
+            logger.info("Retrying LLM call for prompt: %s\nUser Message: %s", system_prompt, messages[-1])
+            response = client.chat.completions.create(
+                model=MODEL,
+                messages=messages,
+                temperature=temperature + 0.1
+            )
+            time.sleep(timeout)
+            attempts -= 1
+            timeout *= 2
+        else:
+            break
     response_content = response.choices[0].message.content
     if not response_content:
         raise AssertionError("Received empty response from LLM.")
+    logger.info("Generation prompt: %s\nUser Message: %s\nResponse: %s", system_prompt, messages[-1], response_content)
     return response_content
-
-
-def eval_strategies(user, user_message):
-    """
-    Evaluate if user response mentions any strategies.
-    """
-    strategies = get_strategies(user.language_id)
-
-    strategy_recogniser = AssistantAgent(
-        name="Recognise_strategy",
-        llm_config={"config_list": CONFIG_LIST},
-        system_message=get_prompt(user, "sys_recognise_strategy").replace("${strategies}", str(strategies)),
-    )
-    strategy_formatter = AssistantAgent(
-        name="Reformat_strategy",
-        llm_config={"config_list": CONFIG_LIST},
-        system_message=get_prompt(user, "sys_format_strategy"),
-    )
-
-    initializer = UserProxyAgent(
-        name="Init",
-        code_execution_config=False
-    )
-
-    chat_results = initializer.initiate_chats(
-        [
-            {
-                "recipient": strategy_recogniser,
-                "message": user_message,
-                "max_turns": 1,
-                "summary_method": "last_msg",
-            },
-            {
-                "recipient": strategy_formatter,
-                "message": get_prompt(user, "format_strategy"),
-                "max_turns": 1,
-                "summary_method": "last_msg",
-            },
-        ]
-    )
-    print(chat_results)
-    print("***********************")
-    print(chat_results[0].summary)
-    print(chat_results[1].summary)
-    print(chat_results[-1].summary)
-    regex = r"(\[\s*)({\s*\"index\":\s?[\d]+,\s*\"strategy\":\s?[\s\S]+(\s*},?)\s*)+(\s*\])"
-    strategy_json = re.search(regex, chat_results[1].summary).group()
-    return chat_results[0].summary, json.loads(strategy_json)
-
-
-def eval_frequencies(user, user_message):
-    """
-    Evaluate frequency of strategy use mentioned in most recent user response
-    for context asked for in most recent LLM message.
-    """
-    strategies = get_strategies(user.language_id)
-    strategy_for_frequency = user.conversation_state.strategy_for_frequency
-    most_recent_response = user.llm_responses[0]
-    for response in user.llm_responses:
-        if response.message_time >= most_recent_response.message_time:
-            most_recent_response = response
-
-    if not strategy_for_frequency:
-        message_to_evaluate = most_recent_response.message
-    else:
-        message_to_evaluate = f"We've most recently asked about strategy number {strategy_for_frequency}"
-
-    context_eval = AssistantAgent(
-        name="Evaluate_context",
-        llm_config={"config_list": CONFIG_LIST},
-        system_message=get_prompt(user, "sys_extract_strategy_for_frequency").replace("${strategies}", str(strategies)),
-    )
-    frequency_eval = AssistantAgent(
-        name="Evaluate_frequency",
-        llm_config={"config_list": CONFIG_LIST},
-        system_message=get_prompt(user, "sys_format_frequency"),
-    )
-
-    initializer = UserProxyAgent(
-        name="Init",
-        code_execution_config=False
-    )
-    chat_results = initializer.initiate_chats(
-        [
-            {
-                "recipient": context_eval,
-                "message": message_to_evaluate,
-                "max_turns": 1,
-                "summary_method": "last_msg",
-            },
-            {
-                "recipient": frequency_eval,
-                "message": user_message,
-                "max_turns": 1,
-                "summary_method": "last_msg",
-            },
-        ]
-    )
-    print(chat_results)
-    print("***********************")
-    print(chat_results[-1].summary)
-    regex = r"{\s*\"strategy\":\s?[\d]+,\s*\"frequency\":\s?[\d]\s*}"
-    frequency_json = re.search(regex, chat_results[1].summary).group()
-    print(frequency_json)
-    return json.loads(frequency_json)
 
 
 def get_prompt(user, prompt_name):
@@ -167,28 +82,25 @@ def get_prompt(user, prompt_name):
     return prompt
 
 
-def get_probe_prompt(context, user):
-    prompt = get_prompt(user, "probe")
-    prompt = prompt.replace("${context}", context)
-    return prompt
+def get_intro_prompt(user, limit):
+    return get_prompt(user, "intro_check").replace("${limit}", str(limit))
 
 
 def get_context_prompt(context, user):
+    subject = user.study_subject
     prompt = get_prompt(user, "context")
-    prompt = prompt.replace("${context}", context)
-    return prompt
-
-
-def get_system_prompt(user):
-    contexts = get_contexts_content(user.language_id)
-    strategies = get_strategies_content(user.language_id)
-    prompt = get_prompt(user, "system").replace("${contexts}", str(contexts)).replace("${strategies}", str(strategies))
+    prompt = prompt.replace(
+        "${context}", context).replace(
+        "${subject}", subject)
     return prompt
 
 
 def get_start_prompt(context, user):
+    subject = user.study_subject
     prompt = get_prompt(user, "start")
-    prompt = prompt.replace("${context}", str(context))
+    prompt = prompt.replace(
+        "${context}", str(context)).replace(
+        "${subject}", subject)
     return prompt
 
 
@@ -198,10 +110,51 @@ def get_frequency_prompt(user, context, strategy):
     return prompt
 
 
+def get_format_frequency_prompt(user, strategy):
+    prompt = get_prompt(user, "format_frequency")
+    prompt = prompt.replace("${strategy_for_frequency}", str(strategy))
+    return prompt
+
+
+def get_strategy_analysis_prompt(user):
+    with open("app/config/interview.json", "r", encoding="utf-8") as file:
+        interview_context = json.load(file)
+    user_lang = get_language_by_id(user.language_id)
+    strat_info = []
+    for category in interview_context[user_lang.lang_code]["categories"]:
+        strat_info.append(category["strategies"])
+    prompt = get_prompt(user, "recognise_strategy").replace("${strat_info}", str(strat_info))
+    return prompt
+
+
+def get_format_strategy_prompt(user, reasoning_response, conv_length, context, limit):
+    with open("app/config/interview.json", "r", encoding="utf-8") as file:
+        interview_context = json.load(file)
+    user_lang = get_language_by_id(user.language_id)
+    strat_info = []
+    for category in interview_context[user_lang.lang_code]["categories"]:
+        strat_info.append(category["strategies"])
+    prompt = get_prompt(user, "format_strategy").replace(
+        "${reasoning_response}", reasoning_response).replace(
+        "${strat_info}", str(strat_info)).replace(
+        "${len(prev_conversation)}", str(conv_length)).replace(
+        "${context}", context).replace(
+        "${limit}", str(limit))
+    return prompt
+
+
 def get_complete_prompt(user, most_contexts_strat, const_strategy, avg_freq, total_strat, const_strategies):
     prompt = get_prompt(user, "interview_complete")
-    prompt = prompt.replace("${most_contexts}", most_contexts_strat).replace("${const_strategy}",
-                                                                             const_strategy).replace("${avg_freq}",
-                                                                                                     str(avg_freq)).replace(
-        "${total_strat}", str(total_strat)).replace("${const_strategies}", str(const_strategies))
+    with open("app/config/interview.json", "r", encoding="utf-8") as file:
+        interview_context = json.load(file)
+    user_lang = get_language_by_id(user.language_id)
+    strat_info = interview_context[user_lang.lang_code]["categories"]
+    prompt = prompt.replace(
+        "${most_contexts}", most_contexts_strat).replace(
+        "${const_strategy}", const_strategy).replace(
+        "${avg_freq}", str(avg_freq)).replace(
+        "${total_strat}", str(total_strat)).replace(
+        "${const_strategies}", str(const_strategies)).replace(
+        "${strategies}", str(strat_info)
+    )
     return prompt

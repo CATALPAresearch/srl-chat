@@ -8,58 +8,152 @@
       "preparing for and taking oral or written exams",
       "when poorly motivated"
     ],
-    "strategies": [
+    "categories": [
       {
-        "name": "goal setting and planning",
-        "description": "Statements indicating student setting of educational goals or subgoals and planning for sequencing, timing, and completing activities related to those goals, e.g., 'First, I start studying two weeks before exams, and I pace myself'"
+        "id": "001",
+        "name": "Retrieval practice",
+        "description": "Retrieval Practice involves actively recalling information from memory without the use of external aids such as books or notes. Common methods include practice tests, self-testing, or using flashcards (quizzing). This strategy strengthens long-term memory by promoting the repeated retrieval of information. Regular testing not only improves knowledge retention but also helps identify gaps in understanding early on.",
+        "strategies": [
+          {
+            "id": "001-001",
+            "name": "Rehearsal and mnemonic strategies (memorising)",
+            "description": "Statements indicating student-initiated efforts to memorize material by overt or covert practice, e.g., \"In preparing for a math test, I keep writing the formula down until I remember it.\""
+          },
+          {
+            "id": "001-002",
+            "name": "Practice testing",
+            "description": "Statements indicating student-initiated efforts to practice recalling the material by working through questions, e.g. \"I use exams from previous years to practice.\" \"I quiz myself using flashcards.\""
+          }
+        ]
       },
       {
-        "name": "environmental structuring",
-        "description": "Statements indicating student-initiated efforts to select or arrange the physical setting to make learning easier, e.g., 'I isolate myself from anything that distracts me.' 'I turned off the radio so I can concentrate on what I am doing.'"
+        "id": "002",
+        "name": "Distributed practice",
+        "description": "Distributed Practice refers to spreading learning over a longer period of time rather than cramming all the material in one sitting. This strategy helps improve long-term retention of knowledge by allowing the brain to process and consolidate information across multiple sessions. By revisiting the material regularly, learners can retain the information more effectively and reduce forgetting. Reviewing material studied in earlier sessions at later times allows for reinforcement of the information. Spacing study over time involves spreading out learning activities across different sessions instead of cramming all material at once. This method helps with better retention of knowledge by giving the brain time to process and consolidate information. Returning to concepts after a break encourages long-term retention by re-engaging with the material multiple times. Distributing items like questions or practice problems within a study session means breaking up the content into smaller chunks or rotating through different topics during a single session. This variety helps maintain engagement and strengthens understanding of the material.",
+        "strategies": [
+          {
+            "id": "002-001",
+            "name": "Repetition over time",
+            "description": "Statements indicating student-initiated efforts to review material studied in earlier sessions at later times, e.g., \"I review flashcards at regular intervals.\""
+          }
+        ]
       },
       {
-        "name": "self-consequences (i.e. self-rewarding and self-punishment)",
-        "description": "Statements indicating student arrangement or imagination of rewards or punishment for success or failure, e.g., \"If I do well on a test, I treat myself to a movie.\""
+        "id": "003",
+        "name": "Rereading",
+        "description": "Rereading involves going through text material multiple times after the initial reading to reinforce understanding.",
+        "strategies": [
+          {
+            "id": "003-001",
+            "name": "reviewing previously compiled records, e.g. tests, notes or course material/textbooks",
+            "description": "Statements indicating student-initiated efforts to reread tests, notes, or textbooks to prepare for class or further testing, e.g., \"When preparing for a test, I review my notes.\""
+          }
+        ]
       },
       {
-        "name": "self-evaluating",
-        "description": "Statements indicating student-initiated evaluations of the quality or progress of their work, e.g., \"I check over my work to make sure I did it right.\""
+        "id": "004",
+        "name": "Selecting, organising and transforming key pieces of information",
+        "description": "Organisation involves selecting, arranging, and transforming important information into a structured format to better understand and remember it. This can be done through creating summaries, mind maps, diagrams, or keyword lists. By reorganizing the material, learners develop a deeper understanding of the relationships between concepts, making it easier to recall the information later. This strategy also helps to make complex topics more manageable and digestible.",
+          "strategies": [
+            {
+              "id": "004-001",
+              "name": "Highlighting and underlining",
+              "description": "Statements indicating student-initiated efforts to mark the central points of material to be learned, e.g., \"When I read the course text I highlight important parts.\""
+            },
+            {
+              "id": "004-002",
+              "name": "Organising and transforming",
+              "description": "Statements indicating student-initiated overt or covert rearrangement of instructional materials to improve learning, e.g., \"I make an outline before I write my paper.\" \"I write a summary in my own words.\" \"I create a mind map, knowledge graph or diagram of the material.\""
+            },
+            {
+              "id": "004-003",
+              "name": "Keeping records and monitoring",
+              "description": "Statements indicating student-initiated efforts to record events or results, e.g., \"I took notes of the class discussion.\" \"I kept a list of the words I got wrong.\""
+            },
+            {
+              "id": "004-004",
+              "name": "Visualisation",
+              "description": "Statements indicating student-initiated efforts to create explanative or organizational drawings to illustrate lesson contents or forming mental images of the material, e.g., \"I try to imagine what this would look like.\""
+            }
+        ]
       },
       {
-        "name": "organising and transforming",
-        "description": "Statements indicating student-initiated overt or covert rearrangement of instructional materials to improve learning, e.g., \"I make an outline before I write my paper.\""
+        "id": "005",
+        "name": "Elaboration",
+        "description": "Elaboration means actively linking new information to existing knowledge to foster deeper understanding. This can be done by asking 'why' questions (asking oneself why certain facts or concepts are true and providing explanations), explaining relationships between ideas, or thinking about the meaning behind the material. By connecting new concepts with what is already known, learners build a network of information that helps them retain and apply the material. This strategy also encourages critical thinking as it requires learners to engage deeply with the content.",
+        "strategies": [
+          {
+            "id": "005-001",
+            "name": "Teaching and preparing to teach",
+            "description": "Statements indicating student-initiated efforts to understand material by explaining it to someone else or preparing to do so, e.g., \"I try to explain the material to a friend.\" \"I prepare a presentation for my study group.\""
+          },
+          {
+            "id": "005-002",
+            "name": "Self Explanation",
+            "description": "Statements indicating student-initiated efforts to understand material by verbally or mentally explaining how new information is related to previously learned material, e.g., \"I think out loud when I work through a task.\""
+          }
+        ]
       },
       {
-        "name": "seeking and selecting information",
-        "description": "Statements indicating student-initiated efforts to secure further task information from nonsocial sources when undertaking an assignment, e.g., \"Before beginning to write the paper, I go to the library to get as much information as possible concerning the topic.\""
+        "id": "006",
+        "name": "Metacognitive strategies",
+        "description": "Metacognitive strategies involve the conscious management and reflection on one's own learning process. This includes setting learning goals, planning study sessions, monitoring progress, and evaluating whether the strategies used are effective. Learners who use this strategy regularly reflect on their methods and adjust them to work more efficiently and purposefully. This helps them regulate their own learning and continually improve their approach.",
+        "strategies": [
+          {
+            "id": "006-001",
+            "name": "goal setting and planning",
+            "description": "Statements indicating student setting of educational goals or subgoals and planning for prioritising, sequencing, timing, and completing activities related to those goals, e.g., \"First, I start studying two weeks before exams, and I pace myself.\" \"I review the materials and decide what to focus on first.\""
+          },
+          {
+            "id": "006-002",
+            "name": "Self-evaluating and regulation",
+            "description": "Statements indicating student-initiated evaluations of the quality or progress of their work and their own level of understanding, e.g., \"I check over my work to make sure I did it right.\""
+          }
+        ]
       },
       {
-        "name": "rehearsal and mnemonic strategies (memorising)",
-        "description": "Statements indicating student-initiated efforts to memorize material by overt or covert practice, e.g., \"In preparing for a math test, I keep writing the formula down until I remember it.\""
+        "id": "007",
+        "name": "Resources",
+        "description": "The use of resources refers to effectively managing external tools to support the learning process. This includes planning and managing time, accessing additional sources of information such as books or online materials, and seeking help from others like peers, tutors, or family members. This strategy aims to optimize learning by leveraging resources and overcoming barriers such as time constraints or missing information.",
+        "strategies": [
+          {
+            "id": "007-001",
+            "name": "Environmental structuring",
+            "description": "Statements indicating student-initiated efforts to select or arrange the physical setting to make learning easier, e.g., \"I isolate myself so I can concentrate on what I am doing.\" \"I tidy my desk so there is no clutter that distracts me.\""
+          },
+          {
+            "id": "007-002",
+            "name": "Self-consequences (i.e. self-rewarding and self-punishment)",
+            "description": "Statements indicating student arrangement or imagination of rewards or punishment for success or failure, e.g., \"If I do well on a test, I treat myself to a movie.\""
+          },
+          {
+            "id": "007-003",
+            "name": "Seeking social assistance from fellow students, teachers or others",
+            "description": "Statements indicating student-initiated efforts to solicit help from fellow students, e.g., \"If I have problems with math assignments, I ask for help in the class forums.\" \"I ask my classmates/friends\" \"I find that I get to the correct answer quicker in a study group\""
+          },
+          {
+            "id": "007-004",
+            "name": "Seeking and selecting information",
+            "description": "Statements indicating student-initiated efforts to secure further task information from nonsocial sources when undertaking an assignment, e.g., \"Before beginning to write the paper, I go to the library to get as much information as possible concerning the topic.\" \"I look for materials online.\""
+          },
+          {
+            "id": "007-005",
+            "name": "Time and attention management",
+            "description": "Statements indicating student-initiated efforts to structure their work periods and break times taking into account other commitments, motivation and focus, e.g., \"I use the Pomodoro Technique to intersperse work periods with short breaks.\" \"I commit to regular study times\" \"When I can't focus I go for a walk and get back to studying after.\""
+          }
+        ]
       },
       {
-        "name": "seeking social assistance from fellow students",
-        "description": "Statements indicating student-initiated efforts to solicit help from fellow students, e.g., \"If I have problems with math assignments, I ask for help in the class forums.\""
-      },
-      {
-        "name": "seeking social assistance from teachers",
-        "description": "Statements indicating student-initiated efforts to solicit help from teachers, e.g., \"If I have problems with math assignments, I ask a lecturer for help.\""
-      },
-      {
-        "name": "seeking social assistance from others (not fellow students or teachers)",
-        "description": "Statements indicating student-initiated efforts to solicit help from others who are not teachers or fellow students, e.g., \"If I have problems with math assignments, I ask a friend to help.\""
-      },
-      {
-        "name": "reviewing previously compiled records, e.g. tests, notes or course material/textbooks",
-        "description": "Statements indicating student-initiated efforts to reread tests, notes, or textbooks to prepare for class or further testing, e.g., \"When preparing for a test, I review my notes.\""
-      },
-      {
-        "name": "keeping records and monitoring",
-        "description": "Statements indicating student-initiated efforts to record events or results, e.g., \"I took notes of the class discussion.\" \"I kept a list of the words I got wrong.\""
-      },
-      {
+        "id": "008",
         "name": "other",
-        "description": "Statements indicating learning behavior that is initiated by other persons such as teachers or parents, and all unclear verbal responses, e.g., \"I just do what the teacher says.\""
+        "description": "Statements indicating learning behaviour that is initiated by other persons such as teachers or parents, and all unclear verbal responses, e.g., \"I just do what the teacher says.\"",
+        "strategies": [
+          {
+            "id": "008-001",
+            "name": "other",
+            "description": "Statements indicating learning behaviour that is initiated by other persons such as teachers or parents, and all unclear verbal responses, e.g., \"I just do what the teacher says.\""
+          }
+        ]
       }
     ]
   },
@@ -72,60 +166,154 @@
       "Bei der Vorbereitung und beim Ablegen mündlicher oder schriflicher Prüfungen",
       "Bei geringer Motivation"
     ],
-  "strategies":
-  [
+    "categories": [
       {
-        "name": "Lernziele setzen, Planung und Zeitmanagement",
-        "description": "Aussagen, die darauf hinweisen, dass sich ein Student Lernziele oder Teilziele setzt und die Reihenfolge, den Zeitpunkt und die Durchführung der mit diesen Zielen in Zusammenhang stehenden Aktivitäten plant, z. B.: 'Erstens beginne ich zwei Wochen vor den Prüfungen mit dem Lernen und teile es mir selbst ein.'"
+        "id": "001",
+        "name": "Retrieval Practice",
+        "description": "Retrieval Practice bezeichnet das aktive Abrufen von Informationen aus dem Gedächtnis ohne den Einsatz von Hilfsmitteln wie Büchern oder Notizen. Zu den häufig verwendeten Methoden gehören Übungstests, Selbsttests oder das Lernen mit Karteikarten (Quizzing). Diese Strategie stärkt das Langzeitgedächtnis, indem sie den Abruf von Informationen durch wiederholte Übung fördert. Regelmäßige Tests verbessern nicht nur das Behalten von Wissen, sondern helfen auch dabei, Lücken im Verständnis frühzeitig zu erkennen.",
+        "strategies": [
+          {
+            "id": "001-001",
+            "name": "Übungs- und Gedächtnisstrategien (Auswendiglernen)",
+            "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, sich den Lernstoff durch offenes oder verdecktes Üben einzuprägen, z.B.: 'Wenn ich mich auf eine Matheprüfung vorbereite, schreibe ich die Formel so lange auf, bis ich sie mir einpräge.'"
+          },
+          {
+            "id": "001-002",
+            "name": "Wissenstest",
+            "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, sich den Stoff durch das Durcharbeiten von Fragen einzuprägen, z. B. \"Ich verwende Prüfungen aus früheren Jahren zum Üben.\" \"Ich teste mich selbst mithilfe von Karteikarten.\""
+          }
+        ]
       },
       {
-        "name": "Räumliche Rahmenbedingungen setzen, z.B. Arbeitsplatz strukturieren",
-        "description": "Aussagen, die auf von den Schülern initiierte Bemühungen hinweisen, die physische Umgebung so auszuwählen oder zu gestalten, dass das Lernen erleichtert wird, z. B. 'Ich isoliere mich von allem, was mich ablenkt.' 'Ich habe das Radio ausgeschaltet, damit ich mich auf das konzentrieren kann, was ich tue.'"
+        "id": "002",
+        "name": "Verteiltes Üben",
+        "description": "Verteiltes Üben bezieht sich auf das Verteilen des Lernens über einen längeren Zeitraum, anstatt den gesamten Stoff in einer Sitzung zu pauken. Diese Strategie trägt dazu bei, das langfristige Behalten von Wissen zu verbessern, indem das Gehirn Informationen über mehrere Sitzungen hinweg verarbeiten und konsolidieren kann. Durch regelmäßiges Wiederholen des Materials können Lernende die Informationen effektiver behalten und das Vergessen reduzieren. Das Wiederholen von in früheren Sitzungen gelerntem Material zu einem späteren Zeitpunkt ermöglicht eine Festigung der Informationen. Das Verteilen des Lernens über einen längeren Zeitraum bedeutet, die Lernaktivitäten auf verschiedene Sitzungen zu verteilen, anstatt den gesamten Stoff auf einmal zu pauken. Diese Methode hilft beim besseren Behalten von Wissen, indem sie dem Gehirn Zeit gibt, Informationen zu verarbeiten und zu konsolidieren. Das Zurückkehren zu Konzepten nach einer Pause fördert das langfristige Behalten, indem man sich mehrmals erneut mit dem Material beschäftigt. Das Verteilen von Elementen wie Fragen oder Übungsaufgaben innerhalb einer Lernsitzung bedeutet, den Inhalt in kleinere Abschnitte aufzuteilen oder während einer einzelnen Sitzung durch verschiedene Themen zu wechseln. Diese Abwechslung hilft, das Engagement aufrechtzuerhalten und das Verständnis des Materials zu stärken.",
+        "strategies": [
+          {
+            "id": "002-001",
+            "name": "Wiederholung",
+            "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, in früheren Sitzungen erlerntes Material zu einem späteren Zeitpunkt zu wiederholen, z. B. \"Ich gehe Karteikarten in regelmäßigen Abständen durch.\""
+          }
+        ]
       },
       {
-        "name": "Selbstbelohnung oder -strafe",
-        "description": "Aussagen, die darauf hinweisen, dass sich Schüler Belohnungen oder Bestrafungen für Erfolg oder Misserfolg ausdenken oder diese planen, z. B.: 'Wenn ich bei einem Test gut abschneide, gönne ich mir einen Film.'"
+        "id": "003",
+        "name": "Erneutes Lesen",
+        "description": "Beim erneuten Lesen geht man den Textinhalt nach dem ersten Lesen mehrmals durch, um das Verständnis zu festigen.",
+        "strategies": [
+          {
+            "id": "003-001",
+            "name": "Lesen von bereits erstellten Aufzeichnungen, z. B. Tests, Notizen oder Kursmaterial/Lehrbücher",
+            "description": "Aussagen, die auf von Studenten initiierte Bemühungen hinweisen, Tests, Notizen oder Lehrbücher zur Vorbereitung auf den Unterricht oder weitere Tests erneut zu lesen, z. B. \"Wenn ich mich auf einen Test vorbereite, gehe ich meine Notizen noch einmal durch.\""
+          }
+        ]
       },
       {
-        "name": "Selbstevaluation - Bewertung der eigenen Arbeit",
-        "description": "Aussagen, die auf von den Studierenden initiierte Bewertungen der Qualität oder des Fortschritts ihrer Arbeit hinweisen, z.B. 'Ich überprüfe meine Arbeit, um sicherzustellen, dass ich sie richtig gemacht habe.'"
+        "id": "004",
+        "name": "Auswählen, Ordnen und Strukturieren wichtiger Informationen",
+        "description": "Organisation bezieht sich auf das Auswählen, Ordnen und Umwandeln von wichtigen Informationen in eine strukturierte Form, um sie besser zu verstehen und sich langfristig zu merken. Dies kann durch das Erstellen von Zusammenfassungen, Mindmaps, Diagrammen oder Stichwortlisten geschehen. Indem Lernende den Stoff neu organisieren, schaffen sie ein tieferes Verständnis der Zusammenhänge und erleichtern das spätere Abrufen der Informationen. Diese Strategie hilft auch, komplexe Inhalte übersichtlicher und greifbarer zu machen.",
+        "strategies": [
+            {
+              "id": "004-001",
+              "name": "Hervorheben und Unterstreichen",
+              "description": "Aussagen, die auf von Studenten initiierte Bemühungen hinweisen, die zentralen Punkte des zu lernenden Materials visuell hervorzuheben, z. B. \"Wenn ich den Kurstext lese, markiere ich wichtige Teile.\""
+            },
+            {
+              "id": "004-002",
+              "name": "Organisieren und Umstrukturieren",
+              "description": "Aussagen, die auf von Studenten initiierte offene oder verdeckte Umgestaltung von Unterrichtsmaterialien hinweisen, um das Lernen zu verbessern, z. B. \"Ich erstelle eine Gliederung, bevor ich meine Arbeit schreibe.\" \"Ich schreibe eine Zusammenfassung in meinen eigenen Worten.\" \"Ich erstelle eine Mindmap, ein Wissensdiagramm oder ein Diagramm des Materials.\""
+            },
+            {
+              "id": "004-003",
+              "name": "Aufzeichnungen führen",
+              "description": "Aussagen, die auf von Studenten initiierte Bemühungen hinweisen, Ereignisse oder Ergebnisse aufzuzeichnen, z. B. \"Ich habe mir Notizen zur Unterrichtsdiskussion gemacht.\" \"Ich habe eine Liste der Wörter geführt, die ich falsch hatte.\""
+            },
+            {
+              "id": "004-004",
+              "name": "Visualisierung",
+              "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, erklärende oder strukturierende Zeichnungen zu erstellen, um Unterrichtsinhalte zu veranschaulichen oder sich ein Bild vom Material zu machen, z. B. \"Ich versuche mir vorzustellen, wie das aussehen würde.\""
+            }
+        ]
       },
       {
-        "name": "Umstrukturierung von Lernmaterial zur Verbesserung des Lerneffekts",
-        "description": "Aussagen, die auf eine offene oder verdeckte Umgestaltung des Unterrichtsmaterials durch den Schüler hinweisen, um das Lernen zu verbessern, z. B. 'Ich erstelle eine Gliederung, bevor ich meine Arbeit schreibe.'"
+        "id": "005",
+        "name": "Elaboration",
+        "description": "Elaboration bedeutet, neues Wissen aktiv mit vorhandenem Wissen zu verknüpfen, um ein tieferes Verständnis zu fördern. Dies kann durch das Stellen von 'Warum'-Fragen, das Erklären von Zusammenhängen oder das Nachdenken über die Bedeutung von Informationen geschehen. Indem Lernende neue Konzepte mit bereits bekanntem Wissen verknüpfen, schaffen sie ein Netzwerk von Informationen, das ihnen hilft, das Gelernte zu behalten und anzuwenden. Diese Strategie fördert auch das kritische Denken, da man sich mit dem Lernstoff intensiv auseinandersetzt.",
+        "strategies": [
+          {
+            "id": "005-001",
+            "name": "Unterrichten und Unterrichtsvorbereitung",
+            "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, den Stoff zu verstehen, indem sie ihn jemand anderem erklären oder sich darauf vorbereiten, z. B. \"Ich versuche, den Stoff einem Freund zu erklären.\" \"Ich bereite eine Präsentation für meine Lerngruppe vor.\""
+          },
+          {
+            "id": "005-002",
+            "name": "Selbsterklärung",
+            "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, den Stoff zu verstehen, indem sie verbal oder gedanklich erklären, wie neue Informationen mit zuvor gelerntem Stoff zusammenhängen, z. B. \"Ich denke laut, wenn ich eine Aufgabe durcharbeite.\""
+          }
+        ]
       },
       {
-        "name": "Weitere Informationsquellen aufsuchen (von anderen Informationsquellen als anderen Personen), z.B. Bücher oder anderes Material",
-        "description": "Aussagen, die auf von den Schülern initiierte Bemühungen hinweisen, bei der Bearbeitung einer Aufgabe weitere Aufgabeninformationen aus nicht-sozialen Quellen zu beschaffen, z. B.: 'Bevor ich mit dem Schreiben der Arbeit beginne, gehe ich in die Bibliothek, um möglichst viele Informationen zum Thema zu sammeln.'"
+        "id": "006",
+        "name": "Metakognitive Strategien",
+        "description": "Metakognitive Strategien umfassen die bewusste Steuerung und Reflexion des eigenen Lernprozesses. Dazu gehören das Setzen von Lernzielen, das Planen des Lernens, die Überwachung des eigenen Fortschritts sowie die Auswertung, ob die eingesetzten Lernstrategien effektiv waren. Lernende, die diese Strategie nutzen, reflektieren regelmäßig über ihre Lernmethoden und passen sie an, um effizienter und zielgerichteter zu arbeiten. Dies hilft dabei, sich selbst zu regulieren und den Lernprozess kontinuierlich zu verbessern.",
+        "strategies": [
+          {
+            "id": "006-001",
+            "name": "Lernziele setzen und planen",
+            "description": "Aussagen, die darauf hinweisen, dass sich Studierende Lernziele oder Teilziele setzen und die Priorisierung, Reihenfolge, Zeiteinteilung und Erledigung von Aktivitäten planen, die mit diesen Zielen in Zusammenhang stehen, z. B. \"Zunächst beginne ich zwei Wochen vor den Prüfungen mit dem Lernen und teile mir mein Tempo ein.\" \"Ich schaue mir die Materialien an und entscheide, worauf ich mich zuerst konzentriere.\""
+          },
+          {
+            "id": "006-002",
+            "name": "Selbstbewertung und -regulierung",
+            "description": "Aussagen, die darauf hinweisen, dass Studierende die Qualität oder den Fortschritt ihrer Arbeit und ihr eigenes Verständnisniveau bewerten, z. B. \"Ich überprüfe meine Arbeit, um sicherzustellen, dass ich sie richtig gemacht habe.\""
+          }
+        ]
       },
       {
-        "name": "Übungs- und Gedächtnisstrategien (Auswendig lernen)",
-        "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, sich den Lernstoff durch offenes oder verdecktes Üben einzuprägen, z.B.: 'Wenn ich mich auf eine Matheprüfung vorbereite, schreibe ich die Formel so lange auf, bis ich sie mir einpräge.'"
+        "id": "007",
+        "name": "Ressourcen",
+        "description": "Die Nutzung von Ressourcen bezieht sich auf die effektive Verwaltung von externen Hilfsmitteln, um den Lernprozess zu unterstützen. Dazu gehören die Planung und Einteilung der Zeit, der Zugang zu zusätzlichen Informationsquellen wie Büchern oder Online-Materialien sowie das Einholen von Hilfe von anderen, beispielsweise durch Peers, Tutoren oder Familienmitglieder. Diese Strategie zielt darauf ab, das Lernen durch den geschickten Einsatz von Ressourcen zu optimieren und Hindernisse wie Zeitdruck oder fehlende Informationen zu minimieren.",
+        "strategies": [
+          {
+            "id": "007-001",
+            "name": "Räumliche Rahmenbedingungen",
+            "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, die physische Umgebung so auszuwählen oder zu gestalten, dass das Lernen leichter fällt, z. B. \"Ich isoliere mich, damit ich mich auf das konzentrieren kann, was ich tue.\" \"Ich räume meinen Schreibtisch auf, damit mich kein Durcheinander ablenkt.\""
+          },
+          {
+            "id": "007-002",
+            "name": "Selbstkonsequenzen (d. h. Selbstbelohnung und Selbstbestrafung)",
+            "description": "Aussagen, die auf die Gestaltung oder Vorstellung von Belohnungen oder Bestrafungen durch Schüler für Erfolg oder Misserfolg hinweisen, z. B. \"Wenn ich bei einem Test gut abschneide, gönne ich mir einen Film.\""
+          },
+          {
+            "id": "007-003",
+            "name": "Hilfe bei Kommilitonen, Lehrpersonal oder anderen suchen",
+            "description": "Aussagen, die auf von Studierenden initiierte Bemühungen, Mitstudierende, Lehrpersonal oder andere Personen (z.B. Familie/Freunde) um Hilfe zu bitten, z. B. \"Wenn ich Probleme mit Matheaufgaben habe, bitte ich in den Klassenforen um Hilfe.\" \"Ich frage meine Klassenkameraden/Freunde.\" \"In einer Lerngruppe komme ich schneller auf die richtige Antwort.\""
+          },
+          {
+            "id": "007-004",
+            "name": "Suchen und Auswählen von Informationen",
+            "description": "Aussagen, die auf von Studierenden initiierte Bemühungen hinweisen, bei der Bearbeitung einer Aufgabe weitere Aufgabeninformationen aus nicht-sozialen Quellen zu erhalten, z. B. \"Bevor ich mit dem Schreiben der Arbeit beginne, gehe ich in die Bibliothek, um so viele Informationen wie möglich zum Thema zu erhalten.\" \"Ich suche online nach Materialien.\""
+          },
+          {
+            "id": "007-005",
+            "name": "Zeit- und Aufmerksamkeitsmanagement",
+            "description": "Aussagen, die auf von Studierenden initiierte Bemühungen hinweisen, ihre Arbeitszeiten und Pausenzeiten unter Berücksichtigung anderer Verpflichtungen, Motivation und Konzentration zu strukturieren, z. B. \"Ich verwende die Pomodoro-Technik, um zwischen den Arbeitsphasen kurze Pausen einzulegen.\" \"Ich lege mir regelmäßige Lernzeiten zu.\" \"Wenn ich mich nicht konzentrieren kann, gehe ich spazieren und fange danach wieder an zu lernen.\""
+          }
+        ]
       },
       {
-        "name": "Hilfe bei Kommilitonen suchen",
-        "description": "Aussagen, die auf von Studierenden initiierte Bemühungen hinweisen, bei Mitstudierenden Hilfe zu suchen, z. B.: 'Wenn ich Probleme mit Matheaufgaben habe, bitte ich im Klassenforum um Hilfe.'"
-      },
-      {
-        "name": "Hilfe bei Lehrpersonal suchen",
-        "description": "Aussagen, die auf von Studierenden initiierte Bemühungen hinweisen, Hilfe von Lehrkräften in Anspruch zu nehmen, z. B.: 'Wenn ich Probleme mit Matheaufgaben habe, bitte ich einen Dozenten um Hilfe.'"
-      },
-      {
-        "name": "Hilfe bei anderen suchen (nicht Kommilitonen oder Lehrpersonal)",
-        "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, Hilfe von anderen Personen als Lehrern oder Mitschülern zu erbitten, z. B.: 'Wenn ich Probleme mit Matheaufgaben habe, bitte ich einen Freund um Hilfe.'"
-      },
-      {
-        "name": "Notizen, frühere Prüfungen oder Kursmaterial wiederholen",
-        "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, Tests, Notizen oder Lehrbücher erneut durchzulesen, um sich auf den Unterricht oder weitere Prüfungen vorzubereiten, z.B.: 'Wenn ich mich auf eine Prüfung vorbereite, schaue ich mir meine Notizen noch einmal an.'"
-      },
-      {
-        "name": "Notizen machen und Fehler festhalten",
-        "description": "Aussagen, die auf von Schülern initiierte Bemühungen hinweisen, Ereignisse oder Ergebnisse aufzuzeichnen, z. B. 'Ich habe mir Notizen zur Unterrichtsdiskussion gemacht.' 'Ich habe eine Liste der Wörter geführt, die ich falsch hatte.'"
-      },
-      {
-        "name": "other",
-        "description": "Aussagen über Lernverhalten, das von anderen Personen wie Lehrern oder Eltern initiiert wird, und alle unklaren verbalen Reaktionen, z. B.: 'Ich mache nur, was der Lehrer sagt.'"
+        "id": "008",
+        "name": "Andere",
+        "description": "Aussagen über Lernverhalten, das von anderen Personen wie Lehrern oder Eltern initiiert wird, und alle unklaren verbalen Reaktionen, z. B.: 'Ich mache nur, was der Lehrer sagt.'",
+        "strategies": [
+          {
+            "id": "008-001",
+            "name": "Andere",
+            "description": "Aussagen über Lernverhalten, das von anderen Personen wie Lehrern oder Eltern initiiert wird, und alle unklaren verbalen Reaktionen, z. B.: 'Ich mache nur, was der Lehrer sagt.'"
+          }
+        ]
       }
     ]
-  }
+}
+
 }

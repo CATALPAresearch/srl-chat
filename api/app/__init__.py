@@ -3,8 +3,36 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import MetaData
+from logging.config import dictConfig
 
-app = Flask(__name__)
+dictConfig(
+    {
+        "version": 1,
+        "formatters": {
+            "default": {
+                "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+            }
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "stream": "ext://sys.stdout",
+                "formatter": "default",
+            },
+            "fileRotate": {
+                "class": "logging.handlers.RotatingFileHandler",
+                "filename": "logs/api.log",
+                "maxBytes": 1000000,
+                "backupCount": 5,
+                "formatter": "default",
+            },
+        },
+        "root": {"level": "INFO", "handlers": ["console", "fileRotate"]},
+    }
+)
+
+
+app = Flask('StudyBot')
 app.config.from_object(Config)
 convention = {
     "ix": 'ix_%(column_0_label)s',
