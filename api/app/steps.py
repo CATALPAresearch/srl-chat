@@ -6,9 +6,25 @@ from .llm import (
     get_llm_response_openai,
     get_strategy_analysis_prompt,
     get_format_strategy_prompt,
-    get_format_frequency_prompt
+    get_format_frequency_prompt,
+    get_intro_prompt
 )
 from .models import User
+
+ABANDON_AFTER_STEPS = 6
+
+
+def intro_step(user: User, prev_conversation: list[str]):
+    system_prompt = get_intro_prompt(user, ABANDON_AFTER_STEPS)
+
+    json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, system_prompt, prev_conversation=prev_conversation,
+                                                      user_prompt=None)
+    if not json_valid:
+        return "", "in_progress", json_output
+    if json_output["study_subject"] == "" and len(prev_conversation) >= ABANDON_AFTER_STEPS:
+        json_output["study_subject"] = ["unknown"]
+        json_output["status"] = "abandon"
+    return json_output["study_subject"], json_output["status"], json_output["comment"]
 
 
 def strategy_step(user: User, context: str, prev_conversation: list[str]):
@@ -22,16 +38,15 @@ def strategy_step(user: User, context: str, prev_conversation: list[str]):
     strategy_analysis_prompt = get_strategy_analysis_prompt(user)
     reasoning_response = get_llm_response_openai(strategy_analysis_prompt, user_prompt=None, temperature=0.0,
                                                  prev_conversation=prev_conversation)
-    print(reasoning_response)
 
-    limit = 6
-    system_prompt = get_format_strategy_prompt(user, reasoning_response, len(prev_conversation), context, limit)
+    system_prompt = get_format_strategy_prompt(user, reasoning_response, len(prev_conversation), context,
+                                               ABANDON_AFTER_STEPS)
 
     json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, system_prompt, prev_conversation=prev_conversation,
                                                       user_prompt=None)
     if not json_valid:
         return [], "in_progress", json_output
-    if json_output["strategies"] in ([], ["other"]) and len(prev_conversation) >= limit:
+    if json_output["strategies"] in ([], ["other"]) and len(prev_conversation) >= ABANDON_AFTER_STEPS:
         json_output["strategies"] = ["other"]
         json_output["status"] = "abandon"
     return json_output["strategies"], json_output["status"], json_output["comment"]
@@ -45,7 +60,7 @@ def frequency_step(user: User, prev_conversation: list[str]):
                                                       user_prompt=None)
     if not json_valid:
         return [], 0, "in_progress", json_output
-    if json_output["status"] == "in_progress" and len(prev_conversation) > 10:
+    if json_output["status"] == "in_progress" and len(prev_conversation) > ABANDON_AFTER_STEPS:
         json_output["status"] = "abandon"
         json_output["frequency"] = 0
     return strategy_for_frequency, json_output["frequency"], json_output["status"], json_output["comment"]

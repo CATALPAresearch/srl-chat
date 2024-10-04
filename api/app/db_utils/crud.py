@@ -141,7 +141,7 @@ def get_strategy_mentions_for_user(user, strategy):
 def first_time_setup(userid, client, language):
     language_db = get_language(language)
     user = User(id=userid, client=client, language_id=language_db.id,
-                message_history="",
+                study_subject="",
                 conversation_state=ConversationState(id=str(uuid.uuid4())))
     db.session.add(user)
     db.session.flush()
@@ -150,6 +150,11 @@ def first_time_setup(userid, client, language):
         .where(User.id == str(userid))
         .where(User.client == client))
     return created_user
+
+
+def store_study_subject(user, subject):
+    user.study_subject = subject
+    db.session.flush()
 
 
 def set_current_context(user, context):

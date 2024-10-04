@@ -82,22 +82,25 @@ def get_prompt(user, prompt_name):
     return prompt
 
 
+def get_intro_prompt(user, limit):
+    return get_prompt(user, "intro_check").replace("${limit}", str(limit))
+
+
 def get_context_prompt(context, user):
+    subject = user.study_subject
     prompt = get_prompt(user, "context")
-    prompt = prompt.replace("${context}", context)
-    return prompt
-
-
-def get_system_prompt(user):
-    contexts = get_contexts_content(user.language_id)
-    strategies = get_strategies_content(user.language_id)
-    prompt = get_prompt(user, "system").replace("${contexts}", str(contexts)).replace("${strategies}", str(strategies))
+    prompt = prompt.replace(
+        "${context}", context).replace(
+        "${subject}", subject)
     return prompt
 
 
 def get_start_prompt(context, user):
+    subject = user.study_subject
     prompt = get_prompt(user, "start")
-    prompt = prompt.replace("${context}", str(context))
+    prompt = prompt.replace(
+        "${context}", str(context)).replace(
+        "${subject}", subject)
     return prompt
 
 

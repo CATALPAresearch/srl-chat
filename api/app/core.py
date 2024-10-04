@@ -6,7 +6,7 @@ import logging
 
 from .llm import (
     get_llm_response_openai,
-    get_system_prompt,
+    get_prompt,
     get_start_prompt,
     get_frequency_prompt,
     get_context_prompt,
@@ -32,9 +32,10 @@ from .db_utils.crud import (
     get_strategies,
     get_strategy_mentions_for_user,
     save_evaluation_for_strategy,
-    update_most_recent_strategy_for_frequency
+    update_most_recent_strategy_for_frequency,
+    store_study_subject
 )
-from .steps import strategy_step, frequency_step, validate_strategies
+from .steps import strategy_step, frequency_step, validate_strategies, intro_step
 
 MODEL = os.getenv("MODEL")
 logger = logging.getLogger("StudyBot.core")
@@ -68,24 +69,14 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
             user = created_user
 
         logger.info("Created new user (%s): %s - %s", language, user.id, user.client)
-        contexts = set(get_contexts(user.language_id))
 
-        if get_completed_contexts(user) is not None:
-            completed_contexts = set(get_completed_contexts(user))
-            remaining_contexts = contexts.difference(completed_contexts)
-        else:
-            remaining_contexts = contexts
-        current_context = list(remaining_contexts)[0]
+        system_prompt = get_prompt(user, "system")
+        intro_prompt = get_prompt(user, "intro")
+        update_current_conversation_step(user, "intro")
 
-        set_current_context(user, current_context)
-
-        system_prompt = get_system_prompt(user)
-        start_prompt = get_start_prompt(current_context.context, user)
-        update_current_conversation_step(user, "strategy")
-
-        llm_message = get_llm_response_openai(system_prompt + " " + start_prompt, "Hi!", 0.1)
+        llm_message = get_llm_response_openai(system_prompt + " " + intro_prompt, None, 0.1)
         turn = update_current_turn(user)
-        store_llm_answer(user, llm_message, current_context, turn)
+        store_llm_answer(user, llm_message, None, turn)
         return llm_message, 200
     except Exception as e:
         raise Exception(e)
@@ -109,17 +100,37 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
 
         # Retrieve current context
         current_context_id = user.conversation_state.current_context
-        current_context = get_context_by_id(current_context_id)
+        if current_context_id:
+            current_context = get_context_by_id(current_context_id)
         turn = update_current_turn(user)
-        user_answer_db = store_answer(user, current_context.id, user_message, turn)
+        user_answer_db = store_answer(user, current_context_id, user_message, turn)
 
-        conversation_for_current_context = retrieve_full_conversation(user, current_context.id)
-
+        conversation_for_current_context = retrieve_full_conversation(user, current_context_id)
+        logger.info(user_message)
         if user.conversation_state.interview_completed:
             return sign_off_interview(user)
         logger.info("Replying to user: %s - %s. Step: %s", user.id, user.client,
                     user.conversation_state.current_conversation_step)
         match user.conversation_state.current_conversation_step:
+            case "intro":
+                study_subject, status, llm_message = intro_step(user, conversation_for_current_context)
+                if status in ("completed", "complete", "abandon"):
+                    store_study_subject(user, study_subject)
+                    contexts = set(get_contexts(user.language_id))
+                    if get_completed_contexts(user) is not None:
+                        completed_contexts = set(get_completed_contexts(user))
+                        remaining_contexts = contexts.difference(completed_contexts)
+                    else:
+                        remaining_contexts = contexts
+                    current_context = list(remaining_contexts)[0]
+
+                    set_current_context(user, current_context)
+
+                    system_prompt = get_prompt(user, "system")
+                    start_prompt = get_start_prompt(current_context.context, user)
+                    update_current_conversation_step(user, "strategy")
+
+                    llm_message = get_llm_response_openai(system_prompt + " " + start_prompt, None, 0.1)
             case "strategy":
                 strategies_mentioned, status, llm_message = strategy_step(user, str(current_context.context),
                                                                           conversation_for_current_context)
@@ -185,7 +196,7 @@ def retrieve_full_conversation(user, context_id=None):
 def ask_about_frequency(user, current_context):
     # retrieve all interview answers for current context
     answers = get_strategies_for_context(user, current_context.id)
-    system_prompt = get_system_prompt(user)
+    system_prompt = get_prompt(user, "system")
 
     def list_filter(a):
         if a.frequency is None and a.strategy != "008-001":
@@ -217,7 +228,7 @@ def move_to_next_context(user, current_context):
     next_context = set_current_context_complete(user, current_context)
     logger.info("Moving on to context: %s", next_context.context)
     conversation_so_far = retrieve_full_conversation(user)
-    system_prompt = get_system_prompt(user)
+    system_prompt = get_prompt(user, "system")
     if next_context:
         prompt = get_context_prompt(next_context.context, user)
         update_current_conversation_step(user, "strategy")
@@ -277,7 +288,7 @@ def generate_summary(user, strategy_scores):
     for strat in consistently_used:
         const_strategies.append(get_strategy_translation_by_id(user, strat).description)
     full_conversation = retrieve_full_conversation(user)
-    system_prompt = get_system_prompt(user)
+    system_prompt = get_prompt(user, "system")
     prompt = get_complete_prompt(user, most_contexts_strat, const_strategy, avg_freq, total_strat, const_strategies)
     llm_message = get_llm_response_openai(system_prompt + " " + prompt, prev_conversation=full_conversation)
     return llm_message
