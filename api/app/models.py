@@ -157,3 +157,7 @@ class StrategyEvaluation(db.Model):
     SC: so.Mapped[float] = so.mapped_column(sa.Float())
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
                                               [User.id, User.client]), {})
+
+
+class Archive(db.Model):
+    archived_conversation: so.Mapped[str] = so.mapped_column(sa.String())

@@ -3,7 +3,7 @@ from app import app, db
 from flask import request, jsonify
 import json
 
-from .core import start_conversation_core, reply_core
+from .core import start_conversation_core, reply_core, reset_conversation
 from .db_utils.crud import get_user, get_language_by_id, delete_latest_answer
 
 
@@ -32,16 +32,19 @@ def index():
     return "OK"
 
 
-@app.route("/deletemessage", methods=["POST"])
+@app.route("/resetConversation", methods=["POST"])
 def delete_message():
     try:
         content = request.json
         client = content["client"]
         userid = content["userid"]
-        app.logger.info("Deleting latest messages for user: %s - %s", userid, client)
-        return delete_latest_answer(userid, client)
+        app.logger.info("Resetting conversation for user: %s - %s", userid, client)
+        user = get_user(userid, client)
+        success = reset_conversation(user)
+        if success:
+            return "*** Conversation has been reset. A new conversation can be started from the StudyTest server. ***", 200
     except Exception as e:
-        app.logger.error("Error on delete message: %s - Rolling back DB changes", e)
+        app.logger.error("Error on reset conversation: %s - Rolling back DB changes", e)
         db.session.rollback()
         with open("app/config/translations.json", "r", encoding="utf-8") as file:
             translations = json.load(file)

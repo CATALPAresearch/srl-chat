@@ -23,7 +23,7 @@ services:
     networks:
       - bot-net
     depends_on:
-      - postgres
+      - postgresql
   bot:
     build: ./discord
     environment:
@@ -32,7 +32,7 @@ services:
       - BOT_TOKEN=${BOT_TOKEN}
     networks:
       - bot-net
-  postgres:
+  postgresql:
     image: pgvector/pgvector:pg16
     environment:
       POSTGRES_USER: chat

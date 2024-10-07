@@ -68,19 +68,4 @@ scp user@VM:/backup/pg_backup_<date>.sql .
 ## Dialogue Flow
 
 ![interview_v1.png](arch/interview_v1.png)
-
-## Current status
-
-The following steps need to be completed before the app is ready for user testing:
-
-| Done? | Task                                                                                                                                                                                     |
-|-------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ✓     | Define database models required for the app to function: users, conversation state and supported languages                                                                               |                                                                                                           |
-| ✓     | Define database models for required interview elements: learning contexts, learning strategies and user answers connecting them                                                          |
-| ✓     | Create API endpoint to send first response and perform initial setup for users in database                                                                                               |
-| ✓     | Create API endpoint to reply to user message based on previous messages                                                                                                                  |
-| ✓     | Populate learning contexts and strategies in database                                                                                                                                    |                                                    |
-| ✓     | Implement dialogue loop with chained LLM prompts to ask about strategies for each learning context in turn, evaluate answers' mention of strategies and ask required follow-up questions |
-| ✓     | Implement evaluation of learner SRL strategy use based on interview responses                                                                                                            |
-| ✓     | Store results in database                                                                                                                                                                |
-|       | Make answers and drawn conclusions viewable by users (including authentication; may be done after user testing has started)                                                              |
+|

@@ -2,6 +2,7 @@ import logging
 import numpy as np
 from app import app, db
 from app.models import (
+    Archive,
     User,
     Language,
     LlmResponse,
@@ -278,4 +279,11 @@ def delete_latest_answer(userid, client):
     db.session.execute(deletion_user)
     db.session.execute(deletion_llm)
     db.session.flush()
-    return "deleted"
+    return True
+
+
+def archive_conversation(conversation_data):
+    archive = Archive(archived_conversation=str(conversation_data))
+    db.session.add(archive)
+    db.session.commit()
+    return True

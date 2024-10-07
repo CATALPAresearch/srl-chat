@@ -17,15 +17,6 @@ API_URL = os.getenv('API_URL', "http://127.0.0.1:5000")
 session = None
 
 
-async def clear_messages(user, channel):
-    print("Clearing bot messages from DM history")
-    messages = [msg async for msg in channel.history(limit=200)]
-    for msg in messages:
-        if msg.author.id == user.id:
-            print("deleting", msg)
-            await msg.delete()
-
-
 async def start_conversation(language, userid):
     url = f"{API_URL}/startConversation"
 
@@ -54,6 +45,23 @@ async def reply(message, userid):
     headers = {
         'Content-Type': 'application/json'
     }
+    async with session.post(url, headers=headers, data=payload) as response:
+        data = await response.text()  # or json()
+        return data
+
+
+async def reset_conversation(user):
+    print("Resetting conversation for user", user.id)
+    url = f"{API_URL}/resetConversation"
+
+    payload = json.dumps({
+        "client": CLIENT_NAME,
+        "userid": user.id
+    })
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
     async with session.post(url, headers=headers, data=payload) as response:
         data = await response.text()  # or json()
         return data
@@ -101,13 +109,12 @@ class MyClient(Client):
                 not isinstance(message.channel, DMChannel)):
             # Abort if the message was sent by this bot, or isn't in a DM channel
             return
-        if message.content == "!clear" and isinstance(message.channel, DMChannel):
-            await clear_messages(self.user, message.channel)
-            return
-
         channel = message.channel
         async with channel.typing():
-            response = await reply(message.content, message.author.id)
+            if message.content == "!deleteall" and isinstance(message.channel, DMChannel):
+                response = await reset_conversation(message.author)
+            else:
+                response = await reply(message.content, message.author.id)
 
         await channel.send(response)
 

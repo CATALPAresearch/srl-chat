@@ -33,7 +33,8 @@ from .db_utils.crud import (
     get_strategy_mentions_for_user,
     save_evaluation_for_strategy,
     update_most_recent_strategy_for_frequency,
-    store_study_subject
+    store_study_subject,
+    archive_conversation
 )
 from .steps import strategy_step, frequency_step, validate_strategies, intro_step
 
@@ -292,3 +293,16 @@ def generate_summary(user, strategy_scores):
     prompt = get_complete_prompt(user, most_contexts_strat, const_strategy, avg_freq, total_strat, const_strategies)
     llm_message = get_llm_response_openai(system_prompt + " " + prompt, prev_conversation=full_conversation)
     return llm_message
+
+
+def reset_conversation(user):
+    conversation = retrieve_full_conversation(user)
+    state = user.conversation_state
+    archive = {"messages": conversation,
+               "state": {
+                   "complete": state.interview_completed,
+                   "current_context": state.current_context,
+                   "step": state.current_conversation_step
+               }
+               }
+    return archive_conversation(archive)
