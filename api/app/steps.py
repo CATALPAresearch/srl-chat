@@ -6,6 +6,7 @@ from .llm import (
     get_llm_response_openai,
     get_strategy_analysis_prompt,
     get_format_strategy_prompt,
+    get_frequency_validate_prompt,
     get_format_frequency_prompt,
     get_intro_prompt
 )
@@ -55,12 +56,16 @@ def strategy_step(user: User, context: str, prev_conversation: list[str]):
 def frequency_step(user: User, prev_conversation: list[str]):
     strategy_for_frequency = user.conversation_state.strategy_for_frequency
 
-    system_prompt = get_format_frequency_prompt(user, strategy_for_frequency)
+    frequency_validate_prompt = get_frequency_validate_prompt(user, strategy_for_frequency)
+    reasoning_response = get_llm_response_openai(frequency_validate_prompt, user_prompt=None, temperature=0.0,
+                                                 prev_conversation=prev_conversation)
+
+    system_prompt = get_format_frequency_prompt(user, strategy_for_frequency, reasoning_response)
     json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, system_prompt, prev_conversation=prev_conversation,
                                                       user_prompt=None)
     if not json_valid:
         return [], 0, "in_progress", json_output
-    if json_output["status"] == "in_progress" and len(prev_conversation) > ABANDON_AFTER_STEPS:
+    if json_output["status"] == "in_progress" and len(prev_conversation) > (ABANDON_AFTER_STEPS * 2):
         json_output["status"] = "abandon"
         json_output["frequency"] = 0
     return strategy_for_frequency, json_output["frequency"], json_output["status"], json_output["comment"]

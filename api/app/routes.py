@@ -23,7 +23,6 @@ def teardown_request(exception):
         app.logger.error("Caught error: %s - rolling back", exception)
     else:
         db.session.commit()
-        app.logger.info("DB commit successful")
     db.session.remove()
 
 

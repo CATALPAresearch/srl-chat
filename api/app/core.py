@@ -7,7 +7,6 @@ import logging
 from .llm import (
     get_llm_response_openai,
     get_prompt,
-    get_start_prompt,
     get_frequency_prompt,
     get_context_prompt,
     get_complete_prompt)
@@ -128,10 +127,10 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                     set_current_context(user, current_context)
 
                     system_prompt = get_prompt(user, "system")
-                    start_prompt = get_start_prompt(current_context.context, user)
+                    context_prompt = get_context_prompt(current_context.context, user)
                     update_current_conversation_step(user, "strategy")
 
-                    llm_message = get_llm_response_openai(system_prompt + " " + start_prompt, None, 0.1)
+                    llm_message = get_llm_response_openai(context_prompt + " " + system_prompt, None, 0.1)
             case "strategy":
                 strategies_mentioned, status, llm_message = strategy_step(user, str(current_context.context),
                                                                           conversation_for_current_context)
@@ -215,7 +214,7 @@ def ask_about_frequency(user, current_context):
             update_current_conversation_step(user, "frequency")
             update_most_recent_strategy_for_frequency(user, strategy)
             conversation_so_far = retrieve_full_conversation(user)
-            llm_message = get_llm_response_openai(system_prompt + " " + frequency_prompt,
+            llm_message = get_llm_response_openai(frequency_prompt + " " + system_prompt,
                                                   prev_conversation=conversation_so_far)
             new_context = current_context
             break
@@ -227,10 +226,10 @@ def ask_about_frequency(user, current_context):
 
 def move_to_next_context(user, current_context):
     next_context = set_current_context_complete(user, current_context)
-    logger.info("Moving on to context: %s", next_context.context)
     conversation_so_far = retrieve_full_conversation(user)
     system_prompt = get_prompt(user, "system")
     if next_context:
+        logger.info("Moving on to context: %s", next_context.context)
         prompt = get_context_prompt(next_context.context, user)
         update_current_conversation_step(user, "strategy")
         llm_message = get_llm_response_openai(system_prompt + " " + prompt,

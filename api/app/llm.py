@@ -95,12 +95,9 @@ def get_context_prompt(context, user):
     return prompt
 
 
-def get_start_prompt(context, user):
-    subject = user.study_subject
-    prompt = get_prompt(user, "start")
-    prompt = prompt.replace(
-        "${context}", str(context)).replace(
-        "${subject}", subject)
+def get_frequency_validate_prompt(user, strategy):
+    prompt = get_prompt(user, "validate_frequency")
+    prompt = prompt.replace("${strategy_for_frequency}", str(strategy))
     return prompt
 
 
@@ -110,9 +107,11 @@ def get_frequency_prompt(user, context, strategy):
     return prompt
 
 
-def get_format_frequency_prompt(user, strategy):
+def get_format_frequency_prompt(user, strategy, reasoning_response):
     prompt = get_prompt(user, "format_frequency")
-    prompt = prompt.replace("${strategy_for_frequency}", str(strategy))
+    prompt = prompt.replace(
+        "${strategy_for_frequency}", str(strategy)).replace(
+        "${reasoning_response}", reasoning_response)
     return prompt
 
 
