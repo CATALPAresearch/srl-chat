@@ -4,7 +4,7 @@ from flask import request, jsonify
 import json
 
 from .core import start_conversation_core, reply_core, reset_conversation
-from .db_utils.crud import get_user, get_language_by_id, delete_latest_answer
+from .db_utils.crud import get_user, get_language_by_id
 
 
 @app.errorhandler(500)

@@ -305,4 +305,4 @@ def reset_conversation(user):
                    "step": state.current_conversation_step
                }
                }
-    return archive_conversation(archive)
+    return archive_conversation(user, archive)

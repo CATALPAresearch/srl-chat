@@ -85,14 +85,17 @@ class ConversationState(db.Model):
         "current_conversation_step IN ('intro', 'strategy', 'probe', 'frequency', 'complete')", name="response_check"),
                                                             nullable=True)
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
-                                              [User.id, User.client]), {})
+                                              [User.id, User.client],
+                                              ondelete="CASCADE"), {})
 
 
 class ConversationCompletedContexts(db.Model):
     __tablename__ = "conversation_completed_contexts"
     conversation_id: so.Mapped["ConversationState"] = so.mapped_column(
         sa.ForeignKey(ConversationState.id, ondelete="CASCADE"), primary_key=True)
-    completed_context_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), primary_key=True)
+    completed_context_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id,
+                                                                          ondelete="CASCADE"),
+                                                            primary_key=True)
     conversation: so.Mapped["ConversationState"] = so.relationship(
         back_populates="completed_contexts", cascade="all, delete")
 
@@ -112,7 +115,8 @@ class InterviewAnswer(db.Model):
         nullable=False, server_default=sa.func.CURRENT_TIMESTAMP()
     )
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
-                                              [User.id, User.client]),)
+                                              [User.id, User.client],
+                                              ondelete="CASCADE"),)
 
 
 class UserStrategy(db.Model):
@@ -128,7 +132,8 @@ class UserStrategy(db.Model):
     strategy: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Strategy.id))
     frequency: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=True)
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
-                                              [User.id, User.client]), {})
+                                              [User.id, User.client],
+                                              ondelete="CASCADE"), {})
 
 
 class LlmResponse(db.Model):
@@ -143,7 +148,8 @@ class LlmResponse(db.Model):
         nullable=False, server_default=sa.func.CURRENT_TIMESTAMP()
     )
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
-                                              [User.id, User.client]), {})
+                                              [User.id, User.client],
+                                              ondelete="CASCADE"), {})
 
 
 class StrategyEvaluation(db.Model):
@@ -156,8 +162,10 @@ class StrategyEvaluation(db.Model):
     SF: so.Mapped[float] = so.mapped_column(sa.Float())
     SC: so.Mapped[float] = so.mapped_column(sa.Float())
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
-                                              [User.id, User.client]), {})
+                                              [User.id, User.client],
+                                              ondelete="CASCADE"), {})
 
 
 class Archive(db.Model):
+    id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True, autoincrement=True)
     archived_conversation: so.Mapped[str] = so.mapped_column(sa.String())

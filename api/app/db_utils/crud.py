@@ -269,21 +269,10 @@ def retrieve_similar_docs_vector(query_embedding):
     return result
 
 
-def delete_latest_answer(userid, client):
-    user = get_user(userid, client)
-    latest_message = db.session.scalars(
-        sa.select(InterviewAnswer).where(InterviewAnswer.user == user).order_by(InterviewAnswer.turn.desc())
-    ).first()
-    deletion_user = sa.delete(InterviewAnswer).where(InterviewAnswer.id == latest_message.id)
-    deletion_llm = sa.delete(LlmResponse).where(LlmResponse.user == user).where(LlmResponse.turn > latest_message.turn)
-    db.session.execute(deletion_user)
-    db.session.execute(deletion_llm)
-    db.session.flush()
-    return True
-
-
-def archive_conversation(conversation_data):
+def archive_conversation(user, conversation_data):
     archive = Archive(archived_conversation=str(conversation_data))
     db.session.add(archive)
+    delete_user = sa.delete(User).where(User.id == user.id).where(User.client == user.client)
+    db.session.execute(delete_user)
     db.session.commit()
     return True
