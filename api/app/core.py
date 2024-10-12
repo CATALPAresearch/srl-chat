@@ -38,7 +38,7 @@ from .db_utils.crud import (
 from .steps import strategy_step, frequency_step, validate_strategies, intro_step
 
 MODEL = os.getenv("MODEL")
-logger = logging.getLogger("StudyBot.core")
+logger = logging.getLogger("StudyBot")
 
 
 def start_conversation_core(language, client, userid) -> tuple[str, int]:

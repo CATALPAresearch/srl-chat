@@ -22,7 +22,7 @@ EMBEDDING_URL = os.getenv("EMBEDDING_URL", "https://api-inference.huggingface.co
 EMBEDDING_TOKEN = os.getenv("EMBEDDING_TOKEN", "")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 
-logger = logging.getLogger('StudyBot.LLM')
+logger = logging.getLogger('StudyBot')
 
 
 def query_embeddings(text_to_embed):

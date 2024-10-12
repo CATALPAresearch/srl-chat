@@ -19,7 +19,7 @@ from app.models import (
 import sqlalchemy as sa
 import uuid
 
-logger = logging.getLogger("StudyBot.crud")
+logger = logging.getLogger("StudyBot")
 
 
 def get_user(userid, client) -> User | None:

@@ -28,6 +28,7 @@ dictConfig(
             },
         },
         "root": {"level": "INFO", "handlers": ["console", "fileRotate"]},
+        "StudyBot": {"level": "INFO", "handlers": ["console", "fileRotate"]},
     }
 )
 
