@@ -16,6 +16,8 @@ services:
       - PG_DB=${PG_DB}
     expose:
       - "5000"
+    volumes:
+      - ./api/logs:/api/logs
     command: >
       sh -c "python -m setup.db_setup &&
              gunicorn app:app -b 0.0.0.0:5000 --timeout 300"
