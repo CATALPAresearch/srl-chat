@@ -3,6 +3,8 @@ from discord import Client, Intents, Interaction, Object, app_commands, DMChanne
 import json
 import requests
 import os
+import asyncio
+import random
 from aiohttp import ClientSession
 from dotenv import load_dotenv
 
@@ -67,6 +69,47 @@ async def reset_conversation(user):
         return data
 
 
+async def send_delay_message(language, channel):
+    update_messages = {
+        "en": [
+            "Please hold for a moment while I analyze your response.",
+            "One moment, I am currently processing your input.",
+            "I am reviewing your answer, please bear with me.",
+            "Let me take a moment to reflect on that.",
+            "I am reading your answer carefully, please give me a moment."
+        ],
+        "de": [
+            "Bitte einen Moment Geduld, ich analysiere deine Antwort."
+            "Einen Augenblick, ich beschäftige mich gerade mit deiner Antwort."
+            "Ich bearbeite deine Eingabe, einen Moment bitte."
+            "Ich denke kurz darüber nach, einen kleinen Moment bitte."
+            "Ich lese mir deine Antwort gründlich durch, bitte hab kurz Geduld."
+        ]
+    }
+    try:
+        while True:
+            await asyncio.sleep(20)
+            response = random.choice(update_messages[language])
+            await channel.send(response)
+    except asyncio.CancelledError:
+        raise
+
+
+async def get_reply(message):
+    headers = {'Content-Type': 'application/json; charset=utf-8', }
+    user_language = requests.get(f"{API_URL}/user_language", headers=headers, data={"userid": message.author.id,
+                                                                                    "client": CLIENT_NAME})
+    task = asyncio.create_task(send_delay_message(user_language, message.channel))
+    response = await reply(message.content, message.author.id)
+    task.cancel()
+    try:
+        await task
+    except asyncio.CancelledError:
+        print("Response received.")
+    finally:
+        return response
+
+
 class MyClient(Client):
     def __init__(self, *, intents: Intents):
         super().__init__(command_prefix='!', intents=intents)
@@ -100,10 +143,6 @@ class MyClient(Client):
     async def on_disconnect(self):
         await session.close()
 
-    # on message in user DM:
-    # read user messages and surround with [INST] [/INST]
-    # read system messages and append </s>
-    # generate next response
     async def on_message(self, message):
         if (message.author == self.user or
                 not isinstance(message.channel, DMChannel)):
@@ -114,9 +153,12 @@ class MyClient(Client):
             if message.content == "!deleteall" and isinstance(message.channel, DMChannel):
                 response = await reset_conversation(message.author)
             else:
-                response = await reply(message.content, message.author.id)
-
-        await channel.send(response)
+                response = await get_reply(message)
+        # Send response in chunks od 2000 characters or fewer to avoid Discord limit
+        n = 2000
+        chunks = [response[i:i+n] for i in range(0, len(response), n)]
+        for chunk in chunks:
+            await channel.send(chunk)
 
 
 intents = Intents(messages=True)
@@ -140,8 +182,8 @@ async def talk_in_user_channel(user, language, translations):
 )
 async def studybot(interaction: Interaction, language: str):
     """Start a conversation with StudyBot!"""
-    HEADERS = {'Content-Type': 'application/json; charset=utf-8', }
-    translations_response = requests.get(f"{API_URL}/translations/{language}",  headers=HEADERS)
+    headers = {'Content-Type': 'application/json; charset=utf-8', }
+    translations_response = requests.get(f"{API_URL}/translations/{language}",  headers=headers)
     try:
         translations_response.raise_for_status()
     except requests.exceptions.HTTPError as e:

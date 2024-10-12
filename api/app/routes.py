@@ -55,6 +55,27 @@ def delete_message():
             return translations["translations"]["en"]["create_error"], 500
 
 
+@app.route("/user_language/", methods=["GET"])
+def get_user_language():
+    """
+    Request format:
+    {
+        "client": "discord",
+        "userid": Discord user ID
+    }
+    """
+    with open("app/config/translations.json", "r", encoding="utf-8") as file:
+        translations = json.load(file)
+    userid = request.args.get('userid')
+    client = request.args.get('client')
+    user = get_user(userid, client)
+    if user:
+        user_lang = get_language_by_id(user.language_id)
+        return user_lang.lang_code, 200
+    else:
+        return translations["translations"]["en"]["create_error"], 500
+
+
 @app.route("/translations/<language>", methods=["GET"])
 def get_translations(language):
     with open("app/config/translations.json", "r", encoding="utf-8") as file:
