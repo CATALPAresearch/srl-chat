@@ -1,5 +1,6 @@
 import re
 import json
+from json.decoder import JSONDecodeError
 
 from .db_utils.crud import get_language_by_id, get_all_strategies
 from .llm import (
@@ -18,7 +19,9 @@ ABANDON_AFTER_STEPS = 6
 def intro_step(user: User, prev_conversation: list[str]):
     system_prompt = get_intro_prompt(user, ABANDON_AFTER_STEPS)
 
-    json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, system_prompt, prev_conversation=prev_conversation,
+    json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, system_prompt,
+                                                      expected_fields=["study_subject", "status", "comment"],
+                                                      prev_conversation=prev_conversation,
                                                       user_prompt=None)
     if not json_valid:
         return "", "in_progress", json_output
@@ -43,7 +46,9 @@ def strategy_step(user: User, context: str, prev_conversation: list[str]):
     system_prompt = get_format_strategy_prompt(user, reasoning_response, len(prev_conversation), context,
                                                ABANDON_AFTER_STEPS)
 
-    json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, system_prompt, prev_conversation=prev_conversation,
+    json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, system_prompt,
+                                                      expected_fields=["strategies", "status", "comment"],
+                                                      prev_conversation=prev_conversation,
                                                       user_prompt=None)
     if not json_valid:
         return [], "in_progress", json_output
@@ -61,8 +66,11 @@ def frequency_step(user: User, prev_conversation: list[str]):
                                                  prev_conversation=prev_conversation)
 
     system_prompt = get_format_frequency_prompt(user, strategy_for_frequency, reasoning_response)
-    json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, system_prompt, prev_conversation=prev_conversation,
-                                                      user_prompt=None)
+    json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, system_prompt,
+                                                      expected_fields=["frequency", "status", "comment"],
+                                                      prev_conversation=prev_conversation,
+                                                      user_prompt=None
+                                                      )
     if not json_valid:
         return [], 0, "in_progress", json_output
     if json_output["status"] == "in_progress" and len(prev_conversation) > (ABANDON_AFTER_STEPS * 2):
@@ -85,7 +93,7 @@ def validate_strategies(user_strategies):
 
 
 def try_get_json_completion(
-        num_attempts, start_temp, temp_increase, system_prompt, prev_conversation=[], user_prompt=None
+        num_attempts, start_temp, temp_increase, system_prompt, expected_fields, prev_conversation=[], user_prompt=None
 ):
     attempts = num_attempts
     temperature = start_temp
@@ -96,9 +104,12 @@ def try_get_json_completion(
             regex = r"{[\s\S]+}"
             json_string = re.search(regex, llm_message).group()
             json_output = json.loads(json_string)
+            for field in expected_fields:
+                if not json_output[field]:
+                    continue
             json_valid = True
             return json_output, json_valid
-        except AttributeError:
+        except (AttributeError, JSONDecodeError):
             attempts -= 1
             temperature += temp_increase
             continue
