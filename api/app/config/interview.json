@@ -3,8 +3,8 @@
     "contexts": [
       "learning and remembering what was said during in-person or online events",
       "reviewing course material at home",
-      "writing papers",
-      "completing practice tasks",
+      "writing a scientific paper, such as a term paper/seminar paper, an internship report or a laboratory report",
+      "completing practice tasks to test understanding of the course material",
       "preparing for and taking oral or written exams",
       "when poorly motivated"
     ],
@@ -160,10 +160,10 @@
   "de": {
     "contexts": [
       "Aufnehmen und Erinnern von Inhalten von Live-Veranstaltungen in Präsenz oder Online",
-      "Beim Durcharbeiten von Kurstexten",
-      "Hausarbeiten schreiben",
-      "Übungsaufgaben bearbeiten",
-      "Bei der Vorbereitung und beim Ablegen mündlicher oder schriflicher Prüfungen",
+      "Durcharbeiten von Kurstexten",
+      "Verfassen einer wissenschaftlichen Arbeit, wie z.B. einer Hausarbeit/Seminararbeit, eines Praktikumsberichts oder Laborberichts",
+      "Bearbeiten von Übungsaufgaben zum Kursmaterial",
+      "Vorbereitung und Ablegen mündlicher oder schriftlicher Prüfungen",
       "Bei geringer Motivation"
     ],
     "categories": [
