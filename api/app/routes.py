@@ -58,11 +58,9 @@ def delete_message():
 @app.route("/user_language/", methods=["GET"])
 def get_user_language():
     """
-    Request format:
-    {
+    Args:
         "client": "discord",
         "userid": Discord user ID
-    }
     """
     with open("app/config/translations.json", "r", encoding="utf-8") as file:
         translations = json.load(file)

@@ -79,16 +79,16 @@ async def send_delay_message(language, channel):
             "I am reading your answer carefully, please give me a moment."
         ],
         "de": [
-            "Bitte einen Moment Geduld, ich analysiere deine Antwort."
-            "Einen Augenblick, ich beschäftige mich gerade mit deiner Antwort."
-            "Ich bearbeite deine Eingabe, einen Moment bitte."
-            "Ich denke kurz darüber nach, einen kleinen Moment bitte."
-            "Ich lese mir deine Antwort gründlich durch, bitte hab kurz Geduld."
+            "Bitte einen Moment Geduld, ich analysiere deine Antwort.",
+            "Einen Augenblick, ich beschäftige mich gerade mit deiner Antwort.",
+            "Ich bearbeite deine Eingabe, einen Moment bitte.",
+            "Ich denke kurz darüber nach, einen kleinen Moment bitte.",
+            "Ich lese mir deine Antwort gründlich durch, bitte hab kurz Geduld.",
         ]
     }
     try:
         while True:
-            await asyncio.sleep(20)
+            await asyncio.sleep(30)
             response = random.choice(update_messages[language])
             await channel.send(response)
     except asyncio.CancelledError:
@@ -97,8 +97,9 @@ async def send_delay_message(language, channel):
 
 async def get_reply(message):
     headers = {'Content-Type': 'application/json; charset=utf-8', }
-    user_language = requests.get(f"{API_URL}/user_language", headers=headers, data={"userid": message.author.id,
-                                                                                    "client": CLIENT_NAME})
+    lang_response = requests.get(f"{API_URL}/user_language?client={CLIENT_NAME}&userid={message.author.id}",
+                                 headers=headers)
+    user_language = lang_response.text
     task = asyncio.create_task(send_delay_message(user_language, message.channel))
     response = await reply(message.content, message.author.id)
     task.cancel()
@@ -171,7 +172,6 @@ async def talk_in_user_channel(user, language, translations):
 
     async with user_channel.typing():
         message = await start_conversation(language, user.id)
-        print(message)
 
     await user_channel.send(message)
 
