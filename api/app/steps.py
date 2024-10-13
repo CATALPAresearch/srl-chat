@@ -10,7 +10,8 @@ from .llm import (
     get_format_strategy_prompt,
     get_frequency_validate_prompt,
     get_format_frequency_prompt,
-    get_intro_prompt
+    get_intro_prompt,
+    get_prompt
 )
 from .models import User
 
@@ -19,9 +20,10 @@ logger = logging.getLogger('StudyBot')
 
 
 def intro_step(user: User, prev_conversation: list[str]):
-    system_prompt = get_intro_prompt(user, ABANDON_AFTER_STEPS)
+    intro_prompt = get_intro_prompt(user, ABANDON_AFTER_STEPS)
+    system_prompt = get_prompt("system")
 
-    json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, system_prompt,
+    json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, intro_prompt + system_prompt,
                                                       expected_fields=["study_subject", "status", "comment"],
                                                       prev_conversation=prev_conversation,
                                                       user_prompt=None)
@@ -48,10 +50,11 @@ def strategy_step(user: User, context: str, prev_conversation: list[str]):
     reasoning_response = get_llm_response_openai(strategy_analysis_prompt, user_prompt=None, temperature=0.0,
                                                  prev_conversation=prev_conversation)
     logger.debug("Retrieving prompt")
-    system_prompt = get_format_strategy_prompt(user, reasoning_response, len(prev_conversation), context,
-                                               ABANDON_AFTER_STEPS)
+    format_strategy_prompt = get_format_strategy_prompt(user, reasoning_response, len(prev_conversation), context,
+                                                        ABANDON_AFTER_STEPS)
+    system_prompt = get_prompt("system")
     logger.debug("Retrieving JSON")
-    json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, system_prompt,
+    json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, format_strategy_prompt + system_prompt,
                                                       expected_fields=["strategies", "status", "comment"],
                                                       prev_conversation=prev_conversation,
                                                       user_prompt=None)
@@ -69,13 +72,14 @@ def frequency_step(user: User, prev_conversation: list[str]):
 
     logger.debug("Retrieving prompt")
     frequency_validate_prompt = get_frequency_validate_prompt(user, strategy_for_frequency)
+    system_prompt = get_prompt("system")
     logger.debug("Retrieving reasoning response")
-    reasoning_response = get_llm_response_openai(frequency_validate_prompt, user_prompt=None, temperature=0.0,
+    reasoning_response = get_llm_response_openai(frequency_validate_prompt + system_prompt, user_prompt=None, temperature=0.0,
                                                  prev_conversation=prev_conversation)
     logger.debug("Retrieving prompt")
-    system_prompt = get_format_frequency_prompt(user, strategy_for_frequency, reasoning_response)
+    format_frequency_prompt = get_format_frequency_prompt(user, strategy_for_frequency, reasoning_response)
     logger.debug("Retrieving JSON")
-    json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, system_prompt,
+    json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, format_frequency_prompt + system_prompt,
                                                       expected_fields=["frequency", "status", "comment"],
                                                       prev_conversation=prev_conversation,
                                                       user_prompt=None
