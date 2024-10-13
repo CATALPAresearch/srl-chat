@@ -34,6 +34,7 @@ def query_embeddings(text_to_embed):
 
 
 def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, prev_conversation=[]):
+    logger.info("Generation prompt: %s", system_prompt)
     client = OpenAI(
         base_url=BASE_URL,
         api_key=API_KEY
@@ -45,6 +46,7 @@ def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, pr
             messages.append(message)
     if user_prompt:
         messages.append({"role": "user", "content": user_prompt})
+    logger.info("User Message: %s", messages[-1])
 
     response = client.chat.completions.create(
         model=MODEL,
@@ -70,7 +72,7 @@ def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, pr
     response_content = response.choices[0].message.content
     if not response_content:
         raise AssertionError("Received empty response from LLM.")
-    logger.info("Generation prompt: %s\nUser Message: %s\nResponse: %s", system_prompt, messages[-1], response_content)
+    logger.info("Response: %s", response_content)
     return response_content
 
 

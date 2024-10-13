@@ -34,6 +34,7 @@ def intro_step(user: User, prev_conversation: list[str]):
 
 
 def strategy_step(user: User, context: str, prev_conversation: list[str]):
+    logger.debug("Retrieving contexts")
     with open("app/config/interview.json", "r", encoding="utf-8") as file:
         interview_context = json.load(file)
     user_lang = get_language_by_id(user.language_id)
@@ -41,13 +42,15 @@ def strategy_step(user: User, context: str, prev_conversation: list[str]):
     for category in interview_context[user_lang.lang_code]["categories"]:
         strat_info.append(category["strategies"])
 
+    logger.debug("Retrieving prompt")
     strategy_analysis_prompt = get_strategy_analysis_prompt(user)
+    logger.debug("Retrieving reasoning response")
     reasoning_response = get_llm_response_openai(strategy_analysis_prompt, user_prompt=None, temperature=0.0,
                                                  prev_conversation=prev_conversation)
-
+    logger.debug("Retrieving prompt")
     system_prompt = get_format_strategy_prompt(user, reasoning_response, len(prev_conversation), context,
                                                ABANDON_AFTER_STEPS)
-
+    logger.debug("Retrieving JSON")
     json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, system_prompt,
                                                       expected_fields=["strategies", "status", "comment"],
                                                       prev_conversation=prev_conversation,
@@ -61,13 +64,17 @@ def strategy_step(user: User, context: str, prev_conversation: list[str]):
 
 
 def frequency_step(user: User, prev_conversation: list[str]):
+    logger.debug("Retrieving strategy")
     strategy_for_frequency = user.conversation_state.strategy_for_frequency
 
+    logger.debug("Retrieving prompt")
     frequency_validate_prompt = get_frequency_validate_prompt(user, strategy_for_frequency)
+    logger.debug("Retrieving reasoning response")
     reasoning_response = get_llm_response_openai(frequency_validate_prompt, user_prompt=None, temperature=0.0,
                                                  prev_conversation=prev_conversation)
-
+    logger.debug("Retrieving prompt")
     system_prompt = get_format_frequency_prompt(user, strategy_for_frequency, reasoning_response)
+    logger.debug("Retrieving JSON")
     json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, system_prompt,
                                                       expected_fields=["frequency", "status", "comment"],
                                                       prev_conversation=prev_conversation,
