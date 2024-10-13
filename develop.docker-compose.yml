@@ -29,6 +29,7 @@ services:
   bot-dev:
     build: ./discord
     environment:
+      - PYTHONUNBUFFERED=1
       - API_URL=http://api:5000
       - DISCORD_SERVER_ID=${DISCORD_SERVER_ID}
       - BOT_TOKEN=${BOT_TOKEN}

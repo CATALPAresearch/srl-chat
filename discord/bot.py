@@ -5,6 +5,7 @@ import requests
 import os
 import asyncio
 import random
+import time
 from aiohttp import ClientSession
 from dotenv import load_dotenv
 
@@ -86,10 +87,14 @@ async def send_delay_message(language, channel):
             "Ich lese mir deine Antwort gründlich durch, bitte hab kurz Geduld.",
         ]
     }
+    message_after_seconds = 30
+    timeout = 300
+    start = time.time()
     try:
-        while True:
-            await asyncio.sleep(30)
+        while time.time() < start + timeout:
+            await asyncio.sleep(message_after_seconds)
             response = random.choice(update_messages[language])
+            message_after_seconds = 60
             await channel.send(response)
     except asyncio.CancelledError:
         raise
