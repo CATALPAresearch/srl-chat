@@ -1,5 +1,6 @@
 import re
 import json
+import logging
 from json.decoder import JSONDecodeError
 
 from .db_utils.crud import get_language_by_id, get_all_strategies
@@ -14,6 +15,7 @@ from .llm import (
 from .models import User
 
 ABANDON_AFTER_STEPS = 6
+logger = logging.getLogger('StudyBot')
 
 
 def intro_step(user: User, prev_conversation: list[str]):
@@ -108,11 +110,14 @@ def try_get_json_completion(
                 if not json_output[field]:
                     continue
             json_valid = True
+            logger.info("JSON is valid")
             return json_output, json_valid
         except (AttributeError, JSONDecodeError):
+            logger.info("Invalid JSON, trying again")
             attempts -= 1
             temperature += temp_increase
             continue
 
     json_valid = False
+    logger.info("JSON invalid")
     return llm_message, json_valid
