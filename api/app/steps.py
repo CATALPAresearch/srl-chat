@@ -3,7 +3,6 @@ import json
 import logging
 from json.decoder import JSONDecodeError
 
-from .core import retrieve_full_conversation
 from .db_utils.crud import get_language_by_id, get_all_strategies
 from .llm import (
     get_llm_response_openai,
