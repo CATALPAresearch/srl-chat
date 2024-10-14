@@ -144,8 +144,12 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                             update_strategy_with_frequency(user, current_context.id, mentioned_strategy, 0)
                     llm_message, current_context = ask_about_frequency(user, current_context)
             case "frequency":
+                conversation_for_strategy_in_context = retrieve_full_conversation(user,
+                                                                                  user.conversation_state.current_context,
+                                                                                  user.conversation_state.strategy_for_frequency)
                 strategy_rated, rated_frequency, status, llm_message = frequency_step(user,
-                                                                                      conversation_for_current_context)
+                                                                                      conversation_for_current_context,
+                                                                                      conversation_for_strategy_in_context)
                 if status in ("completed", "abandon"):
                     # Store user's answer(s)
                     update_strategy_with_frequency(user, current_context_id, strategy_rated,

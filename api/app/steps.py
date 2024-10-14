@@ -67,7 +67,7 @@ def strategy_step(user: User, context: str, prev_conversation: list[str]):
     return json_output["strategies"], json_output["status"], json_output["comment"]
 
 
-def frequency_step(user: User, prev_conversation: list[str]):
+def frequency_step(user: User, prev_conversation: list[str], conversation_for_strategy_in_context: list[str]):
     logger.debug("Retrieving strategy")
     strategy_for_frequency = user.conversation_state.strategy_for_frequency
 
