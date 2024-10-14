@@ -244,7 +244,7 @@ def move_to_next_context(user, current_context):
         logger.info("Moving on to context: %s", next_context.context)
         prompt = get_context_prompt(next_context.context, user)
         update_current_conversation_step(user, "strategy")
-        llm_message = get_llm_response_openai(system_prompt + " " + prompt,
+        llm_message = get_llm_response_openai(prompt + system_prompt,
                                               prev_conversation=conversation_so_far)
     else:
         update_current_conversation_step(user, "complete")
@@ -302,7 +302,7 @@ def generate_summary(user, strategy_scores):
     full_conversation = retrieve_full_conversation(user)
     system_prompt = get_prompt(user, "system")
     prompt = get_complete_prompt(user, most_contexts_strat, const_strategy, avg_freq, total_strat, const_strategies)
-    llm_message = get_llm_response_openai(system_prompt + " " + prompt, prev_conversation=full_conversation)
+    llm_message = get_llm_response_openai(prompt + " " + system_prompt, prev_conversation=full_conversation)
     return llm_message
 
 
