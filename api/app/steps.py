@@ -74,7 +74,6 @@ def frequency_step(user: User, prev_conversation: list[str], conversation_for_st
     frequency_validate_prompt = get_frequency_validate_prompt(user, strategy_for_frequency)
     system_prompt = get_prompt(user, "system")
     logger.debug("Retrieving reasoning response")
-    conversation_for_strategy_in_context = retrieve_full_conversation(user, user.conversation_state.current_context, user.conversation_state.strategy_for_frequency)
     reasoning_response = get_llm_response_openai(frequency_validate_prompt + system_prompt, user_prompt=None, temperature=0.0,
                                                  prev_conversation=conversation_for_strategy_in_context)
     logger.debug("Retrieving prompt")
