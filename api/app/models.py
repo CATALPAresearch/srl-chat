@@ -106,8 +106,13 @@ class InterviewAnswer(db.Model):
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
     user: so.Mapped["User"] = so.relationship(back_populates="interview_answers", cascade="all, delete")
     context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), nullable=True)
+    strategy: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Strategy.id), nullable=True)
     turn: so.Mapped[int] = so.mapped_column(sa.Integer)
     message: so.Mapped[str] = so.mapped_column(sa.String())
+    conversation_step: so.Mapped[str] = so.mapped_column(sa.String(32),
+                                                         sa.CheckConstraint(
+                                                             "conversation_step IN ('intro', 'strategy', 'probe', 'frequency', 'complete')", name="step_check"),
+                                                         nullable=False)
     strategies: so.Mapped[List["UserStrategy"]] = so.relationship(
         back_populates="interview_answer",
         cascade="all, delete")
@@ -143,7 +148,12 @@ class LlmResponse(db.Model):
     user: so.Mapped["User"] = so.relationship(back_populates="llm_responses", cascade="all, delete")
     message: so.Mapped[str] = so.mapped_column(sa.String())
     context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), nullable=True)
+    strategy: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Strategy.id), nullable=True)
     turn: so.Mapped[int] = so.mapped_column(sa.Integer)
+    conversation_step: so.Mapped[str] = so.mapped_column(sa.String(32),
+                                                         sa.CheckConstraint(
+                                                             "conversation_step IN ('intro', 'strategy', 'probe', 'frequency', 'complete')", name="step_check"),
+                                                         nullable=False)
     message_time: so.Mapped[datetime.datetime] = so.mapped_column(
         nullable=False, server_default=sa.func.CURRENT_TIMESTAMP()
     )

@@ -76,7 +76,7 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
 
         llm_message = get_llm_response_openai(system_prompt + " " + intro_prompt, None, 0.1)
         turn = update_current_turn(user)
-        store_llm_answer(user, llm_message, None, turn)
+        store_llm_answer(user, llm_message, None, None, turn, step="intro")
         return llm_message, 200
     except Exception as e:
         raise Exception(e)
@@ -103,15 +103,16 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
         if current_context_id:
             current_context = get_context_by_id(current_context_id)
         turn = update_current_turn(user)
-        user_answer_db = store_answer(user, current_context_id, user_message, turn)
+        conversation_step = user.conversation_state.current_conversation_step
+        current_strategy = user.conversation_state.strategy_for_frequency
+        user_answer_db = store_answer(user, current_context_id, current_strategy, user_message, turn, conversation_step)
 
         conversation_for_current_context = retrieve_full_conversation(user, current_context_id)
         logger.info(user_message)
         if user.conversation_state.interview_completed:
             return sign_off_interview(user)
-        logger.info("Replying to user: %s - %s. Step: %s", user.id, user.client,
-                    user.conversation_state.current_conversation_step)
-        match user.conversation_state.current_conversation_step:
+        logger.info("Replying to user: %s - %s. Step: %s", user.id, user.client, conversation_step)
+        match conversation_step:
             case "intro":
                 study_subject, status, llm_message = intro_step(user, conversation_for_current_context)
                 if status in ("completed", "complete", "abandon"):
@@ -155,7 +156,10 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                 pass
 
         turn = update_current_turn(user)
-        store_llm_answer(user, llm_message, current_context, turn)
+        store_llm_answer(user, llm_message, current_context,
+                         user.conversation_state.strategy_for_frequency, turn,
+                         user.conversation_state.current_conversation_step
+                         )
         return llm_message, 200
     except Exception as e:
         raise Exception(e)
@@ -176,14 +180,18 @@ def set_current_context_complete(user, current_context):
     return next_context
 
 
-def retrieve_full_conversation(user, context_id=None):
+def retrieve_full_conversation(user, context_id=None, step=None, strategy_id=None):
     conversation = {}
     for response in user.llm_responses:
         if context_id is None or response.context == context_id:
-            conversation[response.turn] = {"role": "assistant", "content": response.message}
+            if step is None or response.conversation_step == step:
+                if strategy_id is None or response.strategy == strategy_id:
+                    conversation[response.turn] = {"role": "assistant", "content": response.message}
     for response in user.interview_answers:
         if context_id is None or response.context == context_id:
-            conversation[response.turn] = {"role": "user", "content": response.message}
+            if step is None or response.conversation_step == step:
+                if strategy_id is None or response.strategy == strategy_id:
+                    conversation[response.turn] = {"role": "user", "content": response.message}
     ordered_conversation = OrderedDict(sorted(conversation.items()))
 
     messages = []
@@ -213,7 +221,7 @@ def ask_about_frequency(user, current_context):
             frequency_prompt = get_frequency_prompt(user, context.context, strategy.name)
             update_current_conversation_step(user, "frequency")
             update_most_recent_strategy_for_frequency(user, strategy)
-            conversation_so_far = retrieve_full_conversation(user)
+            conversation_so_far = retrieve_full_conversation(user, context.id, "strategy")
             llm_message = get_llm_response_openai(frequency_prompt + " " + system_prompt,
                                                   prev_conversation=conversation_so_far)
             new_context = current_context
