@@ -102,6 +102,8 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
         current_context_id = user.conversation_state.current_context
         if current_context_id:
             current_context = get_context_by_id(current_context_id)
+        else:
+            current_context = None
         turn = update_current_turn(user)
         conversation_step = user.conversation_state.current_conversation_step
         current_strategy = user.conversation_state.strategy_for_frequency
