@@ -12,7 +12,7 @@ The Compose file starts the API server in development mode so that it automatica
 
 ### Running the app locally
 
-Prerequisites: A system with Docker installed.
+Prerequisites: A system with Docker and Docker Compose installed.
 
 - Clone the git repository
 - Copy the env.example file, renaming the new file .env
@@ -49,23 +49,11 @@ Content-Type: application/json
     "userid": "123" // client and user values need to match the values sent in startConversation request
 }
 ```
-## DB backup
-```shell
-sudo docker container exec -it studybotpy-postgresql-1 bash
-mkdir /backup
-pg_dump -d srl_chat -U chat -f /backup/pg_backup_<date>.sql
-exit
-mkdir /backup
-sudo docker container cp studybotpy-postgresql-1:/backup/pg_backup_<date>.sql /backup/pg_backup_<date>.sql
-exit
-scp user@VM:/backup/pg_backup_<date>.sql .
-```
 
-## App Structure
+#### Local App Testing
 
-![system_arch_v1.png](arch/system_arch_v1.png)
-
-## Dialogue Flow
-
-![interview_v1.png](arch/interview_v1.png)
-|
+1. To start the conversation, send an HTTP request to the `/startConversation` endpoint, providing language, client name and user ID in the request body as shown. An API testing tool like [Postman](https://www.postman.com/downloads/) can be used for this purpose.
+2. The response from the endpoint represents the response from the Conversational Agent.
+3. To reply, send an HTTP request to the `/reply` endpoint. Set the `message` field in the request body to the user response and ensure to keep the values of `client` and `userid` equal to those that the conversation was started with.
+4. The response from the endpoint represents the response from the Conversational Agent. To exchange further messages, continue using the `/reply` endpoint providing the same `client` and `userid`.
+5. To reset the conversation, archive all data and restart the conversation from the `/startConversation` endpoint, send `!deleteall` as the content of the user message.
