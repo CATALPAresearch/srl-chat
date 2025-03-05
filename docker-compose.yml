@@ -15,31 +15,33 @@ services:
       - PG_PASSWORD=${PG_PASSWORD}
       - PG_DB=${PG_DB}
     expose:
-      - "5000"
+      - 5000
+    ports:
+      - 5000:5000
     volumes:
       - ./api/logs:/api/logs
     command: >
-      sh -c "python -m setup.db_setup &&
+      sh -c "python -m db_setup &&
              gunicorn app:app -b 0.0.0.0:5000 --timeout 300"
     networks:
       - bot-net
     depends_on:
       - postgresql
-  bot:
-    build: ./discord
-    environment:
-      - PYTHONUNBUFFERED=1
-      - API_URL=http://api:5000
-      - DISCORD_SERVER_ID=${DISCORD_SERVER_ID}
-      - BOT_TOKEN=${BOT_TOKEN}
-    networks:
-      - bot-net
+  #bot:
+  #  build: ./discord
+  #  environment:
+  #    - PYTHONUNBUFFERED=1
+  #    - API_URL=http://api:5000
+  #    - DISCORD_SERVER_ID=${DISCORD_SERVER_ID}
+  #    - BOT_TOKEN=${BOT_TOKEN}
+  #  networks:
+  #    - bot-net
   postgresql:
     image: pgvector/pgvector:pg16
     environment:
-      POSTGRES_USER: chat
+      POSTGRES_USER: ${PG_USER}
       POSTGRES_PASSWORD: ${PG_PASSWORD}
-      POSTGRES_DB: srl_chat
+      POSTGRES_DB: ${PG_DB}
     ports:
       - 5432:5432
     healthcheck:

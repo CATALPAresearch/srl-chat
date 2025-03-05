@@ -33,6 +33,8 @@ dictConfig(
 )
 
 
+
+
 app = Flask('StudyBot')
 app.config.from_object(Config)
 convention = {
@@ -43,8 +45,11 @@ convention = {
     "pk": "pk_%(table_name)s"
 }
 
+app.logger.warn(Config)
 metadata = MetaData(naming_convention=convention)
 db = SQLAlchemy(app, metadata=metadata)
 migrate = Migrate(app, db, render_as_batch=True)
 
 from app import routes, models
+
+
