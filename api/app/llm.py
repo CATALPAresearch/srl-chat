@@ -30,6 +30,7 @@ EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM
 #https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2
 logger = logging.getLogger('StudyBot')
 evil = False
+client = None
 
 def query_embeddings(text_to_embed):
     api_url = f"{EMBEDDING_URL}{EMBEDDING_MODEL}"
@@ -51,12 +52,10 @@ def get_model_names(base_url):
             names.append(m['model'])
         return names
 
-
-def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, top_k=25, top_p=0.3, repeat_penalty=1.1, prev_conversation=[]):
-    logger.info("Generation prompt: %s", system_prompt)
-    
+def get_client():
+    the_client = None
     if evil:
-        client = OpenAI(
+        the_client = OpenAI(
             base_url=BASE_URL,
             #api_key=API_KEY
         )
@@ -71,36 +70,46 @@ def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, to
             repeat_penalty=repeat_penalty,
         )
         """
-        client = Client(
+        the_client = Client(
             host='http://localhost:11434',
             headers={'x-some-header': 'some-value'} #FixMe
             )
+    return the_client
 
+
+def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, top_k=25, top_p=0.3, repeat_penalty=1.1, prev_conversation=[], expected_fields_model=None):
+    
+    logger.info("System Prompt: %s", system_prompt)
+    logger.info("User Prompt: %s", user_prompt)
+    
+    client = get_client()
+    logger.info(1)
     messages = [{"role": "system", "content": system_prompt}]
     if prev_conversation:
         for message in prev_conversation:
             messages.append(message)
     if user_prompt:
         messages.append({"role": "user", "content": user_prompt})
-    logger.info("User Message: %s", messages[-1])
-    logger.info('----xx-----')
-    response = get_response(client, messages, temperature)
-
-    logger.info("First response: %s", response['message']['content'])
+    logger.info(2)
+    response = get_response(client, messages, temperature, expected_fields_model)
+    logger.info(3)
+    #logger.info("First response: %s", response['message']['content'])
     attempts = 5
     timeout = 3
     #return response['message']['content']
     while attempts > 0:
         if response.message.content == "":
-            logger.info("Retrying LLM call for prompt: %s\nUser Message: %s", system_prompt, messages[-1])
-            response = get_response(client, messages, temperature+0.1)
-            logger.info(str(attempts)+". - response: %s", response['message']['content'])
+            #logger.info("Retrying LLM call for prompt: %s\nUser Message: %s", system_prompt, messages[-1])
+            response = get_response(client, messages, temperature+0.1, expected_fields_model)
+            #logger.info(str(attempts)+". - response: %s", response['message']['content'])
             time.sleep(timeout)
             attempts -= 1
             timeout *= 2
         else:
             break
     ##response_content = response.choices[0].message.content
+    logger.info('@llm: response::: ')
+    logger.info(response)
     response_content = response.message.content
     if not response_content:
         logger.info("Empty response")
@@ -109,32 +118,38 @@ def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, to
     return response_content
 
 
-
-def get_response(client, messages, temperature):
+  
+def get_response(client, messages, temperature, expected_fields_model:None):
     response = ''
     if evil: 
         logger.info("Send request to openAI")
-        response = client.chat.completion.create(
+        response = client.chat(
             model=MODEL,
             messages=messages,
             temperature=temperature
         )
     else:
-        logger.info('............')
         logger.info("Send request to Ollama")
-        logger.info(messages[-1]['role'])
-        logger.info('............')
-        response = client.chat(
-            #model='llama3.1:latest', 
-            model=MODEL, 
-            #messages=messages, 
-            messages=[
-            {
-                'role': messages[-1]['role'],
-                'content': messages[-1]['content'], #"You are an interviewer conducting an interview that will be evaluated scientifically. Your tone should be friendly but neutral. Refer back to the user's answers, but do not comment positively or negatively on them. You are guiding a student through an interview to assess their study skills. Start the conversation with a friendly greeting. Ask the student which subject the degree they are studying is about.",
-            }],
-            stream=False
-            )
+        #logger.info('role', messages[-1]['role'])
+        #logger.info('prompt', messages[-1]['content'])
+        #logger.info('............')
+        try:
+            response = client.chat(
+                model=MODEL, 
+                #messages=" ".join(messages),
+                messages=messages, 
+
+                #messages=[
+                #{
+                #    'role': messages[-1]['role'],#'system',#
+                #    'content': messages[-1]['content'], #"You are an interviewer conducting an interview that will be evaluated scientifically. Your tone should be friendly but neutral. Refer back to the user's answers, but do not comment positively or negatively on them. You are guiding a student through an interview to assess their study skills. Start the conversation with a friendly greeting. Ask the student which subject the degree they are studying is about.",
+                #}],
+                format=expected_fields_model.model_json_schema() if expected_fields_model != None else '', 
+                #stream=False,
+                options={'temperature': 0},
+                )
+        except Exception as e:
+                logger.error(f"call ollama client.chat : {e}")
     return response
 
 
