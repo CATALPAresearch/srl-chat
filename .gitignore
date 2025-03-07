@@ -1,2 +1,5 @@
 .env
 api/migrations/*
+api/app/__pycache__/*
+__pycache__
+__pycache__/*
