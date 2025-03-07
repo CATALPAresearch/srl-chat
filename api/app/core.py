@@ -91,6 +91,8 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
         "user_message": message
     }
     """
+    logger.info('Started reply_core')
+    llm_message = ''
     try:
         user = get_user(userid, client)
         if user is None:
@@ -106,6 +108,8 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
             current_context = None
         turn = update_current_turn(user)
         conversation_step = user.conversation_state.current_conversation_step
+        logger.info('......................')
+        logger.info('conversation step: '+ str(conversation_step))
         current_strategy = user.conversation_state.strategy_for_frequency
         user_answer_db = store_answer(user, current_context_id, current_strategy, user_message, turn, conversation_step)
 
@@ -116,8 +120,12 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
         logger.info("Replying to user: %s - %s. Step: %s", user.id, user.client, conversation_step)
         match conversation_step:
             case "intro":
-                study_subject, status, llm_message = intro_step(user, conversation_for_current_context)
-                if status in ("completed", "complete", "abandon"):
+                logger.info('@intro step, Entered intro step')
+                study_subject, status, comment = intro_step(user, conversation_for_current_context)
+                logger.info('@intro step, got subject')
+                logger.info(study_subject)
+                logger.info('@intro status: %s',status)
+                if status in ("completed", "complete", "abandon", "in_progress"):
                     store_study_subject(user, study_subject)
                     contexts = set(get_contexts(user.language_id))
                     if get_completed_contexts(user) is not None:
@@ -132,8 +140,11 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                     system_prompt = get_prompt(user, "system")
                     context_prompt = get_context_prompt(current_context.context, user)
                     update_current_conversation_step(user, "strategy")
-
-                    llm_message = get_llm_response_openai(context_prompt + " " + system_prompt, None, 0.1)
+                    
+                    llm_message = get_llm_response_openai(context_prompt + "  " + system_prompt, None, 0.1)
+                    logger.info('@intro step, second llm call ')
+                    logger.info(llm_message)
+                
             case "strategy":
                 strategies_mentioned, status, llm_message = strategy_step(user, str(current_context.context),
                                                                           conversation_for_current_context)
