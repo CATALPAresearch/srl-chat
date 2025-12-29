@@ -78,9 +78,18 @@ def get_client():
 
 
 def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, top_k=25, top_p=0.3, repeat_penalty=1.1, prev_conversation=[], expected_fields_model=None):
-    
+
+    # --- HARD DEV GUARD: skip LLM entirely ---
+    if os.getenv("DISABLE_LLM", "false").lower() == "true":
+        logger.warning("DISABLE_LLM=true → skipping LLM call")
+        return (
+            "Hallo! Lass uns mit dem Interview beginnen. "
+            "In welchem Fach möchtest du einen Abschluss machen?"
+        )
+
     logger.info("System Prompt: %s", system_prompt)
     logger.info("User Prompt: %s", user_prompt)
+
     
     client = get_client()
     logger.info(1)
@@ -98,7 +107,7 @@ def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, to
     timeout = 3 # FixMe: Should be set as a variable
     #return response['message']['content']
     while attempts > 0:
-        if response.message.content == "":
+        if not hasattr(response, "message") or response.message.content == "":
             #logger.info("Retrying LLM call for prompt: %s\nUser Message: %s", system_prompt, messages[-1])
             response = get_response(client, messages, temperature+0.1, expected_fields_model)
             #logger.info(str(attempts)+". - response: %s", response['message']['content'])
@@ -110,12 +119,14 @@ def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, to
     ##response_content = response.choices[0].message.content
     logger.info('@llm: response::: ')
     logger.info(response)
-    response_content = response.message.content
+    response_content = response.message.content if hasattr(response, "message") else None
+
     if not response_content:
         logger.info("Empty response")
         raise AssertionError("Received empty response from LLM.")
     logger.info("Response: %s", response_content)
     return response_content
+
 
 
   
@@ -147,6 +158,7 @@ def get_response(client, messages, temperature, expected_fields_model:None):
                 )
         except Exception as e:
                 logger.error(f"call ollama client.chat : {e}")
+                return None
     return response
 
 

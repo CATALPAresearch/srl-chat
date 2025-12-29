@@ -49,3 +49,7 @@ db = SQLAlchemy(app, metadata=metadata)
 migrate = Migrate(app, db, render_as_batch=True)
 
 from app import routes, models
+from lti import lti_bp
+app.register_blueprint(lti_bp)
+
+
