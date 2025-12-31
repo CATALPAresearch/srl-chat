@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "amd",
+        "lib": ["dom", "es6"],
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": false,
+        "noFallthroughCasesInSwitch": true,
+        "strictFunctionTypes": true,
+        "removeComments": true,
+        "moduleResolution": "node",
+        "skipLibCheck": true,
+        "declaration": true,             
+        "declarationMap": true,
+        "declarationDir": "./@types",
+        "sourceMap": true,
+        "noImplicitAny": false,
+        "mapRoot": "./@maps",
+        "outDir": "./dist",
+        "rootDir": ".",
+        "paths": {
+            "@/*": ["./src/*"]
+        }
+    },
+    "files": [
+        "./shims-vue.d.ts"
+    ],
+    "include": [],//["./src/**/*", "./src/**/*.ts", "./src/**/*.tsx"],
+    "exclude": ["node_modules", "./node_modules"]
+}
