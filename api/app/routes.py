@@ -1,11 +1,13 @@
-from app import app, db
-
 from flask import request, jsonify
+from flask_cors import CORS, cross_origin
 import json
 
+from app import app, db
 from .core import start_conversation_core, reply_core, reset_conversation
 from .db_utils.crud import get_user, get_language_by_id
 
+cors = CORS(app)
+# FixMe: cors = CORS(app, ressources={r"/api/*": {"origin": "http://localhost:80"}})
 
 @app.errorhandler(500)
 def internal_error(error):
@@ -31,7 +33,8 @@ def index():
     return "OK"
 
 
-@app.route("/resetConversation", methods=["POST"])
+@app.route("/resetConversation", methods=["POST", "OPTIONS"])
+@cross_origin()
 def delete_message():
     try:
         content = request.json
@@ -56,6 +59,7 @@ def delete_message():
 
 
 @app.route("/user_language/", methods=["GET"])
+@cross_origin()
 def get_user_language():
     """
     Args:
@@ -75,6 +79,7 @@ def get_user_language():
 
 
 @app.route("/translations/<language>", methods=["GET"])
+@cross_origin()
 def get_translations(language):
     with open("app/config/translations.json", "r", encoding="utf-8") as file:
         translations = json.load(file)
@@ -85,6 +90,7 @@ def get_translations(language):
 
 
 @app.route("/startConversation", methods=['POST'])
+@cross_origin()
 def start_conversation_flask():
     """
     Post request format:
@@ -110,6 +116,7 @@ def start_conversation_flask():
 
 
 @app.route("/reply", methods=['POST'])
+@cross_origin()
 def reply():
     """
     Post request format:

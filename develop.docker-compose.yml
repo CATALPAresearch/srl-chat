@@ -14,10 +14,12 @@ services:
       - PG_USER=${PG_USER}
       - PG_PASSWORD=${PG_PASSWORD}
       - PG_DB=${PG_DB}
+      - DISABLE_EMBEDDINGS=true
+      - DISABLE_LLM=true
     ports:
       - 5000:5000
     command: >
-      sh -c "python -m setup.db_setup &&
+      sh -c "python db_setup.py &&
              gunicorn app:app -b 0.0.0.0:5000 --timeout 300 --reload"
     networks:
       - bot-net
