@@ -1,0 +1,127 @@
+[
+  {
+    "strategy_id": "organization",
+    "name": "Organization",
+    "zimmerman_phase": "performance",
+    "category": "Cognitive strategies",
+
+    "definitions": [
+      "Structuring learning material to improve understanding.",
+      "Organizing information into meaningful units."
+    ],
+
+    "synonyms": [
+      "structuring",
+      "organizing content",
+      "arranging material"
+    ],
+
+    "methods": [
+      "creating outlines",
+      "grouping related concepts",
+      "using headings and subheadings"
+    ],
+
+    "tools": [
+      "mind maps",
+      "concept maps",
+      "tables"
+    ],
+
+    "positive_indicators": [
+      "I organize my notes",
+      "I structure the material",
+      "I create mind maps"
+    ],
+
+    "negative_indicators": [
+      "I just read the text again"
+    ],
+
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+
+  {
+    "strategy_id": "summarization",
+    "name": "Summarization",
+    "zimmerman_phase": "performance",
+    "category": "Cognitive strategies",
+
+    "definitions": [
+      "Condensing learning material into shorter representations.",
+      "Rewriting content in one’s own words."
+    ],
+
+    "synonyms": [
+      "summarising",
+      "condensing information",
+      "writing summaries"
+    ],
+
+    "methods": [
+      "writing short summaries",
+      "bullet-point notes"
+    ],
+
+    "tools": [
+      "notes",
+      "flash cards"
+    ],
+
+    "positive_indicators": [
+      "I summarize the content",
+      "I write short summaries"
+    ],
+
+    "negative_indicators": [
+      "I just copy text without thinking"
+    ],
+
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+
+  {
+    "strategy_id": "time_management",
+    "name": "Time Management",
+    "zimmerman_phase": "forethought",
+    "category": "Metacognitive strategies",
+
+    "definitions": [
+      "Planning and allocating time effectively for learning tasks."
+    ],
+
+    "synonyms": [
+      "planning time",
+      "scheduling",
+      "time planning"
+    ],
+
+    "methods": [
+      "setting learning schedules",
+      "using timers",
+      "taking planned breaks"
+    ],
+
+    "tools": [
+      "calendars",
+      "pomodoro timer"
+    ],
+
+    "positive_indicators": [
+      "I plan my study time",
+      "I study for 20 minutes and then take a break"
+    ],
+
+    "negative_indicators": [
+      "I study whenever I feel like it"
+    ],
+
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  }
+]
