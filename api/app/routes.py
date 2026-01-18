@@ -128,17 +128,30 @@ def reply():
     """
     try:
         content = request.json
-        client = content["client"]
+        client_id = content["client"]
         userid = content["userid"]
         user_message = content["message"]
 
-        return reply_core(client, userid, user_message)
+        with open("app/config/translations.json", "r", encoding="utf-8") as file:
+            translations = json.load(file)
+        user = get_user(userid, client_id)
+        user_lang = get_language_by_id(user.language_id) if user else None
+        busy_msg = translations["translations"][user_lang.lang_code]["busy_message"] \
+            if user_lang else "The agent is working on your answer, please wait..."
+
+        response_payload = {"status": "busy", "message": busy_msg}
+
+        llm_response = reply_core(client_id, userid, user_message)
+
+        response_payload.update({"status": "done", "llm_response": llm_response})
+        return response_payload
+
     except Exception as e:
         app.logger.error("Error on reply: %s - Rolling back DB changes", e)
         db.session.rollback()
         with open("app/config/translations.json", "r", encoding="utf-8") as file:
             translations = json.load(file)
-        user = get_user(userid, client)
+        user = get_user(userid, client_id)
         if user:
             user_lang = get_language_by_id(user.language_id)
             return translations["translations"][user_lang.lang_code]["reply_error"], 200

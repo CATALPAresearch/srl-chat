@@ -56,6 +56,7 @@ def get_model_names(base_url):
 
 _client_instance = None
 
+
 def get_client():
     global _client_instance
     if _client_instance is None:
@@ -67,7 +68,6 @@ def get_client():
                 headers={'x-some-header': 'some-value'}
             )
     return _client_instance
-
 
 def get_llm_response_openai(
         system_prompt,
@@ -103,6 +103,9 @@ def get_llm_response_openai(
     if user_prompt:
         messages.append({"role": "user", "content": user_prompt})
 
+    # --- NEW: initial feedback ---
+    send_user_feedback("Agent is working on your request...")
+
     attempts = 3
     timeout = 2  # seconds, for retry backoff
     response_content = ""
@@ -111,20 +114,20 @@ def get_llm_response_openai(
         try:
             response = get_response(client, messages, temperature, expected_fields_model, stream=stream)
 
-            if stream and hasattr(response, "__iter__"):  # Streaming generator
+            # Streaming mode: yield partial tokens
+            if stream and hasattr(response, "__iter__"):
                 for partial in response:
-                    # partial.message.content is a token or partial string
-                    token = getattr(partial, "message", None)
-                    if token:
-                        token = token.content if hasattr(token, "content") else str(token)
-                        logger.info("Token: %s", token)
-                        response_content += token
-                        yield token  # send each token to caller immediately
-                return  # streaming completed
+                    token_obj = getattr(partial, "message", None)
+                    if token_obj:
+                        token_text = getattr(token_obj, "content", str(token_obj))
+                        response_content += token_text
+                        send_user_feedback(token_text)  # Live feedback
+                        yield token_text  # send token immediately
+                return  # streaming done
 
-            # Non-streaming response
-            response_content = getattr(response, "message", None)
-            response_content = response_content.content if response_content else None
+            # Non-streaming mode
+            response_message = getattr(response, "message", None)
+            response_content = getattr(response_message, "content", None) if response_message else None
 
             if response_content:
                 return response_content
@@ -136,7 +139,6 @@ def get_llm_response_openai(
             timeout *= 2  # exponential backoff
 
     raise AssertionError("Failed to get response from LLM after retries.")
-
 
 def get_response(client, messages, temperature, expected_fields_model=None, stream=True):
     """
@@ -252,3 +254,6 @@ def get_complete_prompt(user, most_contexts_strat, const_strategy, avg_freq, tot
         "${strategies}", str(strat_info)
     )
     return prompt
+
+def send_user_feedback(text):
+    logger.info(f"[USER FEEDBACK] {text}")
