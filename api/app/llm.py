@@ -20,65 +20,66 @@ CONFIG_LIST = [
     {
         "model": MODEL,
         "base_url": BASE_URL,
-       # "api_key": API_KEY,
+        # "api_key": API_KEY,
     }
 ]
 EMBEDDING_URL = os.getenv("EMBEDDING_URL", "https://huggingface.co/")
-#https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
+# https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
 EMBEDDING_TOKEN = os.getenv("EMBEDDING_TOKEN", "")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-#https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2
+# https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2
 logger = logging.getLogger('StudyBot')
 evil = False
 client = None
+
 
 def query_embeddings(text_to_embed):
     api_url = f"{EMBEDDING_URL}{EMBEDDING_MODEL}"
     headers = {"Authorization": f"Bearer {EMBEDDING_TOKEN}"}
     response = requests.post(
-        api_url, 
-        #headers=headers,
+        api_url,
+        # headers=headers,
         json={"inputs": text_to_embed, "options": {"wait_for_model": True}})
     return response.json()
 
 
 def get_model_names(base_url):
-        """
-        """
-        client = Client(host=base_url)
-        names = []
-        for model in client.list()['models']:
-            m = dict(model)
-            names.append(m['model'])
-        return names
+    """
+    """
+    client = Client(host=base_url)
+    names = []
+    for model in client.list()['models']:
+        m = dict(model)
+        names.append(m['model'])
+    return names
+
+
+_client_instance = None
 
 def get_client():
-    the_client = None
-    if evil:
-        the_client = OpenAI(
-            base_url=BASE_URL,
-            #api_key=API_KEY
-        )
-    else:
-        """
-        client = ChatOllama(
-            model=MODEL, 
-            base_url=BASE_URL,
-            temperature=temperature,
-            top_k=top_k,
-            top_p=top_p,
-            repeat_penalty=repeat_penalty,
-        )
-        """
-        the_client = Client(
-            host='http://localhost:11434',
-            headers={'x-some-header': 'some-value'} #FixMe
+    global _client_instance
+    if _client_instance is None:
+        if evil:
+            _client_instance = OpenAI(base_url=BASE_URL)
+        else:
+            _client_instance = Client(
+                host='http://localhost:11434',
+                headers={'x-some-header': 'some-value'}
             )
-    return the_client
+    return _client_instance
 
 
-def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, top_k=25, top_p=0.3, repeat_penalty=1.1, prev_conversation=[], expected_fields_model=None):
-
+def get_llm_response_openai(
+        system_prompt,
+        user_prompt=None,
+        temperature=0.0,
+        top_k=25,
+        top_p=0.3,
+        repeat_penalty=1.1,
+        prev_conversation=[],
+        expected_fields_model=None,
+        stream=True
+):
     # --- HARD DEV GUARD: skip LLM entirely ---
     if os.getenv("DISABLE_LLM", "false").lower() == "true":
         logger.warning("DISABLE_LLM=true → skipping LLM call")
@@ -90,75 +91,81 @@ def get_llm_response_openai(system_prompt, user_prompt=None, temperature=0.0, to
     logger.info("System Prompt: %s", system_prompt)
     logger.info("User Prompt: %s", user_prompt)
 
-    
-    client = get_client()
-    logger.info(1)
+    # Reuse client if possible
+    global client
+    if client is None:
+        client = get_client()
+
+    # Build conversation
     messages = [{"role": "system", "content": system_prompt}]
     if prev_conversation:
-        for message in prev_conversation:
-            messages.append(message)
+        messages.extend(prev_conversation)
     if user_prompt:
         messages.append({"role": "user", "content": user_prompt})
-    logger.info(2)
-    response = get_response(client, messages, temperature, expected_fields_model)
-    logger.info(3)
-    #logger.info("First response: %s", response['message']['content'])
-    attempts = 5 # FixMe: Should be set as a variable
-    timeout = 3 # FixMe: Should be set as a variable
-    #return response['message']['content']
+
+    attempts = 3
+    timeout = 2  # seconds, for retry backoff
+    response_content = ""
+
     while attempts > 0:
-        if not hasattr(response, "message") or response.message.content == "":
-            #logger.info("Retrying LLM call for prompt: %s\nUser Message: %s", system_prompt, messages[-1])
-            response = get_response(client, messages, temperature+0.1, expected_fields_model)
-            #logger.info(str(attempts)+". - response: %s", response['message']['content'])
-            time.sleep(timeout)
-            attempts -= 1
-            timeout *= 2
-        else:
-            break
-    ##response_content = response.choices[0].message.content
-    logger.info('@llm: response::: ')
-    logger.info(response)
-    response_content = response.message.content if hasattr(response, "message") else None
-
-    if not response_content:
-        logger.info("Empty response")
-        raise AssertionError("Received empty response from LLM.")
-    logger.info("Response: %s", response_content)
-    return response_content
-
-
-
-  
-def get_response(client, messages, temperature, expected_fields_model:None):
-    response = ''
-    if evil: 
-        logger.info("Send request to openAI")
-        response = client.chat(
-            model=MODEL,
-            messages=messages,
-            temperature=temperature
-        )
-    else:
-        logger.info("Send request to Ollama")
         try:
-            response = client.chat(
-                model=MODEL, 
-                #messages=" ".join(messages),
-                messages=messages, 
+            response = get_response(client, messages, temperature, expected_fields_model, stream=stream)
 
-                #messages=[
-                #{
-                #    'role': messages[-1]['role'],#'system',#
-                #    'content': messages[-1]['content'], #"You are an interviewer conducting an interview that will be evaluated scientifically. Your tone should be friendly but neutral. Refer back to the user's answers, but do not comment positively or negatively on them. You are guiding a student through an interview to assess their study skills. Start the conversation with a friendly greeting. Ask the student which subject the degree they are studying is about.",
-                #}],
-                format=expected_fields_model.model_json_schema() if expected_fields_model != None else '', 
-                #stream=False,
-                options={'temperature': 0},
-                )
+            if stream and hasattr(response, "__iter__"):  # Streaming generator
+                for partial in response:
+                    # partial.message.content is a token or partial string
+                    token = getattr(partial, "message", None)
+                    if token:
+                        token = token.content if hasattr(token, "content") else str(token)
+                        logger.info("Token: %s", token)
+                        response_content += token
+                        yield token  # send each token to caller immediately
+                return  # streaming completed
+
+            # Non-streaming response
+            response_content = getattr(response, "message", None)
+            response_content = response_content.content if response_content else None
+
+            if response_content:
+                return response_content
+
         except Exception as e:
-                logger.error(f"call ollama client.chat : {e}")
-                return None
+            logger.error(f"LLM call failed: {e}")
+            attempts -= 1
+            time.sleep(timeout)
+            timeout *= 2  # exponential backoff
+
+    raise AssertionError("Failed to get response from LLM after retries.")
+
+
+def get_response(client, messages, temperature, expected_fields_model=None, stream=True):
+    """
+    Send request to LLM (Ollama or OpenAI) and return the response.
+    If `stream=True`, response will be a generator yielding partial outputs.
+    """
+    response = None
+    try:
+        if evil:
+            logger.info("Send request to OpenAI")
+            response = client.chat(
+                model=MODEL,
+                messages=messages,
+                temperature=temperature,
+                stream=stream  # allow streaming
+            )
+        else:
+            logger.info("Send request to Ollama")
+            response = client.chat(
+                model=MODEL,
+                messages=messages,
+                format=expected_fields_model.model_json_schema() if expected_fields_model else '',
+                options={'temperature': temperature},
+                stream=stream
+            )
+    except Exception as e:
+        logger.error(f"call ollama client.chat failed: {e}")
+        return None
+
     return response
 
 
