@@ -91,19 +91,16 @@ def get_llm_response_openai(
     logger.info("System Prompt: %s", system_prompt)
     logger.info("User Prompt: %s", user_prompt)
 
-    # Reuse client if possible
     global client
     if client is None:
         client = get_client()
 
-    # Build conversation
     messages = [{"role": "system", "content": system_prompt}]
     if prev_conversation:
         messages.extend(prev_conversation)
     if user_prompt:
         messages.append({"role": "user", "content": user_prompt})
 
-    # --- NEW: initial feedback ---
     send_user_feedback("Agent is working on your request...")
 
     attempts = 3
