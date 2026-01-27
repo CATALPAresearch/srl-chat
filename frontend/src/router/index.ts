@@ -7,17 +7,14 @@ import RAGChat from "../components/RAGChat.vue";
 
 Vue.use(VueRouter);
 
-const isLTI = window.SRL_CLIENT === "lti";
-
 const routes = [
-  { path: "/", redirect: "/agent-chat" },
+  { path: "/", redirect: "/agent-chat" }, // Agent chat default
   { path: "/agent-chat", component: AgentChat },
   { path: "/llm-chat", component: LLMChat },
   { path: "/document-chat", component: RAGChat },
 ];
 
 export default new VueRouter({
-  mode: "history",
-  base: isLTI ? "/lti/ui/" : "/",
+  mode: "hash",   //  REQUIRED for LTI + Flask
   routes,
 });

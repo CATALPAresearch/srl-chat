@@ -5,7 +5,7 @@
   <title>SRL Agent</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- LTI mode flag (used by Vue / Vuex / Router) -->
+  <!-- LTI mode flag -->
   <script>
     window.SRL_CLIENT = "lti";
   </script>
@@ -35,8 +35,7 @@
       waitSeconds: 30,
 
       /*
-       * IMPORTANT:
-       * Map Moodle AMD namespaces to our local LTI stubs
+       * Map Moodle AMD namespaces to local LTI stubs
        */
       paths: {
         core: "/static/lti/core"
