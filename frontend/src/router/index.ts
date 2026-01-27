@@ -1,24 +1,19 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+
+import AgentChat from '../components/AgentChat.vue';
 import LLMChat from '../components/LLMChat.vue';
 import RAGChat from '../components/RAGChat.vue';
-import AgentChat from '../components/AgentChat.vue';
 
-Vue.use(VueRouter); // ✅ Important: Use VueRouter before creating the instance
+Vue.use(VueRouter);
 
 const routes = [
-  { path: '/', redirect: '/agent-chat' }, // ✅ Agent Chat default
+  { path: '/', redirect: '/agent-chat' }, // Agent chat default
   { path: '/agent-chat', component: AgentChat },
-  { path: '/document-chat', component: RAGChat },
-  { path: '/llm-chat', component: LLMChat }
+  { path: '/llm-chat', component: LLMChat },
+  { path: '/document-chat', component: RAGChat }
 ];
 
-
-// FixMe: add moodle path to routes
-const router = new VueRouter({ 
-//  mode: 'history', 
-// base: '/moodle/'
+export default new VueRouter({
   routes
 });
-
-export default router;
