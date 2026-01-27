@@ -5,17 +5,19 @@
   <title>SRL Agent</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- LTI mode flag -->
+  <!-- LTI mode flag (used by Vue / Vuex / Router) -->
   <script>
     window.SRL_CLIENT = "lti";
   </script>
 
   <style>
-    html, body {
+    html,
+    body {
       margin: 0;
       height: 100%;
       overflow: hidden;
     }
+
     #app {
       height: 100%;
     }
@@ -24,7 +26,27 @@
 <body>
   <div id="app"></div>
 
-  <!-- Built Vue app -->
-  <script src="./app-lazy.js"></script>
+  <!-- RequireJS (needed for Moodle-style AMD bundles) -->
+  <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
+
+  <script>
+    require.config({
+      baseUrl: "/static/lti",
+      waitSeconds: 30,
+
+      /*
+       * IMPORTANT:
+       * Map Moodle AMD namespaces to our local LTI stubs
+       */
+      paths: {
+        core: "/static/lti/core"
+      }
+    });
+
+    // Load the AMD bundle produced by webpack (DO NOT add .js)
+    require(["app-lazy"], function () {
+      console.log("SRL Agent LTI UI loaded");
+    });
+  </script>
 </body>
 </html>

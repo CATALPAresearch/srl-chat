@@ -1,3 +1,15 @@
 .env
 api/migrations/*
 api/app/__pycache__
+# Node / Vue
+frontend/node_modules/
+frontend/node_modules/.cache/
+
+# Webpack / Moodle build output
+amd/build/
+amd/src/
+
+# Python
+api/.venv/
+api/__pycache__/
+*.pyc
