@@ -1,84 +1,472 @@
 [
   {
-    "strategy_id": "organization",
-    "name": "Organization",
+    "strategy_id": "rehearsal_mnemonics",
+    "name": "Rehearsal and Mnemonic Strategies",
     "zimmerman_phase": "performance",
     "category": "Cognitive strategies",
-
     "definitions": [
-      "Structuring learning material to improve understanding.",
-      "Organizing information into meaningful units."
+      "Memorizing material through repetition or mnemonic techniques.",
+      "Practicing information until it can be recalled automatically."
     ],
-
-    "synonyms": [
-      "structuring",
-      "organizing content",
-      "arranging material"
+    "student_phrases": [
+      "I write things down again and again until I remember them",
+      "I repeat formulas until they stick",
+      "I memorize definitions",
+      "I learn things by heart"
     ],
-
     "methods": [
-      "creating outlines",
-      "grouping related concepts",
-      "using headings and subheadings"
+      "repeating content",
+      "rote learning",
+      "using mnemonic devices"
     ],
-
     "tools": [
-      "mind maps",
-      "concept maps",
-      "tables"
+      "flashcards",
+      "lists",
+      "memory aids"
     ],
-
     "positive_indicators": [
-      "I organize my notes",
-      "I structure the material",
-      "I create mind maps"
+      "I keep repeating it",
+      "I memorize it",
+      "I write it until I remember"
     ],
-
-    "negative_indicators": [
-      "I just read the text again"
-    ],
-
     "literature": [
       "Zimmerman & Martinez-Pons (1986)"
     ]
   },
 
   {
-    "strategy_id": "summarization",
-    "name": "Summarization",
+    "strategy_id": "practice_testing",
+    "name": "Practice Testing",
     "zimmerman_phase": "performance",
     "category": "Cognitive strategies",
-
     "definitions": [
-      "Condensing learning material into shorter representations.",
-      "Rewriting content in one’s own words."
+      "Practicing retrieval of information by answering questions or taking tests."
     ],
-
-    "synonyms": [
-      "summarising",
-      "condensing information",
-      "writing summaries"
+    "student_phrases": [
+      "I test myself",
+      "I use old exams to practice",
+      "I quiz myself with flashcards"
     ],
-
     "methods": [
-      "writing short summaries",
-      "bullet-point notes"
+      "self-testing",
+      "practice exams",
+      "answering questions"
     ],
+    "tools": [
+      "practice tests",
+      "flashcards",
+      "question banks"
+    ],
+    "positive_indicators": [
+      "I quiz myself",
+      "I solve practice questions"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
 
+  {
+    "strategy_id": "repetition_over_time",
+    "name": "Repetition Over Time",
+    "zimmerman_phase": "performance",
+    "category": "Cognitive strategies",
+    "definitions": [
+      "Reviewing learning material at spaced intervals over time."
+    ],
+    "student_phrases": [
+      "I review things regularly",
+      "I repeat material after some time",
+      "I go over flashcards again later"
+    ],
+    "methods": [
+      "spaced repetition",
+      "scheduled review"
+    ],
+    "tools": [
+      "flashcard apps",
+      "study schedules"
+    ],
+    "positive_indicators": [
+      "I review it again later"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+
+  {
+    "strategy_id": "reviewing_records",
+    "name": "Reviewing Notes and Records",
+    "zimmerman_phase": "performance",
+    "category": "Cognitive strategies",
+    "definitions": [
+      "Re-reading notes, tests, or textbooks to prepare for learning or exams."
+    ],
+    "student_phrases": [
+      "I read my notes again",
+      "I go through my old tests",
+      "I review the textbook"
+    ],
+    "methods": [
+      "re-reading",
+      "reviewing notes"
+    ],
     "tools": [
       "notes",
-      "flash cards"
+      "textbooks"
     ],
-
     "positive_indicators": [
-      "I summarize the content",
-      "I write short summaries"
+      "I review my notes"
     ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
 
-    "negative_indicators": [
-      "I just copy text without thinking"
+  {
+    "strategy_id": "highlighting_underlining",
+    "name": "Highlighting and Underlining",
+    "zimmerman_phase": "performance",
+    "category": "Cognitive strategies",
+    "definitions": [
+      "Marking important parts of learning material."
     ],
+    "student_phrases": [
+      "I highlight important parts",
+      "I underline key points"
+    ],
+    "methods": [
+      "highlighting",
+      "underlining"
+    ],
+    "tools": [
+      "highlighters",
+      "pens"
+    ],
+    "positive_indicators": [
+      "I mark important sections"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
 
+  {
+    "strategy_id": "organization",
+    "name": "Organizing and Transforming",
+    "zimmerman_phase": "performance",
+    "category": "Cognitive strategies",
+    "definitions": [
+      "Structuring and reorganizing learning material to improve understanding."
+    ],
+    "student_phrases": [
+      "I create an outline",
+      "I make mind maps",
+      "I structure the content",
+      "I reorganize my notes"
+    ],
+    "methods": [
+      "outlining",
+      "summarizing in own words",
+      "creating diagrams"
+    ],
+    "tools": [
+      "mind maps",
+      "concept maps"
+    ],
+    "positive_indicators": [
+      "I organize my material"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+
+  {
+    "strategy_id": "keeping_records",
+    "name": "Keeping Records and Monitoring",
+    "zimmerman_phase": "performance",
+    "category": "Metacognitive strategies",
+    "definitions": [
+      "Recording learning activities, results, or errors."
+    ],
+    "student_phrases": [
+      "I take notes",
+      "I write down mistakes",
+      "I keep track of my progress"
+    ],
+    "methods": [
+      "note-taking",
+      "progress tracking"
+    ],
+    "tools": [
+      "notebooks",
+      "learning logs"
+    ],
+    "positive_indicators": [
+      "I write things down"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+
+  {
+    "strategy_id": "visualisation",
+    "name": "Visualisation",
+    "zimmerman_phase": "performance",
+    "category": "Cognitive strategies",
+    "definitions": [
+      "Creating mental or visual representations of learning material."
+    ],
+    "student_phrases": [
+      "I imagine how it looks",
+      "I draw diagrams",
+      "I visualize the content"
+    ],
+    "methods": [
+      "drawing",
+      "mental imagery"
+    ],
+    "tools": [
+      "sketches",
+      "diagrams"
+    ],
+    "positive_indicators": [
+      "I visualize it"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+
+  {
+    "strategy_id": "teaching_preparing_to_teach",
+    "name": "Teaching and Preparing to Teach",
+    "zimmerman_phase": "performance",
+    "category": "Metacognitive strategies",
+    "definitions": [
+      "Learning by explaining material to others or preparing to do so."
+    ],
+    "student_phrases": [
+      "I explain it to someone else",
+      "I prepare a presentation",
+      "I teach my friend"
+    ],
+    "methods": [
+      "peer teaching",
+      "presentation preparation"
+    ],
+    "tools": [
+      "slides",
+      "study groups"
+    ],
+    "positive_indicators": [
+      "I explain it to others"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+
+  {
+    "strategy_id": "self_explanation",
+    "name": "Self Explanation",
+    "zimmerman_phase": "performance",
+    "category": "Metacognitive strategies",
+    "definitions": [
+      "Explaining learning material to oneself to deepen understanding."
+    ],
+    "student_phrases": [
+      "I think out loud",
+      "I explain it to myself",
+      "I connect new information to what I know"
+    ],
+    "methods": [
+      "verbal reasoning",
+      "mental explanation"
+    ],
+    "tools": [
+      "notes",
+      "inner speech"
+    ],
+    "positive_indicators": [
+      "I explain it to myself"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+
+  {
+    "strategy_id": "goal_setting_planning",
+    "name": "Goal Setting and Planning",
+    "zimmerman_phase": "forethought",
+    "category": "Metacognitive strategies",
+    "definitions": [
+      "Setting learning goals and planning learning activities."
+    ],
+    "student_phrases": [
+      "I set goals",
+      "I plan what to study first",
+      "I decide what to focus on"
+    ],
+    "methods": [
+      "goal setting",
+      "planning schedules"
+    ],
+    "tools": [
+      "to-do lists",
+      "study plans"
+    ],
+    "positive_indicators": [
+      "I plan my learning"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+
+  {
+    "strategy_id": "self_evaluating_regulation",
+    "name": "Self Evaluating and Regulation",
+    "zimmerman_phase": "self_reflection",
+    "category": "Metacognitive strategies",
+    "definitions": [
+      "Monitoring and evaluating one’s own learning progress."
+    ],
+    "student_phrases": [
+      "I check my work",
+      "I see if I understood it",
+      "I evaluate my progress"
+    ],
+    "methods": [
+      "self-checking",
+      "reflection"
+    ],
+    "tools": [
+      "checklists",
+      "feedback notes"
+    ],
+    "positive_indicators": [
+      "I check if I did it right"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+
+  {
+    "strategy_id": "environmental_structuring",
+    "name": "Environmental Structuring",
+    "zimmerman_phase": "performance",
+    "category": "Resource management strategies",
+    "definitions": [
+      "Organizing the physical learning environment to improve concentration."
+    ],
+    "student_phrases": [
+      "I clean my desk",
+      "I study in a quiet place",
+      "I isolate myself to focus"
+    ],
+    "methods": [
+      "choosing study location",
+      "removing distractions"
+    ],
+    "tools": [
+      "quiet rooms",
+      "headphones"
+    ],
+    "positive_indicators": [
+      "I make my environment suitable"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+
+  {
+    "strategy_id": "self_consequences",
+    "name": "Self Consequences",
+    "zimmerman_phase": "self_reflection",
+    "category": "Motivational strategies",
+    "definitions": [
+      "Using self-rewards or punishments to regulate learning behavior."
+    ],
+    "student_phrases": [
+      "I reward myself after studying",
+      "I treat myself if I do well"
+    ],
+    "methods": [
+      "self-rewarding",
+      "self-punishment"
+    ],
+    "tools": [
+      "rewards",
+      "break activities"
+    ],
+    "positive_indicators": [
+      "I reward myself"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+
+  {
+    "strategy_id": "seeking_social_assistance",
+    "name": "Seeking Social Assistance",
+    "zimmerman_phase": "performance",
+    "category": "Resource management strategies",
+    "definitions": [
+      "Asking others for help when learning difficulties arise."
+    ],
+    "student_phrases": [
+      "I ask classmates for help",
+      "I ask my teacher",
+      "I get help in forums"
+    ],
+    "methods": [
+      "asking questions",
+      "peer support"
+    ],
+    "tools": [
+      "forums",
+      "study groups"
+    ],
+    "positive_indicators": [
+      "I ask for help"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+
+  {
+    "strategy_id": "seeking_selecting_information",
+    "name": "Seeking and Selecting Information",
+    "zimmerman_phase": "performance",
+    "category": "Resource management strategies",
+    "definitions": [
+      "Searching for additional learning information from non-social sources."
+    ],
+    "student_phrases": [
+      "I look for information online",
+      "I go to the library",
+      "I search for sources"
+    ],
+    "methods": [
+      "research",
+      "information search"
+    ],
+    "tools": [
+      "internet",
+      "libraries"
+    ],
+    "positive_indicators": [
+      "I search for information"
+    ],
     "literature": [
       "Zimmerman & Martinez-Pons (1986)"
     ]
@@ -86,40 +474,48 @@
 
   {
     "strategy_id": "time_management",
-    "name": "Time Management",
+    "name": "Time and Attention Management",
     "zimmerman_phase": "forethought",
-    "category": "Metacognitive strategies",
-
+    "category": "Resource management strategies",
     "definitions": [
-      "Planning and allocating time effectively for learning tasks."
+      "Structuring study time and managing attention during learning."
     ],
-
-    "synonyms": [
-      "planning time",
-      "scheduling",
-      "time planning"
+    "student_phrases": [
+      "I use the Pomodoro technique",
+      "I take planned breaks",
+      "I study at fixed times"
     ],
-
     "methods": [
-      "setting learning schedules",
-      "using timers",
-      "taking planned breaks"
+      "time blocking",
+      "break scheduling"
     ],
-
     "tools": [
-      "calendars",
-      "pomodoro timer"
+      "timers",
+      "calendars"
     ],
-
     "positive_indicators": [
-      "I plan my study time",
-      "I study for 20 minutes and then take a break"
+      "I manage my time"
     ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
 
-    "negative_indicators": [
-      "I study whenever I feel like it"
+  {
+    "strategy_id": "other",
+    "name": "Other / Externally Regulated",
+    "zimmerman_phase": "other",
+    "category": "Other",
+    "definitions": [
+      "Learning behavior initiated by others or unclear responses."
     ],
-
+    "student_phrases": [
+      "I just do what the teacher says",
+      "Someone else tells me what to do"
+    ],
+    "methods": [],
+    "tools": [],
+    "positive_indicators": [],
     "literature": [
       "Zimmerman & Martinez-Pons (1986)"
     ]

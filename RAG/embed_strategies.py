@@ -11,6 +11,7 @@ from pgvector.psycopg2 import register_vector
 OLLAMA_BASE_URL = os.getenv("BASE_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("EMBEDDING_MODEL", "nomic-embed-text")
 
+
 DB_CONN = "postgresql://chat:example@localhost:5432/srl_chat"
 
 
@@ -35,14 +36,40 @@ def embed(text: str) -> list[float]:
 
 
 def build_strategy_text(strategy: dict) -> str:
-    parts = [
-        f"Strategy: {strategy['name']}",
-        f"Definitions: {' '.join(strategy['definitions'])}",
-        f"Synonyms: {' '.join(strategy['synonyms'])}",
-        f"Methods: {' '.join(strategy['methods'])}",
-        f"Indicators: {' '.join(strategy['positive_indicators'])}"
-    ]
+    """
+    Build a semantically rich text representation of a learning strategy
+    for embedding-based retrieval.
+    """
+
+    parts = []
+
+    # Core identity (strong anchor)
+    parts.append(f"Learning strategy: {strategy['name']}")
+
+    # Theoretical grounding
+    if "definitions" in strategy:
+        parts.append(" ".join(strategy["definitions"]) * 2)
+
+    # Student language (MOST IMPORTANT for detection)
+    if "student_phrases" in strategy:
+        parts.append(" ".join(strategy["student_phrases"]) * 3)
+
+    # Behavioral signals
+    if "methods" in strategy:
+        parts.append(" ".join(strategy["methods"]))
+
+    if "positive_indicators" in strategy:
+        parts.append(" ".join(strategy["positive_indicators"]))
+
+    # Optional but useful context
+    if "synonyms" in strategy:
+        parts.append(" ".join(strategy["synonyms"]))
+
+    if "tools" in strategy:
+        parts.append(" ".join(strategy["tools"]))
+
     return "\n".join(parts)
+
 
 
 # -----------------------------
