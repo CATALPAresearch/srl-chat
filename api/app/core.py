@@ -126,7 +126,7 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
     try:
         user = get_user(userid, client)
         if user is None:
-            raise FileNotFoundError("User not found")
+            return "User not found. Start a conversation first.", 400
             # language = "en"  # TODO - ask first time
             # return start_conversation(language, client, userid)
 
@@ -141,6 +141,15 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
         logger.info('......................')
         logger.info('conversation step: '+ str(conversation_step))
         current_strategy = user.conversation_state.strategy_for_frequency
+
+        log_action(
+            LogAction.REPLY_USER,
+            user=user,
+            value={"message_length": len(user_message), "message_preview": user_message[:100]},
+            turn=turn,
+            step=conversation_step
+        )
+
         user_answer_db = store_answer(user, current_context_id, current_strategy, user_message, turn, conversation_step)
 
         conversation_for_current_context = retrieve_full_conversation(user, current_context_id)
@@ -170,8 +179,21 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                     system_prompt = get_prompt(user, "system")
                     context_prompt = get_context_prompt(current_context.context, user)
                     update_current_conversation_step(user, "strategy")
-                    
-                    llm_message = get_llm_response_openai(context_prompt + "  " + system_prompt, None, 0.1)
+
+                    llm_message = get_llm_response_openai(
+                        system_prompt=system_prompt,
+                        user_prompt=user_message,
+                        temperature=0.1
+                    )
+
+                    log_action(
+                        LogAction.REPLY_LLM,
+                        user=user,
+                        value={"message_length": len(llm_message), "message_preview": llm_message[:100]},
+                        turn=turn,
+                        step=conversation_step
+                    )
+
                     logger.info('@intro step, second llm call ')
                     logger.info(llm_message)
                 
