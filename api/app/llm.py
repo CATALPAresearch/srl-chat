@@ -6,10 +6,6 @@ import logging
 
 from openai import OpenAI
 from ollama import Client
-from ollama import chat
-from ollama import ChatResponse
-from langchain_core.output_parsers import StrOutputParser
-from langchain_ollama import ChatOllama
 
 from .db_utils.crud import get_language_by_id, get_contexts_content, get_strategies_content
 

@@ -4,6 +4,7 @@ import os
 from xml.sax.saxutils import escape as xmlescape
 import logging
 
+from .enums import LogAction
 from .llm import (
     get_llm_response_openai,
     get_prompt,
@@ -35,6 +36,7 @@ from .db_utils.crud import (
     store_study_subject,
     archive_conversation
 )
+from .logging_utlis import log_action
 from .steps import strategy_step, frequency_step, validate_strategies, intro_step
 
 MODEL = os.getenv("MODEL")
@@ -67,16 +69,44 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
             if created_user is None:
                 return "An error occurred, please try to restart the conversation", 500
             user = created_user
+            log_action(
+                LogAction.USER_CREATED,
+                user=user,
+                value={"language": language, "client": client},
+                http_status=201
+            )
 
         logger.info("Created new user (%s): %s - %s", language, user.id, user.client)
+
+        log_action(
+            LogAction.START_CONVERSATION,
+            user=user,
+            value={"language": language, "client": client},
+            turn=0,
+            step="intro",
+            http_status=200
+        )
 
         system_prompt = get_prompt(user, "system")
         intro_prompt = get_prompt(user, "intro")
         update_current_conversation_step(user, "intro")
 
-        llm_message = get_llm_response_openai(system_prompt + " " + intro_prompt, None, 0.1)
+        llm_message = get_llm_response_openai(
+            system_prompt,
+            intro_prompt,
+            0.1
+        )
         turn = update_current_turn(user)
         store_llm_answer(user, llm_message, None, None, turn, step="intro")
+
+        log_action(
+            LogAction.REPLY_LLM,
+            user=user,
+            value={"message_length": len(llm_message), "message_preview": llm_message[:100]},
+            turn=turn,
+            step="intro"
+        )
+
         return llm_message, 200
     except Exception as e:
         raise Exception(e)
