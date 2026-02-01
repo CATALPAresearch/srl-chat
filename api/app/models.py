@@ -1,3 +1,4 @@
+import uuid
 from typing import List, Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
@@ -8,7 +9,7 @@ from app import db
 
 
 class Language(db.Model):
-    __tablename__ = "languages"
+    __tableName__ = "languages"
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     lang_code: so.Mapped[str] = so.mapped_column(sa.String(2), index=True, unique=True)
     contexts: so.Mapped[List["Context"]] = so.relationship()
@@ -17,7 +18,7 @@ class Language(db.Model):
 
 
 class User(db.Model):
-    __tablename__ = "users"
+    __tableName__ = "users"
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     client: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
@@ -41,7 +42,7 @@ class User(db.Model):
 
 
 class Context(db.Model):
-    __tablename__ = "contexts"
+    __tableName__ = "contexts"
     id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True)
     context: so.Mapped[str] = so.mapped_column(sa.String())
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
@@ -68,7 +69,7 @@ class StrategyVector(db.Model):
 
 
 class ConversationState(db.Model):
-    __tablename__ = "state"
+    __tableName__ = "state"
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
@@ -81,16 +82,17 @@ class ConversationState(db.Model):
         back_populates="conversation",
         cascade="all, delete")
     current_conversation_step: so.Mapped[str] = so.mapped_column(sa.String(32),
-                                                            sa.CheckConstraint(
-        "current_conversation_step IN ('intro', 'strategy', 'probe', 'frequency', 'complete')", name="response_check"),
-                                                            nullable=True)
+                                                                 sa.CheckConstraint(
+                                                                     "current_conversation_step IN ('intro', 'strategy', 'probe', 'frequency', 'complete')",
+                                                                     name="response_check"),
+                                                                 nullable=True)
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
                                               [User.id, User.client],
                                               ondelete="CASCADE"), {})
 
 
 class ConversationCompletedContexts(db.Model):
-    __tablename__ = "conversation_completed_contexts"
+    __tableName__ = "conversation_completed_contexts"
     conversation_id: so.Mapped["ConversationState"] = so.mapped_column(
         sa.ForeignKey(ConversationState.id, ondelete="CASCADE"), primary_key=True)
     completed_context_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id,
@@ -111,7 +113,8 @@ class InterviewAnswer(db.Model):
     message: so.Mapped[str] = so.mapped_column(sa.String())
     conversation_step: so.Mapped[str] = so.mapped_column(sa.String(32),
                                                          sa.CheckConstraint(
-                                                             "conversation_step IN ('intro', 'strategy', 'probe', 'frequency', 'complete')", name="step_check"),
+                                                             "conversation_step IN ('intro', 'strategy', 'probe', 'frequency', 'complete')",
+                                                             name="step_check"),
                                                          nullable=False)
     strategies: so.Mapped[List["UserStrategy"]] = so.relationship(
         back_populates="interview_answer",
@@ -152,7 +155,8 @@ class LlmResponse(db.Model):
     turn: so.Mapped[int] = so.mapped_column(sa.Integer)
     conversation_step: so.Mapped[str] = so.mapped_column(sa.String(32),
                                                          sa.CheckConstraint(
-                                                             "conversation_step IN ('intro', 'strategy', 'probe', 'frequency', 'complete')", name="step_check"),
+                                                             "conversation_step IN ('intro', 'strategy', 'probe', 'frequency', 'complete')",
+                                                             name="step_check"),
                                                          nullable=False)
     message_time: so.Mapped[datetime.datetime] = so.mapped_column(
         nullable=False, server_default=sa.func.CURRENT_TIMESTAMP()
@@ -179,3 +183,52 @@ class StrategyEvaluation(db.Model):
 class Archive(db.Model):
     id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True, autoincrement=True)
     archived_conversation: so.Mapped[str] = so.mapped_column(sa.String())
+
+class ActivityLog(db.Model):
+    __tableName__ = 'activity_log'
+
+    id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()))
+
+    timestamp = db.Column(db.Integer, nullable=False, index=True)
+
+    user_id = db.Column(db.String, nullable=True, index=True)
+    user_client = db.Column(db.String, nullable=True)
+
+    action = db.Column(db.String, nullable=False, index=True)
+    value = db.Column(db.JSON, nullable=True)
+
+    user_agent = db.Column(db.String, nullable=True)
+    ip_address_hash = db.Column(db.String, nullable=True)
+
+    context_id = db.Column(db.String, nullable=True, index=True)
+    strategy_id = db.Column(db.String, nullable=True)
+    turn = db.Column(db.Integer, nullable=True)
+    step = db.Column(db.String, nullable=True)
+
+    http_status = db.Column(db.Integer, nullable=True)
+
+    __table_args__ = (
+        db.Index('idx_user_action', 'user_id', 'action'),
+        db.Index('idx_timestamp_action', 'timestamp', 'action'),
+        db.Index('idx_user_timestamp', 'user_id', 'timestamp'),
+    )
+
+    def __repr__(self):
+        return f'<ActivityLog {self.action} user={self.user_id} timestamp={self.timestamp}>'
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'timestamp': self.timestamp,
+            'user_id': self.user_id,
+            'user_client': self.user_client,
+            'action': self.action,
+            'value': self.value,
+            'user_agent': self.user_agent,
+            'ip_address_hash': self.ip_address_hash,
+            'context_id': self.context_id,
+            'strategy_id': self.strategy_id,
+            'turn': self.turn,
+            'step': self.step,
+            'http_status': self.http_status
+        }
