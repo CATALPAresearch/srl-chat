@@ -372,13 +372,50 @@ def generate_summary(user, strategy_scores):
 
 
 def reset_conversation(user):
-    conversation = retrieve_full_conversation(user)
-    state = user.conversation_state
-    archive = {"messages": conversation,
-               "state": {
-                   "complete": state.interview_completed,
-                   "current_context": state.current_context,
-                   "step": state.current_conversation_step
-               }
-               }
-    return archive_conversation(user, archive)
+    try:
+        log_action(
+            LogAction.RESET_CONVERSATION,
+            user=user,
+            value={"status": "started"},
+            http_status=200
+        )
+
+        conversation = retrieve_full_conversation(user)
+        state = user.conversation_state
+
+        archive = {
+            "messages": conversation,
+            "state": {
+                "complete": state.interview_completed,
+                "current_context": state.current_context,
+                "step": state.current_conversation_step
+            }
+        }
+
+        success = archive_conversation(user, archive)
+
+        if success:
+            log_action(
+                LogAction.CONVERSATION_ARCHIVED,
+                user=user,
+                value={"archived_messages": len(conversation)},
+                http_status=200
+            )
+        else:
+            log_action(
+                LogAction.ERROR_OCCURRED,
+                user=user,
+                value={"reason": "archive_failed"},
+                http_status=500
+            )
+
+        return success
+
+    except Exception as e:
+        log_action(
+            LogAction.ERROR_OCCURRED,
+            user=user,
+            value={"error": str(e)},
+            http_status=500
+        )
+        raise

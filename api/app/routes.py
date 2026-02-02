@@ -45,6 +45,7 @@ def delete_message():
         success = reset_conversation(user)
         if success:
             return "*** Conversation has been reset. A new conversation can be started from the StudyTest server. ***", 200
+        return None
     except Exception as e:
         app.logger.error("Error on reset conversation: %s - Rolling back DB changes", e)
         db.session.rollback()
