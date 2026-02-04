@@ -1,9 +1,26 @@
+/* =========================
+ * LTI / Moodle environment detection
+ * ========================= */
+const IS_LTI = window.SRL_CLIENT === "lti";
+
 import Vue from "vue";
 import Vuex from "vuex";
 import communication from "../classes/communication";
-import moodleAjax from 'core/ajax';
-import moodleStorage from 'core/localstorage';
 
+/* =========================
+ * Moodle-only dependencies (guarded)
+ * ========================= */
+let moodleAjax = null;
+let moodleStorage = null;
+
+if (!IS_LTI) {
+  try {
+    moodleAjax = require("core/ajax");
+    moodleStorage = require("core/localstorage");
+  } catch (e) {
+    console.warn("[Store] Moodle APIs not available:", e);
+  }
+}
 
 Vue.use(Vuex);
 
@@ -24,7 +41,6 @@ export const store = new Vuex.Store({
       userId: null,
     },
     informedConsentAgreement: false,
-    
 
     // plugin context
     pluginSettings: {
@@ -32,7 +48,7 @@ export const store = new Vuex.Store({
       hostname: null,
       model: null,
       prompttemplate: null,
-      chatmodus: null,
+      chatmodus: "agent", // ✅ Agent chat default (Issue 6)
       //
       llmhostname: null,
       llmenabled: null,
@@ -42,297 +58,271 @@ export const store = new Vuex.Store({
       agentenabled: null,
     },
   },
+
+  /* =========================
+   * MUTATIONS
+   * ========================= */
   mutations: {
-    setDocuments: function (state, docs) {
+    setDocuments(state, docs) {
       state.documents = docs;
     },
-    setSystemContext: function (state, arr) {
-      state.systemName = arr['systemName'];
-      state.courseID = arr['courseID'];
+
+    setSystemContext(state, arr) {
+      state.systemName = arr.systemName;
+      state.courseID = arr.courseID;
     },
-    toggleShowSettings: function (state, id) {
+
+    toggleShowSettings(state) {
       state.showSettings = !state.showSettings;
     },
-    setCourseModuleID: function (state, id) {
+
+    setCourseModuleID(state, id) {
       state.courseModuleID = parseInt(id);
     },
-    setPluginSettings: function (state, settings) {
-      //Object.assign(state.pluginSettings, settings); 
 
-      // Set local settings of the opchchat instance
-      //state.courseModuleID = settings.courseModuleID;
-      state.pluginSettings.intro = settings.intro;
-      state.pluginSettings.model = settings.model;
-      state.pluginSettings.prompttemplate = settings.prompttemplate;
-      state.pluginSettings.chatmodus = settings.chatmodus;
+    setPluginSettings(state, settings) {
+      // Local instance settings
+    state.pluginSettings.intro =
+        settings.intro !== undefined ? settings.intro : null;
 
-      // Set global openchat settings
-      state.pluginSettings.hostname = settings.llm.llmhostname;
-      state.pluginSettings.llmhostname = settings.llm.llmhostname;
-      state.pluginSettings.llmenabled = settings.llm.llmenabled;
-      state.pluginSettings.raghostname = settings.rag.raghostname;
-      state.pluginSettings.ragenabled = settings.llm.ragenabled;
-      state.pluginSettings.agenthostname = settings.rag.agenthostname;
-      state.pluginSettings.agentenabled = settings.llm.agentenabled;
-      
-      this.dispatch("loadModelNames");
-      //console.log('storr', state.getters.pluginSettings.model)
+    state.pluginSettings.model =
+        settings.model !== undefined ? settings.model : null;
+
+    state.pluginSettings.prompttemplate =
+        settings.prompttemplate !== undefined ? settings.prompttemplate : null;
+
+
+
+      // Ensure Agent Chat default if missing
+      state.pluginSettings.chatmodus =
+        settings.chatmodus || state.pluginSettings.chatmodus || "agent";
+
+      // Global OpenChat settings
+      if (settings.llm) {
+        state.pluginSettings.hostname = settings.llm.llmhostname;
+        state.pluginSettings.llmhostname = settings.llm.llmhostname;
+        state.pluginSettings.llmenabled = settings.llm.llmenabled;
+      }
+
+      if (settings.rag) {
+        state.pluginSettings.raghostname = settings.rag.raghostname;
+        state.pluginSettings.ragenabled = settings.rag.ragenabled;
+        state.pluginSettings.agenthostname = settings.rag.agenthostname;
+        state.pluginSettings.agentenabled = settings.rag.agentenabled;
+      }
     },
+
     setIntro(state, intro) {
       state.pluginSettings.intro = intro;
     },
+
     setPromptTemplate(state, name) {
       state.pluginSettings.prompttemplate = name;
     },
+
     setLLMModelList(state, list) {
-      state.llmModelList = list
+      state.llmModelList = list;
     },
+
     setModel(state, name) {
       state.pluginSettings.model = name;
     },
-    setPageInstanceId(state, name) {
-      state.pageInstanceId = name;
+
+    setPageInstanceId(state, id) {
+      state.pageInstanceId = id;
     },
-    setInformedConsentAgreement: function (state, value) {
+
+    setInformedConsentAgreement(state, value) {
       state.informedConsentAgreement = value;
-      this.dispatch("updatePreference");
     },
-    setAdmin: function (state, value) {
+
+    setAdmin(state, value) {
       state.isAdmin = value;
     },
-    setChatModus: function (state, value) {
-      state.pluginSettings.chatmodus = value;
+
+    setChatModus(state, value) {
+      state.pluginSettings.chatmodus = value || "agent";
     },
+
     setStrings(state, strings) {
-			state.strings = strings;
-		},
+      state.strings = strings;
+    },
   },
+
+  /* =========================
+   * GETTERS
+   * ========================= */
   getters: {
-    getSystemContext: function (state) {
+    getSystemContext(state) {
       return {
         systemName: state.systemName,
-        courseID: state.courseID
+        courseID: state.courseID,
       };
     },
-    showSettings: function (state) {
+
+    showSettings(state) {
       return state.showSettings;
     },
-    getIsAdmin: function (state) {
+
+    getIsAdmin(state) {
       return state.isAdmin;
     },
-    getChatModus: function (state) {
+
+    getChatModus(state) {
       return state.pluginSettings.chatmodus;
     },
-    getCMID: function (state) {
+
+    getCMID(state) {
       return state.courseModuleID;
     },
-    getPluginSettings: function (state) {
+
+    getPluginSettings(state) {
       return state.pluginSettings;
     },
-    getHostname: function (state) {
+
+    getHostname(state) {
       return state.pluginSettings.llmhostname;
     },
-    getRAGWebserviceHost: function (state) {
-      return state.pluginSettings.raghostname
+
+    getRAGWebserviceHost(state) {
+      return state.pluginSettings.raghostname;
     },
+
     getLLMModelList(state) {
       return state.llmModelList;
     },
-    getModel: function (state) {
+
+    getModel(state) {
       return state.pluginSettings.model;
     },
-    getPromptTemplate: function (state) {
-      return state.pluginSettings.prompttemplate
+
+    getPromptTemplate(state) {
+      return state.pluginSettings.prompttemplate;
     },
+
     getIntro(state) {
       return state.pluginSettings.intro;
     },
-    getCourseModuleId: function (state) {
-      return parseInt(state.courseModuleId);
-    },
-    getPageInstanceId: function (state) {
+
+    getPageInstanceId(state) {
       return state.pageInstanceId;
     },
-    getInformedConsentAgreement: function (state) {
+
+    getInformedConsentAgreement(state) {
       return state.informedConsentAgreement;
     },
-    getUser: function(state){
+
+    getUser(state) {
       return state.user.userId;
-    }
+    },
   },
+
+  /* =========================
+   * ACTIONS
+   * ========================= */
   actions: {
-    loadPluginSettings: async function (context) {
-      try {
-        const cmid = context.getters.getCMID;
-        if (!cmid){
-          throw new Error('cmid undefined at store > actions > loadPluginSettings.');
+    async loadPluginSettings(context) {
+      const cmid = context.getters.getCMID;
+
+      // LTI has no CMID → skip safely
+      if (!cmid) {
+        if (IS_LTI) {
+          console.log("[LTI] Skipping loadPluginSettings");
+          return;
         }
-        const req = await communication.webservice("load_settings", {
-          cmid: cmid,
-        });
-        if (req.success) {
-          const settings = JSON.parse(req.data);
-          context.commit('setPluginSettings', settings);
-          console.log("@store: loadPluginSettings: ", settings);
-          
-        } else {
-          console.log('@store: loadPluginSettings without success: ', req);
-        }
-      } catch (error) {
-        console.error('msg', error, "@store: Failed to load plugin settings. ");
-        throw error;
+        throw new Error("cmid undefined at loadPluginSettings");
+      }
+
+      const req = await communication.webservice("load_settings", { cmid });
+      if (req && req.success) {
+        context.commit("setPluginSettings", JSON.parse(req.data));
       }
     },
-    updatePluginSettings: async function (context) {
-      try {
-        const cmid = context.getters.getCMID
-        if (!cmid){
-          throw new Error('cmid undefined at store > actions > updatePluginSettings: ' + cmid);
-        }
-        const response = await communication.webservice("update_settings", {
-          cmid: cmid,
-          settings: JSON.stringify(context.getters.getPluginSettings)
-        });
 
-        if (!response.success) {
-          console.error(response);
-          throw new Error("@store: Failed to update plugin settings. Webservice return ressult. ");
-        } else {
-          console.log('Stored settings', context.getters.getPluginSettings)
-        }
-
-      } catch (error) {
-        console.error(error);
-        throw new Error("@store: Failed to update plugin settings. Webservice not reachable. ");
+    async updatePluginSettings(context) {
+      if (IS_LTI) {
+        console.log("[LTI] Skipping updatePluginSettings");
+        return;
       }
+
+      const cmid = context.getters.getCMID;
+      if (!cmid) throw new Error("cmid undefined at updatePluginSettings");
+
+      await communication.webservice("update_settings", {
+        cmid,
+        settings: JSON.stringify(context.getters.getPluginSettings),
+      });
     },
-    /**
-     * Fetches the i18n data for the current language.
-     *
-     * @param context
-     * @returns {Promise<void>}
-     */
+
     async loadComponentStrings(context) {
-      const html = document.getElementsByTagName('html');
-      const lang = html[0].getAttribute('lang').replace(/-/g, '_');
-      const cacheKey = 'mod_openchat/strings/' + lang;
-      const cachedStrings = moodleStorage.get(cacheKey);
-      if (cachedStrings) {
-        context.commit('setStrings', JSON.parse(cachedStrings));
-      } else {
-        const request = {
-          methodname: 'core_get_component_strings',
-          args: {
-            'component': 'mod_openchat',
-            lang,
-          },
-        };
-        const loadedStrings = await moodleAjax.call([request])[0];
-        let strings = {};
-        loadedStrings.forEach((s) => {
-          strings[s.stringid] = s.string;
-        });
-        context.commit('setStrings', strings);
-        moodleStorage.set(cacheKey, JSON.stringify(strings));
+      if (IS_LTI || !moodleAjax || !moodleStorage) {
+        console.log("[LTI] Skipping Moodle i18n");
+        return;
       }
-    },
-    loadPreference: async function (context) {
-      try {
-        const req = await communication.webservice("preference", {
-          preference: 'accepted-informed-consent',
-          preference_value: 'none'
-        });
-        if (req.success) {
-          console.log('pref', req.preference)
-          context.informedConsentAgreement = req.preference;
-          context.commit('setInformedConsentAgreement', req.preference);
-        } else {
-          console.log('loadPluginpreference', req);
-        }
-      } catch (error) {
-        console.error(error);
-        throw new Error("@store: Failed to load plugin preference. ");
+
+      const html = document.documentElement;
+      const lang = html.getAttribute("lang").replace(/-/g, "_");
+      const cacheKey = "mod_openchat/strings/" + lang;
+
+      const cached = moodleStorage.get(cacheKey);
+      if (cached) {
+        context.commit("setStrings", JSON.parse(cached));
+        return;
       }
-    },
-    updatePreference: async function (context) {
-      try {
-        const req = await communication.webservice("preference", {
-          preference: 'accepted-informed-consent',
-          preference_value: context.getters.getInformedConsentAgreement,
-        });
-        if (req.success) {
-          console.log('loadPluginpreference done', req);//context.commit('setInformedConsentAgreement', JSON.parse(req.preference));
-        } else {
-          console.log('loadPluginpreference failed', req);
-        }
-      } catch (error) {
-        console.error(error);
-        throw new Error("@store: Failed to load plugin preference. ");
-      }
-    },
-    loadModelNames: async function (context) {
-      const base = new URL(context.getters.getPluginSettings.hostname);
-      const url = new URL('./api/tags', base);
-      console.log('setLLMModelList', url)
-      const response = await fetch(url.href); // or your base_url
-      const data = await response.json();
-      console.log('Availab. models', data.models)
-      let models = data.models.map(m => m.name);
-      context.commit('setLLMModelList', models);
-    },
-    loadRAGDocuments: async function (context) {
-      // Loads documents already indexed for RAG
-      const sc = context.getters.getSystemContext;
-      const payload = {
-        system: sc.systemName,
-        course_id: sc.courseID
+
+      const request = {
+        methodname: "core_get_component_strings",
+        args: { component: "mod_openchat", lang },
       };
-      const base = new URL(this.getters.getRAGWebserviceHost);
-      const url = new URL('./documents/documents_by_course', base);
-      let response = await fetch(url.href, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          //Authorization: "Bearer " + apiKey,
-        },
-        body: JSON.stringify(payload)
-      });
 
-      if (!response.ok) {
-        console.error("Failed to fetch models:", response.statusText);
-        return;
-      }
-      let data = await response.json();
+      const loaded = await moodleAjax.call([request])[0];
+      const strings = {};
+      loaded.forEach((s) => (strings[s.stringid] = s.string));
 
-      if (data.success) {
-        console.log('rag do', data.documents)
-        context.commit('setDocuments', data.documents);
-      }
-
+      context.commit("setStrings", strings);
+      moodleStorage.set(cacheKey, JSON.stringify(strings));
     },
-    /*
-    loadRAGModelNames: async function(context) {
-      let path = "llm/models/list";
-      let response = await fetch(this.getters.getRAGWebserviceHost + path, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          //Authorization: "Bearer " + apiKey,
-        },
-      });
 
-      if (!response.ok) {
-        console.error("Failed to fetch models:", response.statusText);
-        return;
+    async loadModelNames(context) {
+      const host = context.getters.getHostname;
+      if (!host) return;
+
+      const base = new URL(host);
+      const url = new URL("./api/tags", base);
+
+      const response = await fetch(url.href);
+      const data = await response.json();
+
+      context.commit(
+        "setLLMModelList",
+        (data.models || []).map((m) => m.name)
+      );
+    },
+
+    async loadRAGDocuments(context) {
+      const host = context.getters.getRAGWebserviceHost;
+      if (!host) return;
+
+      const payload = {
+        system: context.state.systemName,
+        course_id: context.state.courseID,
+      };
+
+      const response = await fetch(
+        new URL("./documents/documents_by_course", host),
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await response.json();
+      if (data && data.success) {
+        context.commit("setDocuments", data.documents);
       }
-  
-      let data = await response.json();
-
-      if (data.success) {
-        context.commit('setLLMModelList', data.data);
-      }
-
-    },*/
+    },
   },
+
   modules: {},
 });
