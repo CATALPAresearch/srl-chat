@@ -20,6 +20,7 @@ class LogAction(str, Enum):
 
     # ============ Strategy Detection & Evaluation ============
     STRATEGY_DETECTED = "strategy_detected"
+    STRATEGY_NOT_DETECTED = "strategy_not_detected"
     STRATEGY_STORED = "strategy_stored"
     STRATEGY_VALIDATED = "strategy_validated"
     FREQUENCY_ASKED = "frequency_asked"
@@ -44,6 +45,7 @@ class LogAction(str, Enum):
     SUMMARY_GENERATED = "summary_generated"
 
     # ============ User Management ============
+    NEW_USER = "new_user"
     USER_CREATED = "user_created"
     USER_RETRIEVED = "user_retrieved"
     STUDY_SUBJECT_STORED = "study_subject_stored"

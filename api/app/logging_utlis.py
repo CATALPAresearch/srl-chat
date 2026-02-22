@@ -3,7 +3,7 @@ import hashlib
 import uuid
 from flask import request, has_request_context
 from app import db, app
-from .enums import LogAction
+from .actions import LogAction
 from .models import ActivityLog
 import logging
 
@@ -13,8 +13,8 @@ def log_action(
         action: LogAction,
         user=None,
         value=None,
-        context_id=None,
-        strategy_id=None,
+        context=None,
+        strategy=None,
         turn=None,
         step=None,
         http_status=None,
@@ -28,8 +28,8 @@ def log_action(
         action (LogAction): The action being performed
         user (User): User object
         value (dict): Additional data as JSON
-        context_id (str): Context ID
-        strategy_id (str): Strategy ID
+        context (str): Context
+        strategy (str): Strategy
         turn (int): Conversation turn
         step (str): Conversation step
         http_status (int): HTTP status code
@@ -46,13 +46,13 @@ def log_action(
     """
     try:
         extracted_user_agent = None
-        ip_hash = None
+        ip = None
 
         if has_request_context():
             extracted_user_agent = user_agent or request.headers.get('User-Agent')
 
             if include_ip and request.remote_addr:
-                ip_hash = hash_ip(request.remote_addr)
+                ip = request.remote_addr
 
         log_entry = ActivityLog(
             id=str(uuid.uuid4()),
@@ -62,9 +62,9 @@ def log_action(
             action=action.value,
             value=value,
             user_agent=extracted_user_agent,
-            ip_address_hash=ip_hash,
-            context_id=context_id,
-            strategy_id=strategy_id,
+            ip_address=ip,
+            context=context,
+            strategy=strategy,
             turn=turn,
             step=step,
             http_status=http_status
@@ -80,18 +80,6 @@ def log_action(
         db.session.rollback()
         logger.error(f"Failed to log action {action}: {e}")
         return None
-
-
-def hash_ip(ip_address: str) -> str | None:
-    """Hash IP address with SHA256"""
-    if not ip_address:
-        return None
-
-    salt = app.config.get('IP_HASH_SALT', 'studybot-default-salt')
-    salted = f"{ip_address}{salt}"
-
-    return hashlib.sha256(salted.encode()).hexdigest()
-
 
 def log_api_call(endpoint: str, method: str = None, user=None):
     """Log API calls"""

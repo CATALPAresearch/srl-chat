@@ -86,9 +86,14 @@ def strategy_step(user: User, context: str, prev_conversation: list[str]):
                                                       user_prompt=None)
     if not json_valid:
         return [], "in_progress", json_output
+
+    if json_output["strategies"] not in ([], ["other"]):
+        json_output["status"] = "completed"
+
     if json_output["strategies"] in ([], ["other"]) and len(prev_conversation) >= ABANDON_AFTER_STEPS:
         json_output["strategies"] = ["other"]
         json_output["status"] = "abandon"
+
     return json_output["strategies"], json_output["status"], json_output["comment"]
 
 

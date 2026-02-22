@@ -185,7 +185,7 @@ class Archive(db.Model):
     archived_conversation: so.Mapped[str] = so.mapped_column(sa.String())
 
 class ActivityLog(db.Model):
-    __tableName__ = 'activity_log'
+    __tablename__ = 'activity_log'
 
     id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()))
 
@@ -198,10 +198,10 @@ class ActivityLog(db.Model):
     value = db.Column(db.JSON, nullable=True)
 
     user_agent = db.Column(db.String, nullable=True)
-    ip_address_hash = db.Column(db.String, nullable=True)
+    ip_address = db.Column(db.String, nullable=True)
 
-    context_id = db.Column(db.String, nullable=True, index=True)
-    strategy_id = db.Column(db.String, nullable=True)
+    context = db.Column(db.String, nullable=True, index=True)
+    strategy = db.Column(db.String, nullable=True)
     turn = db.Column(db.Integer, nullable=True)
     step = db.Column(db.String, nullable=True)
 
@@ -225,9 +225,9 @@ class ActivityLog(db.Model):
             'action': self.action,
             'value': self.value,
             'user_agent': self.user_agent,
-            'ip_address_hash': self.ip_address_hash,
-            'context_id': self.context_id,
-            'strategy_id': self.strategy_id,
+            'ip_address': self.ip_address,
+            'context': self.context,
+            'strategy': self.strategy,
             'turn': self.turn,
             'step': self.step,
             'http_status': self.http_status
