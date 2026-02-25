@@ -13,3 +13,5 @@ amd/src/
 api/.venv/
 api/__pycache__/
 *.pyc
+
+containers/
