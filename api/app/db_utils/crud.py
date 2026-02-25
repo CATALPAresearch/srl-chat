@@ -141,15 +141,30 @@ def get_strategy_mentions_for_user(user, strategy):
 
 def first_time_setup(userid, client, language):
     language_db = get_language(language)
-    user = User(id=userid, client=client, language_id=language_db.id,
-                study_subject="",
-                conversation_state=ConversationState(id=str(uuid.uuid4())))
+
+    conv_state = ConversationState(
+        id=str(uuid.uuid4()),
+        current_turn=0,
+        current_conversation_step="intro"
+    )
+
+    user = User(
+        id=userid,
+        client=client,
+        language_id=language_db.id,
+        study_subject="",
+        conversation_state=conv_state
+    )
+
     db.session.add(user)
     db.session.flush()
+
     created_user = db.session.scalar(
         sa.select(User)
         .where(User.id == str(userid))
-        .where(User.client == client))
+        .where(User.client == client)
+    )
+
     return created_user
 
 

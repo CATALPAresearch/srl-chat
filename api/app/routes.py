@@ -5,6 +5,8 @@ import json
 from app import app, db
 from .core import start_conversation_core, reply_core, reset_conversation
 from .db_utils.crud import get_user, get_language_by_id
+from .actions import LogAction
+from .logging_utlis import log_action
 
 cors = CORS(app)
 # FixMe: cors = CORS(app, ressources={r"/api/*": {"origin": "http://localhost:80"}})
@@ -45,6 +47,7 @@ def delete_message():
         success = reset_conversation(user)
         if success:
             return "*** Conversation has been reset. A new conversation can be started from the StudyTest server. ***", 200
+        return None
     except Exception as e:
         app.logger.error("Error on reset conversation: %s - Rolling back DB changes", e)
         db.session.rollback()
@@ -106,10 +109,32 @@ def start_conversation_flask():
         client = content["client"]
         userid = content["userid"]
         app.logger.info("Starting new conversation (%s) for user: %s - %s", language, userid, client)
+
+        user = get_user(userid, client)
+
+        log_action(
+            LogAction.API_CALL_START,
+            user=user if user else "new_user",
+            value={"endpoint": "/startConversation", "language": language, "client": client, "userid": userid},
+            http_status=200,
+            turn=0,
+            step="request_received",
+            context="conversation_start",
+            strategy="strategy_not_detected"
+        )
+
         return start_conversation_core(language, client, userid)
     except Exception as e:
         app.logger.error("Error on start conversation: %s - Rolling back DB changes", e)
         db.session.rollback()
+
+        log_action(
+            LogAction.DB_ROLLBACK,
+            value={"error": str(e)},
+            http_status=500,
+            step="exception_handled"
+        )
+
         with open("app/config/translations.json", "r", encoding="utf-8") as file:
             translations = json.load(file)
         return translations["translations"][language]["create_error"], 500
@@ -126,6 +151,7 @@ def reply():
         "message": message
     }
     """
+    global userid, client
     try:
         content = request.json
         client_id = content["client"]
@@ -149,9 +175,19 @@ def reply():
     except Exception as e:
         app.logger.error("Error on reply: %s - Rolling back DB changes", e)
         db.session.rollback()
+
+        user = get_user(userid, client)
+        log_action(
+            LogAction.DB_ROLLBACK,
+            user=user if user else None,
+            value={"error": str(e)},
+            http_status=500,
+            step="exception_handled"
+        )
+
         with open("app/config/translations.json", "r", encoding="utf-8") as file:
             translations = json.load(file)
-        user = get_user(userid, client_id)
+
         if user:
             user_lang = get_language_by_id(user.language_id)
             return translations["translations"][user_lang.lang_code]["reply_error"], 200

@@ -4,6 +4,8 @@ import os
 from xml.sax.saxutils import escape as xmlescape
 import logging
 
+from . import db
+from .actions import LogAction
 from .llm import (
     get_llm_response_openai,
     get_prompt,
@@ -35,6 +37,7 @@ from .db_utils.crud import (
     store_study_subject,
     archive_conversation
 )
+from .logging_utlis import log_action
 from .steps import strategy_step, frequency_step, validate_strategies, intro_step
 
 MODEL = os.getenv("MODEL")
@@ -58,6 +61,14 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
         if not get_language(language):
             msg = translations["language_not_supported_message"]
             response = xmlescape(msg, {"ä": "&auml;", "ö": "&ouml;", "ü": "&uuml;"})
+
+            log_action(
+                LogAction.LANGUAGE_NOT_SUPPORTED,
+                value={"language": language},
+                http_status=400,
+                step="language_validation"
+            )
+
             return response, 400
 
         user = get_user(userid, client)
@@ -65,18 +76,61 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
         if user is None:
             created_user = first_time_setup(userid, client, language)
             if created_user is None:
+                log_action(
+                    LogAction.USER_NOT_FOUND,
+                    value={"userid": userid, "client": client},
+                    http_status=500,
+                    step="user_creation_failed",
+                    context="conversation_start"
+                )
+
                 return "An error occurred, please try to restart the conversation", 500
             user = created_user
 
+            log_action(
+                LogAction.USER_CREATED,
+                user=user,
+                value={"language": language, "client": client},
+                http_status=201,
+                turn=0,
+                step="user_created",
+                context="conversation_start",
+                strategy="strategy_not_detected"
+            )
+
         logger.info("Created new user (%s): %s - %s", language, user.id, user.client)
+
+        log_action(
+            LogAction.START_CONVERSATION,
+            user=user,
+            value={"language": language, "client": client},
+            turn=0,
+            step="intro",
+            http_status=200,
+            context="conversation_start",
+            strategy="strategy_not_detected"
+        )
 
         system_prompt = get_prompt(user, "system")
         intro_prompt = get_prompt(user, "intro")
         update_current_conversation_step(user, "intro")
 
         llm_message = get_llm_response_openai(system_prompt + " " + intro_prompt, None, 0.1)
+
         turn = update_current_turn(user)
         store_llm_answer(user, llm_message, None, None, turn, step="intro")
+
+        log_action(
+            LogAction.REPLY_LLM,
+            user=user,
+            value={"message_length": len(llm_message), "message_preview": llm_message[:100]},
+            turn=turn,
+            step="intro",
+            context="conversation_start",
+            strategy="strategy_not_detected",
+            http_status=200
+        )
+
         return llm_message, 200
     except Exception as e:
         raise Exception(e)
@@ -92,32 +146,64 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
     }
     """
     logger.info('Started reply_core')
+
     llm_message = ''
+    user = None
+    current_context = None
+    turn = 0
+
     try:
         user = get_user(userid, client)
         if user is None:
-            raise FileNotFoundError("User not found")
+            log_action(
+                LogAction.USER_NOT_FOUND,
+                value={"userid": userid, "client": client},
+                http_status=500,
+                step="user_not_found",
+                context="conversation_could_not_start"
+            )
+
+            return "User not found. Start a conversation first.", 400
             # language = "en"  # TODO - ask first time
             # return start_conversation(language, client, userid)
 
         # Retrieve current context
         current_context_id = user.conversation_state.current_context
+
         if current_context_id:
             current_context = get_context_by_id(current_context_id)
         else:
             current_context = None
+
         turn = update_current_turn(user)
+
         conversation_step = user.conversation_state.current_conversation_step
         logger.info('......................')
-        logger.info('conversation step: '+ str(conversation_step))
+        logger.info('conversation step: ' + str(conversation_step))
         current_strategy = user.conversation_state.strategy_for_frequency
+
+        log_action(
+            LogAction.REPLY_USER,
+            user=user,
+            value={"message_length": len(user_message), "message_preview": user_message[:100]},
+            context=current_context.context if current_context else "user first response",
+            strategy=current_strategy if current_strategy else "strategy_not_detected",
+            turn=turn,
+            step=user.conversation_state.current_conversation_step if user.conversation_state else None,
+            http_status=200
+        )
+
         user_answer_db = store_answer(user, current_context_id, current_strategy, user_message, turn, conversation_step)
 
         conversation_for_current_context = retrieve_full_conversation(user, current_context_id)
+
         logger.info(user_message)
+
         if user.conversation_state.interview_completed:
             return sign_off_interview(user)
+
         logger.info("Replying to user: %s - %s. Step: %s", user.id, user.client, conversation_step)
+
         match conversation_step:
             case "intro":
                 logger.info('@intro step, Entered intro step')
@@ -125,6 +211,7 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                 logger.info('@intro step, got subject')
                 logger.info(study_subject)
                 logger.info('@intro status: %s',status)
+
                 if status in ("completed", "complete", "abandon", "in_progress"):
                     store_study_subject(user, study_subject)
                     contexts = set(get_contexts(user.language_id))
@@ -140,46 +227,122 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                     system_prompt = get_prompt(user, "system")
                     context_prompt = get_context_prompt(current_context.context, user)
                     update_current_conversation_step(user, "strategy")
-                    
+
                     llm_message = get_llm_response_openai(context_prompt + "  " + system_prompt, None, 0.1)
+
+                    log_action(
+                        LogAction.REPLY_LLM,
+                        user=user,
+                        value={"message_length": len(llm_message), "message_preview": llm_message[:100]},
+                        turn=turn,
+                        step=conversation_step,
+                        context=current_context.context,
+                        strategy=user.conversation_state.strategy_for_frequency if user.conversation_state.strategy_for_frequency else "strategy_not_detected",
+                        http_status=200
+                    )
+
                     logger.info('@intro step, second llm call ')
                     logger.info(llm_message)
-                
+
             case "strategy":
                 strategies_mentioned, status, llm_message = strategy_step(user, str(current_context.context),
                                                                           conversation_for_current_context)
                 if status in ("completed", "complete", "abandon"):
                     update_current_conversation_step(user, "frequency")
                     valid_strategies = validate_strategies(strategies_mentioned)
+
                     for mentioned_strategy in valid_strategies:
                         store_strategy(user, user_answer_db, current_context.id, mentioned_strategy)
                         if mentioned_strategy == "008-001":
                             update_strategy_with_frequency(user, current_context.id, mentioned_strategy, 0)
                     llm_message, current_context = ask_about_frequency(user, current_context)
+
+                    log_action(
+                        LogAction.REPLY_LLM,
+                        user=user,
+                        value={
+                            "message_length": len(llm_message),
+                            "message_preview": llm_message[:100],
+                        },
+                        turn=turn,
+                        step=conversation_step,
+                        context=current_context.context if current_context else None,
+                        strategy=user.conversation_state.strategy_for_frequency if user.conversation_state.strategy_for_frequency else "strategy_not_detected",
+                        http_status=200
+                    )
+                else:
+                    log_action(
+                        LogAction.REPLY_LLM,
+                        user=user,
+                        value={
+                            "message_length": len(llm_message),
+                            "message_preview": llm_message[:100],
+                        },
+                        turn=turn,
+                        step="strategy",
+                        context=current_context.context if current_context else None,
+                        strategy=user.conversation_state.strategy_for_frequency,
+                        http_status=200
+                    )
+
             case "frequency":
-                conversation_for_strategy_in_context = retrieve_full_conversation(user,
-                                                                                  user.conversation_state.current_context,
-                                                                                  user.conversation_state.strategy_for_frequency)
-                strategy_rated, rated_frequency, status, llm_message = frequency_step(user,
-                                                                                      conversation_for_current_context,
-                                                                                      conversation_for_strategy_in_context)
+                conversation_for_strategy_in_context = retrieve_full_conversation(
+                    user,
+                    user.conversation_state.current_context,
+                    user.conversation_state.strategy_for_frequency
+                )
+
+                strategy_rated, rated_frequency, status, llm_message = frequency_step(
+                    user,
+                    conversation_for_current_context,
+                    conversation_for_strategy_in_context
+                )
+
                 if status in ("completed", "abandon"):
                     # Store user's answer(s)
                     update_strategy_with_frequency(user, current_context_id, strategy_rated,
                                                    rated_frequency)
                     # check if further strategies need to be checked for frequency
                     llm_message, current_context = ask_about_frequency(user, current_context)
+
+                log_action(
+                    LogAction.REPLY_LLM,
+                    user=user,
+                    value={
+                        "message_length": len(llm_message),
+                        "message_preview": llm_message[:100],
+                    },
+                    turn=turn,
+                    step=conversation_step,
+                    context=current_context.context if current_context else None,
+                    strategy=strategy_rated,
+                    http_status=200
+                )
+
             case _:
                 pass
 
-        turn = update_current_turn(user)
         store_llm_answer(user, llm_message, current_context,
                          user.conversation_state.strategy_for_frequency, turn,
                          user.conversation_state.current_conversation_step
                          )
         return llm_message, 200
     except Exception as e:
-        raise Exception(e)
+        db.session.rollback()
+        logger.error("Error in reply_core: %s", e)
+
+        log_action(
+            LogAction.DB_ROLLBACK,
+            user=user,
+            value={"error": str(e)},
+            http_status=500,
+            step="exception_handled",
+            turn=turn,
+            context=current_context.context if current_context else None,
+            strategy=user.conversation_state.strategy_for_frequency if user else None
+        )
+
+        return "An error occurred", 500
 
 
 def set_current_context_complete(user, current_context):
@@ -320,13 +483,56 @@ def generate_summary(user, strategy_scores):
 
 
 def reset_conversation(user):
-    conversation = retrieve_full_conversation(user)
-    state = user.conversation_state
-    archive = {"messages": conversation,
-               "state": {
-                   "complete": state.interview_completed,
-                   "current_context": state.current_context,
-                   "step": state.current_conversation_step
-               }
-               }
-    return archive_conversation(user, archive)
+    try:
+        log_action(
+            LogAction.RESET_CONVERSATION,
+            user=user,
+            value={"status": "started"},
+            http_status=200,
+            step="complete",
+            context= "delete conversation",
+            strategy= "no strategy"
+        )
+
+        conversation = retrieve_full_conversation(user)
+        state = user.conversation_state
+
+        archive = {
+            "messages": conversation,
+            "state": {
+                "complete": state.interview_completed,
+                "current_context": state.current_context,
+                "step": state.current_conversation_step
+            }
+        }
+
+        success = archive_conversation(user, archive)
+
+        if success:
+            log_action(
+                LogAction.CONVERSATION_ARCHIVED,
+                user=user,
+                value={"archived_messages": len(conversation)},
+                http_status=200,
+                step="complete",
+                context="conversation archived",
+                strategy="no strategy"
+            )
+        else:
+            log_action(
+                LogAction.ERROR_OCCURRED,
+                user=user,
+                value={"reason": "archive_failed"},
+                http_status=500
+            )
+
+        return success
+
+    except Exception as e:
+        log_action(
+            LogAction.ERROR_OCCURRED,
+            user=user,
+            value={"error": str(e)},
+            http_status=500
+        )
+        raise
