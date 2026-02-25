@@ -31,7 +31,7 @@ Activate pgvector: 'psql -d postgres -c 'CREATE EXTENSION vector'
 - Copy the env.example file, renaming the new file .env inside xxxx
   - Set BASE_URL=https://chat-impact.fernuni-hagen.de:11434/ollama/v1 to use the university hosted Ollama server, or to the URL of any other Ollama compatible endpoint, e.g. http://localhost:11434/
   - OPTIONAL (currently disabled): Set API_KEY to the required API key (Bearer token starting with sk-...) for the BASE_URL. If no API key is required, this field must still be set to any dummy value
-- start the application: 'poetry run python3.11 main.py'
+- start the application: 'poetry run python3.11 api/main.py'
 
 
 **Test the system**

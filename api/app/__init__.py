@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import MetaData
 from logging.config import dictConfig
+import os
+from dotenv import load_dotenv
 
 dictConfig(
     {
@@ -21,7 +23,7 @@ dictConfig(
             },
             "fileRotate": {
                 "class": "logging.handlers.RotatingFileHandler",
-                "filename": "logs/api.log",
+                "filename": os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "logs", "api.log"),
                 "maxBytes": 1000000,
                 "backupCount": 5,
                 "formatter": "default",
@@ -33,8 +35,10 @@ dictConfig(
 )
 
 
+load_dotenv()
 app = Flask('StudyBot')
 app.config.from_object(Config)
+app.secret_key = os.environ.get("SECRET_KEY", "fallback_secret_key")
 convention = {
     "ix": 'ix_%(column_0_label)s',
     "uq": "uq_%(table_name)s_%(column_0_name)s",
