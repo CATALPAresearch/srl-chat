@@ -82,7 +82,7 @@ def get_llm_response_openai(
 ):
     # --- HARD DEV GUARD: skip LLM entirely ---
     if os.getenv("DISABLE_LLM", "false").lower() == "true":
-        logger.warning("DISABLE_LLM=true → skipping LLM call")
+        logger.warning("DISABLE_LLM=true - skipping LLM call")
         return (
             "Hallo! Lass uns mit dem Interview beginnen. "
             "In welchem Fach möchtest du einen Abschluss machen?"
