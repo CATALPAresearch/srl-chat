@@ -1,29 +1,33 @@
 # SRL Chat
 
-An AI agent that conducts structured interviews with students about their self-regulated learning strategies, based on Zimmerman & Martinez-Pons' Self-Regulated Learning Interview Schedule.
+SRL Chat is a conversational AI agent that conducts structured interviews with students about their self-regulated learning (SRL) strategies. It guides students through a multi-step dialogue, asking about the strategies they use across different study contexts, then detects and classifies those strategies and asks about usage frequency. The interview protocol is based on Zimmerman & Martinez-Pons' Self-Regulated Learning Interview Schedule.
 
-> Zimmerman, B. J., & Martinez-Pons, M. M. (1986). _Development of a Structured Interview for Assessing Student Use of Self-Regulated Learning Strategies._ American Educational Research Journal, 23(4), 614–628. https://doi.org/10.2307/1163093
+> Zimmerman, B. J., & Martinez-Pons, M. M. (1986). _Development of a Structured Interview for Assessing Student Use of Self-Regulated Learning Strategies._ American Educational Research Journal, 23(4), 614-628. https://doi.org/10.2307/1163093
 
-The application runs as a Flask API backed by PostgreSQL and Ollama. It can be used in three modes:
+## Features
 
-| Mode             | Description                                                |
-| ---------------- | ---------------------------------------------------------- |
-| **Standalone**   | Browser UI at `http://localhost:5000` — no Moodle required |
-| **LTI Provider** | Embedded inside Moodle via LTI 1.0 launch                  |
-| **Docker**       | Production-ready setup with Docker Compose                 |
-
----
+- Multi-step interview agent (intro, strategy detection, probing, frequency rating, summary)
+- Strategy detection via LLM chain-of-thought reasoning or RAG-based cosine similarity (configurable)
+- Configurable interview protocols via JSON files and the `INTERVIEW_PROTOCOL` env variable
+- Bilingual support (English/German) with extensible translation system
+- SRL-O survey module with Likert-scale questionnaire, stored in the database
+- Full dialogue persistence: every student message and every agent response is stored per turn
+- Structured activity logging to the database (user, unix timestamp, action, value, user agent, IP, context, strategy, turn, step, HTTP status)
+- Detected strategies and frequency ratings stored per user, context, and interview answer
+- Three deployment modes: standalone browser UI, LTI 1.0 integration with Moodle, Docker Compose
+- LTI 1.0 Tool Provider for embedding inside LMS courses (e.g. Moodle, Illias) 
+- Discord bot integration (optional, separate service)
 
 ## Prerequisites
 
 | Dependency | Version | Purpose                                          |
 | ---------- | ------- | ------------------------------------------------ |
-| Python     | 3.12    | API backend                                      |
-| Poetry     | ≥ 1.8   | Python dependency management                     |
-| Node.js    | ≥ 18    | Frontend build                                   |
-| PostgreSQL | ≥ 16    | Database                                         |
-| pgvector   | —       | PostgreSQL vector extension (for RAG embeddings) |
-| Ollama     | —       | Local LLM inference                              |
+| Python     | 3.12    | Backend                                          |
+| Poetry     | >= 1.8  | Python dependency management                     |
+| Node.js    | >= 18   | Frontend build                                   |
+| PostgreSQL | >= 16   | Database                                         |
+| pgvector   | -       | PostgreSQL vector extension (for RAG embeddings) |
+| Ollama     | -       | Local LLM inference                              |
 
 ### Install PostgreSQL + pgvector (macOS)
 
@@ -44,7 +48,7 @@ psql -d srl_chat -c "CREATE EXTENSION IF NOT EXISTS vector"
 
 ```bash
 brew install ollama
-ollama serve          # start the server (runs on port 11434)
+ollama serve
 ollama pull phi3:latest
 ```
 
@@ -54,90 +58,94 @@ ollama pull phi3:latest
 
 ```
 srl-chat/
-├── api/                        # Flask backend
+├── backend/                    # Flask backend (Poetry project)
 │   ├── main.py                 # Entrypoint
-│   ├── lti.py                  # LTI blueprint (/lti/launch, /lti/ui)
-│   ├── lti_client.py           # LTI test client (simulates Moodle launch)
-│   ├── app_config.py           # Flask config (reads .env)
-│   ├── db_setup.py             # DB seed with embeddings
-│   ├── db_setup_no_embed.py    # DB seed without embeddings (local dev)
-│   ├── .env                    # Local dev environment variables
+│   ├── pyproject.toml          # Python dependencies
 │   ├── app/
-│   │   ├── __init__.py         # Flask app factory
-│   │   ├── routes.py           # API + static file routes
+│   │   ├── __init__.py         # Flask app factory, DB init, blueprint registration
+│   │   ├── config.py           # Flask config (reads .env)
+│   │   ├── routes.py           # API + static file + survey routes
 │   │   ├── core.py             # Conversation state machine
-│   │   ├── llm.py              # Ollama client
-│   │   ├── models.py           # SQLAlchemy models
+│   │   ├── llm.py              # Ollama LLM client
+│   │   ├── rag.py              # RAG-based strategy detection (pgvector)
 │   │   ├── steps.py            # Interview step definitions
-│   │   ├── actions.py          # Logging actions enum
-│   │   ├── config/             # Interview JSON configs
-│   │   └── db_utils/crud.py    # DB helpers
-│   └── static/lti/             # LTI frontend assets
-│       ├── index.html
-│       ├── app-lazy.js         # Webpack AMD bundle (copy of amd/build/)
-│       └── core/               # AMD stubs (ajax.js, localstorage.js)
+│   │   ├── models.py           # SQLAlchemy models
+│   │   ├── actions.py          # LogAction enum
+│   │   ├── logging_utlis.py    # Structured activity logging
+│   │   ├── lti.py              # LTI blueprint (/lti/launch, /lti/ui)
+│   │   ├── lti_client.py       # LTI test client
+│   │   └── database/           # DB CRUD helpers, setup scripts
+│   ├── config/                 # JSON configuration files
+│   │   ├── interview/          # Interview protocol variants
+│   │   ├── prompts.json        # LLM prompt templates
+│   │   ├── translations.json   # UI translations (en/de)
+│   │   ├── survey_srl-o.json   # SRL-O questionnaire definition
+│   │   └── learning_strategies.json
+│   ├── static/lti/             # LTI frontend assets (webpack output)
+│   ├── certs/                  # TLS certificates (for LTI)
+│   └── logs/                   # Rotating log files
 ├── frontend/                   # Vue.js 2 source
 │   ├── src/
-│   ├── index.html              # Standalone HTML
-│   ├── core/                   # AMD stubs for standalone mode
-│   ├── webpack.config.js
-│   └── package.json
-├── amd/build/                  # Webpack build output
-├── discord/                    # Discord bot (separate service)
-├── RAG/                        # Embedding & evaluation scripts
-├── .env                        # Docker Compose environment
-├── env.example                 # Template for .env
+│   │   ├── components/         # AgentChat, LLMChat, RAGChat, SurveyView, ...
+│   │   ├── router/             # Vue Router (hash mode)
+│   │   └── store/              # Vuex store
+│   ├── index.html              # Standalone HTML shell
+│   └── webpack.config.js       # AMD library target -> backend/static/lti/
+├── discord/                    # Discord bot (optional, separate service)
+├── tests/                      # pytest test suite + evaluation data
+├── scripts/                    # Utility scripts (docx conversion, strategy merge)
+├── docs/                       # Documentation
 ├── docker-compose.yml          # Production Docker setup
-└── develop.docker-compose.yml  # Development Docker setup
+├── develop.docker-compose.yml  # Development Docker setup
+└── env.example                 # Template for .env
 ```
 
 ---
 
-## Environment files
+## Environment variables
 
-There are **two** `.env` files with different purposes:
+There are two `.env` files:
 
-| File                  | Used by                    | Purpose                                                   |
-| --------------------- | -------------------------- | --------------------------------------------------------- |
-| `.env` (project root) | Docker Compose             | Read by `docker-compose.yml` for container environment    |
-| `api/.env`            | Flask (Poetry / local dev) | Read by `app_config.py` via `dotenv` when running locally |
+| File                  | Used by                    | Purpose                            |
+| --------------------- | -------------------------- | ---------------------------------- |
+| `.env` (project root) | Docker Compose             | Container environment variables    |
+| `backend/.env`        | Flask (Poetry / local dev) | Read by `app/config.py` via dotenv |
 
-For **local development without Docker**, only `api/.env` matters.
-For **Docker Compose**, only the root `.env` matters.
+For local development without Docker, only `backend/.env` matters.
 
-### Key variables in `api/.env`
+### Key variables
 
 ```ini
 BASE_URL=http://localhost:11434/       # Ollama server URL
 MODEL=phi3:latest                      # LLM model name
-PG_HOST=localhost                      # PostgreSQL host
-PG_USER=postgres                       # PostgreSQL user
+PG_HOST=localhost
+PG_USER=postgres
 PG_PORT=5432
 PG_PASSWORD=postgres
 PG_DB=srl_chat
 DISABLE_LLM=false                      # Set true to skip LLM calls (dry-run)
-INTERVIEW_PROTOCOL=interview_default   # Which interview config to use
 SECRET_KEY=dev_secret_key_123          # Flask session secret
+INTERVIEW_PROTOCOL=interview_default   # Interview config (file in config/interview/)
+USE_RAG_STRATEGY=false                 # Use RAG-based strategy detection instead of LLM
+RAG_EMBEDDING_MODEL=nomic-embed-text   # Ollama embedding model for RAG
 ```
 
 ---
 
 ## Database setup
 
-There are two setup scripts:
+Two setup scripts are available in `backend/app/database/`:
 
-| Script                 | Use case                                                                                             |
-| ---------------------- | ---------------------------------------------------------------------------------------------------- |
-| `db_setup.py`          | Full setup including **strategy embeddings** (requires a HuggingFace API token in `EMBEDDING_TOKEN`) |
-| `db_setup_no_embed.py` | Setup **without embeddings** — use this for local dev when you only need the interview agent         |
-
-Run from the `api/` directory:
+| Script              | Use case                                                                    |
+| ------------------- | --------------------------------------------------------------------------- |
+| `setup.py`          | Full setup including strategy embeddings (requires Ollama nomic-embed-text) |
+| `setup_no_embed.py` | Setup without embeddings (local dev, interview agent only)                  |
 
 ```bash
-cd api
-poetry run python db_setup_no_embed.py    # local dev (no embeddings)
+cd backend
+poetry run python -m app.database.setup_no_embed    # local dev
 # OR
-poetry run python db_setup.py             # full setup with embeddings
+poetry run python -m app.database.setup             # full setup with embeddings
 ```
 
 ---
@@ -148,7 +156,7 @@ poetry run python db_setup.py             # full setup with embeddings
 
 ```bash
 # Backend
-cd api
+cd backend
 poetry install
 
 # Frontend
@@ -160,69 +168,41 @@ npm install
 
 ```bash
 cd frontend
-npx webpack --mode development
+npm run build
 ```
 
-This outputs `amd/build/app-lazy.min.js`. Copy it to the LTI static directory too:
-
-```bash
-cp amd/build/app-lazy.min.js api/static/lti/app-lazy.js
-```
+This outputs `app-lazy.js` directly into `backend/static/lti/`.
 
 ### Seed the database
 
 ```bash
-cd api
-poetry run python db_setup_no_embed.py
+cd backend
+poetry run python -m app.database.setup_no_embed
 ```
 
 ### Start the server
 
 ```bash
-cd api
+cd backend
 poetry run python main.py
 ```
 
-Open **http://localhost:5000** in your browser. Click "Start Chat" to begin the SRL interview.
+Open http://localhost:5000 in your browser. The tabs provide access to:
 
-### Test with curl
-
-```bash
-# Verify Ollama is running
-curl http://localhost:11434/api/tags
-
-# Start a conversation
-curl -X POST http://localhost:5000/startConversation \
-  -H "Content-Type: application/json" \
-  -d '{"language": "en", "client": "discord", "userid": "testuser1"}'
-
-# Send a reply
-curl -X POST http://localhost:5000/reply \
-  -H "Content-Type: application/json" \
-  -d '{"message": "I usually summarise my notes and use mind maps.", "client": "discord", "userid": "testuser1"}'
-
-# Reset a conversation
-curl -X POST http://localhost:5000/resetConversation \
-  -H "Content-Type: application/json" \
-  -d '{"client": "discord", "userid": "testuser1"}'
-```
+- Agent Chat (SRL interview)
+- LLM Chat (direct LLM conversation)
+- Document Chat (RAG-based)
+- Survey (SRL-O questionnaire)
 
 ---
 
 ## 2. LTI mode (Moodle integration)
 
-The application provides an LTI 1.0 Tool Provider. Moodle launches the tool via `POST /lti/launch`, which stores the user session and redirects to `/lti/ui`, serving the Vue.js chat interface.
-
-### How it works
-
-1. Moodle sends a POST to `https://<your-host>/lti/launch` with LTI parameters (`context_id`, `user_id`, etc.)
-2. Flask stores the user in the session and redirects to `/lti/ui`
-3. `/lti/ui` serves `api/static/lti/index.html`, which loads the AMD bundle via RequireJS
-4. The AMD stubs in `api/static/lti/core/` replace Moodle's `core/ajax` and `core/localstorage` modules
+The application provides an LTI 1.0 Tool Provider. Moodle launches the tool via `POST /lti/launch`, which stores the user session and redirects to `/lti/ui`.
 
 ### Configure Moodle
 
-In Moodle, add an **External Tool** activity:
+In Moodle, add an External Tool activity:
 
 | Setting          | Value                            |
 | ---------------- | -------------------------------- |
@@ -231,18 +211,14 @@ In Moodle, add an **External Tool** activity:
 | Shared Secret    | _(your secret)_                  |
 | Launch Container | Embed / New Window               |
 
-> **Important:** Moodle typically runs on HTTPS. The Flask server must also be on HTTPS (or behind a reverse proxy) to avoid mixed-content blocking in browsers.
+The Flask server must be on HTTPS (or behind a reverse proxy) to avoid mixed-content blocking.
 
 ### Test locally with the LTI client
 
-The `lti_client.py` script simulates a Moodle LTI launch:
-
 ```bash
-cd api
-poetry run python lti_client.py
+cd backend
+poetry run python -m app.lti_client
 ```
-
-This sends a POST to `http://localhost:5000/lti/launch` with sample LTI parameters and prints the HTML response.
 
 ---
 
@@ -250,23 +226,17 @@ This sends a POST to `http://localhost:5000/lti/launch` with sample LTI paramete
 
 ### Development
 
-Uses `develop.docker-compose.yml` with hot-reload and a local PostgreSQL container:
-
 ```bash
 cp env.example .env
-# Edit .env: set BASE_URL, MODEL, PG_PASSWORD, etc.
-
+# Edit .env with your values
 docker compose -f develop.docker-compose.yml up postgres-dev api-dev
 ```
 
 ### Production
 
-Uses `docker-compose.yml` with gunicorn:
-
 ```bash
 cp env.example .env
 # Edit .env for production values
-
 docker compose build --no-cache
 docker compose up -d
 ```
@@ -275,38 +245,57 @@ docker compose up -d
 
 ## API endpoints
 
-| Method | Path                 | Description                                    |
-| ------ | -------------------- | ---------------------------------------------- |
-| `GET`  | `/`                  | Standalone web UI                              |
-| `POST` | `/startConversation` | Begin a new SRL interview                      |
-| `POST` | `/reply`             | Send a user message and get the agent response |
-| `POST` | `/resetConversation` | Archive and reset a conversation               |
-| `POST` | `/lti/launch`        | LTI 1.0 launch endpoint (Moodle POST)          |
-| `GET`  | `/lti/ui`            | LTI chat interface                             |
+| Method | Path                   | Description                                    |
+| ------ | ---------------------- | ---------------------------------------------- |
+| `GET`  | `/`                    | Standalone web UI                              |
+| `POST` | `/startConversation`   | Begin a new SRL interview                      |
+| `POST` | `/reply`               | Send a user message and get the agent response |
+| `POST` | `/resetConversation`   | Archive and reset a conversation               |
+| `GET`  | `/translations/<lang>` | Get UI translations for a language             |
+| `GET`  | `/user_language/`      | Get a user's language                          |
+| `POST` | `/lti/launch`          | LTI 1.0 launch endpoint                        |
+| `GET`  | `/lti/ui`              | LTI chat interface                             |
+| `GET`  | `/survey/<id>`         | Get survey definition JSON                     |
+| `POST` | `/survey/<id>/submit`  | Submit survey responses                        |
+| `GET`  | `/survey/<id>/results` | Get all responses for a survey                 |
 
 ### Request / response format
 
 ```json
 // POST /startConversation
-{
-  "language": "en",       // "de" or "en"
-  "client": "discord",    // client identifier
-  "userid": "testuser1"   // unique user ID
-}
+{ "language": "en", "client": "discord", "userid": "testuser1" }
 
 // POST /reply
-{
-  "message": "I use mind maps and flashcards.",
-  "client": "discord",
-  "userid": "testuser1"
-}
+{ "message": "I use mind maps and flashcards.", "client": "discord", "userid": "testuser1" }
 
 // POST /resetConversation
-{
-  "client": "discord",
-  "userid": "testuser1"
-}
+{ "client": "discord", "userid": "testuser1" }
+
+// POST /survey/srl-o/submit
+{ "userid": "testuser1", "client": "standalone", "language": "en", "responses": { "oase_1": 4, "oase_2": 5 } }
 ```
+
+---
+
+## Data model
+
+The key database tables and what they store:
+
+| Table                  | Purpose                                                              |
+| ---------------------- | -------------------------------------------------------------------- |
+| `users`                | User identity (id + client) and language                             |
+| `languages`            | Supported languages (en, de)                                         |
+| `contexts`             | Study contexts from the interview protocol                           |
+| `strategy`             | Strategy codes (e.g. 001-001)                                        |
+| `strategy_translation` | Strategy names and descriptions per language                         |
+| `interview_answer`     | Every student message, per turn/context/step                         |
+| `llm_response`         | Every agent response, per turn/context/step                          |
+| `user_strategy`        | Detected strategies per user, context, and frequency                 |
+| `strategy_evaluation`  | Aggregated strategy evaluation per user                              |
+| `state`                | Current conversation state (step, turn, context)                     |
+| `activity_log`         | Structured event log (timestamp, action, value, user agent, IP, ...) |
+| `survey_responses`     | Submitted survey answers as JSON                                     |
+| `strategy_embedding`   | RAG embeddings (pgvector, 768-dim)                                   |
 
 ---
 

@@ -8262,3 +8262,29 @@ Top-3 accuracy       : 196/517 (37.9%)
 Embedding errors     : 0
 ============================================================
 
+[2026-03-10 23:41:53,419] WARNING in __init__: <class 'app.config.Config'>
+[2026-03-10 23:41:54,350] INFO in _internal: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.178.34:5000
+[2026-03-10 23:41:54,350] INFO in _internal: [33mPress CTRL+C to quit[0m
+[2026-03-10 23:41:54,351] INFO in _internal:  * Restarting with stat
+[2026-03-10 23:41:54,697] WARNING in __init__: <class 'app.config.Config'>
+[2026-03-10 23:41:55,065] WARNING in _internal:  * Debugger is active!
+[2026-03-10 23:41:55,075] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-03-10 23:42:25,259] INFO in _internal: 127.0.0.1 - - [10/Mar/2026 23:42:25] "GET /survey/srl-o HTTP/1.1" 200 -
+[2026-03-10 23:42:31,731] ERROR in routes: Error saving survey response: (psycopg2.errors.UndefinedTable) relation "survey_responses" does not exist
+LINE 1: INSERT INTO survey_responses (id, survey_id, user_id, user_c...
+                    ^
+
+[SQL: INSERT INTO survey_responses (id, survey_id, user_id, user_client, language, responses) VALUES (%(id)s, %(survey_id)s, %(user_id)s, %(user_client)s, %(language)s, %(responses)s) RETURNING survey_responses.submitted_at]
+[parameters: {'id': '68aa35b0-b934-4a4e-a32c-2e90a5a56995', 'survey_id': 'srl-o', 'user_id': 'test_user_1', 'user_client': 'standalone', 'language': 'en', 'responses': '{"oase_1": 4, "oase_2": 5, "oase_3": 3, "oase_4": 4}'}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+[2026-03-10 23:42:31,732] INFO in _internal: 127.0.0.1 - - [10/Mar/2026 23:42:31] "[35m[1mPOST /survey/srl-o/submit HTTP/1.1[0m" 500 -
+[2026-03-10 23:42:39,979] WARNING in __init__: <class 'app.config.Config'>
+[2026-03-10 23:42:54,524] INFO in routes: Survey srl-o submitted by user test_user_1/standalone
+[2026-03-10 23:42:54,528] INFO in _internal: 127.0.0.1 - - [10/Mar/2026 23:42:54] "[35m[1mPOST /survey/srl-o/submit HTTP/1.1[0m" 201 -
+[2026-03-10 23:43:07,720] INFO in _internal: 127.0.0.1 - - [10/Mar/2026 23:43:07] "GET /survey/srl-o/results HTTP/1.1" 200 -
+[2026-03-10 23:43:13,973] INFO in _internal: 127.0.0.1 - - [10/Mar/2026 23:43:13] "GET / HTTP/1.1" 200 -
+[2026-03-10 23:43:13,984] INFO in _internal: 127.0.0.1 - - [10/Mar/2026 23:43:13] "GET / HTTP/1.1" 200 -
+[2026-03-10 23:43:28,010] WARNING in __init__: <class 'app.config.Config'>

@@ -2,7 +2,7 @@
 
 This directory contains the Vue.js frontend for the SRL Chat application, adapted from Moodle to work as both a standalone application and LTI integrated tool.
 
-## 🎯 Overview
+## Overview
 
 The frontend has been refactored to:
 
@@ -11,7 +11,7 @@ The frontend has been refactored to:
 - Connect directly to the SRL Chat backend API
 - Use Bootstrap and FontAwesome for styling
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Frontend Testing (No Backend Required)
 
@@ -35,11 +35,11 @@ python frontend_server.py
 
 This provides:
 
-- ✅ Frontend testing with mock SRL responses
-- ✅ No complex setup required
-- ✅ Vue.js component testing (if built)
-- ✅ Chat interface testing
-- ✅ Realistic conversation flow
+- Frontend testing with mock SRL responses
+- No complex setup required
+- Vue.js component testing (if built)
+- Chat interface testing
+- Realistic conversation flow
 
 **What you'll see:**
 
@@ -84,7 +84,7 @@ python api/lti_provider.py
 - **Standalone Mode**: http://localhost:5000/
 - **LTI Integration**: http://localhost:5000/launch (for LMS configuration)
 
-## 📁 Key Files
+## Key Files
 
 - `src/main.js` - Entry point, adapted for standalone/LTI modes
 - `src/store/index.js` - Vuex store, removed Moodle dependencies
@@ -93,7 +93,7 @@ python api/lti_provider.py
 - `index.html` - Standalone HTML entry point
 - `build-dev.sh` - Development build script
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Detection
 
@@ -120,7 +120,7 @@ The frontend connects to these backend endpoints:
 - `POST /startConversation` - Initialize chat session
 - `POST /reply` - Send user message and get agent response
 
-## 🔗 LTI Integration
+## LTI Integration
 
 For LTI integration with Learning Management Systems:
 
@@ -135,7 +135,7 @@ For LTI integration with Learning Management Systems:
    - Extract user information
    - Initialize the Vue.js app with LTI context
 
-## 🛠 Development Commands
+## Development Commands
 
 ```bash
 # Install dependencies
@@ -154,7 +154,7 @@ npm run watch
 npm run watch-hot
 ```
 
-## 📦 Dependencies
+## Dependencies
 
 Key Vue.js ecosystem packages:
 
@@ -165,7 +165,7 @@ Key Vue.js ecosystem packages:
 - `bootstrap-vue` - UI components
 - `@fortawesome/vue-fontawesome` - Icons
 
-## 🎨 Styling
+## Styling
 
 The app uses:
 
@@ -174,7 +174,7 @@ The app uses:
 - Custom CSS for chat interface
 - Responsive design for mobile/desktop
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Build Issues
 
