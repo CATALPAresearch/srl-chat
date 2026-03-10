@@ -20,28 +20,19 @@ CONFIG_LIST = [
     }
 ]
 EMBEDDING_URL = os.getenv("EMBEDDING_URL", "https://huggingface.co/")
-# https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
 EMBEDDING_TOKEN = os.getenv("EMBEDDING_TOKEN", "")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-# https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2
 logger = logging.getLogger('StudyBot')
 evil = False
 client = None
 
 
-def query_embeddings(text_to_embed):
-    api_url = f"{EMBEDDING_URL}{EMBEDDING_MODEL}"
-    headers = {"Authorization": f"Bearer {EMBEDDING_TOKEN}"}
-    response = requests.post(
-        api_url,
-        # headers=headers,
-        json={"inputs": text_to_embed, "options": {"wait_for_model": True}})
-    return response.json()
+def query_embeddings(text):
+    # Demo-safe dummy embedding (pgvector 384)
+    return [0.0] * 384
 
 
 def get_model_names(base_url):
-    """
-    """
     client = Client(host=base_url)
     names = []
     for model in client.list()['models']:
@@ -50,20 +41,15 @@ def get_model_names(base_url):
     return names
 
 
-_client_instance = None
-
-
 def get_client():
-    global _client_instance
-    if _client_instance is None:
-        if evil:
-            _client_instance = OpenAI(base_url=BASE_URL)
-        else:
-            _client_instance = Client(
-                host='http://localhost:11434',
-                headers={'x-some-header': 'some-value'}
-            )
-    return _client_instance
+    if evil:
+        return OpenAI(base_url=BASE_URL)
+    else:
+        return Client(
+            host='http://localhost:11434',
+            headers={'x-some-header': 'some-value'}
+        )
+
 
 def get_llm_response_openai(
         system_prompt,
@@ -74,7 +60,7 @@ def get_llm_response_openai(
         repeat_penalty=1.1,
         prev_conversation=[],
         expected_fields_model=None,
-        stream=True
+        stream=False
 ):
     # --- HARD DEV GUARD: skip LLM entirely ---
     if os.getenv("DISABLE_LLM", "false").lower() == "true":
@@ -87,81 +73,71 @@ def get_llm_response_openai(
     logger.info("System Prompt: %s", system_prompt)
     logger.info("User Prompt: %s", user_prompt)
 
-    global client
-    if client is None:
-        client = get_client()
-
-    messages = [{"role": "system", "content": system_prompt}]
+    # Use user/assistant format instead of system role for llama3.2 compatibility
+    messages = [
+        {"role": "user", "content": system_prompt},
+        {"role": "assistant", "content": "Verstanden, ich werde das Interview auf Deutsch führen."},
+    ]
     if prev_conversation:
         messages.extend(prev_conversation)
     if user_prompt:
         messages.append({"role": "user", "content": user_prompt})
 
-    send_user_feedback("Agent is working on your request...")
-
-    attempts = 3
-    timeout = 2  # seconds, for retry backoff
-    response_content = ""
+    attempts = 5
+    timeout = 0
+    response = get_response(messages, temperature, expected_fields_model)
 
     while attempts > 0:
-        try:
-            response = get_response(client, messages, temperature, expected_fields_model, stream=stream)
-
-            # Streaming mode: yield partial tokens
-            if stream and hasattr(response, "__iter__"):
-                for partial in response:
-                    token_obj = getattr(partial, "message", None)
-                    if token_obj:
-                        token_text = getattr(token_obj, "content", str(token_obj))
-                        response_content += token_text
-                        send_user_feedback(token_text)  # Live feedback
-                        yield token_text  # send token immediately
-                return  # streaming done
-
-            # Non-streaming mode
-            response_message = getattr(response, "message", None)
-            response_content = getattr(response_message, "content", None) if response_message else None
-
-            if response_content:
-                return response_content
-
-        except Exception as e:
-            logger.error(f"LLM call failed: {e}")
-            attempts -= 1
+        if response is None or not hasattr(response, "message") or response.message.content == "":
+            response = get_response(messages, temperature + 0.1, expected_fields_model)
             time.sleep(timeout)
-            timeout *= 2  # exponential backoff
-
-    raise AssertionError("Failed to get response from LLM after retries.")
-
-def get_response(client, messages, temperature, expected_fields_model=None, stream=True):
-    """
-    Send request to LLM (Ollama or OpenAI) and return the response.
-    If `stream=True`, response will be a generator yielding partial outputs.
-    """
-    response = None
-    try:
-        if evil:
-            logger.info("Send request to OpenAI")
-            response = client.chat(
-                model=MODEL,
-                messages=messages,
-                temperature=temperature,
-                stream=stream  # allow streaming
-            )
+            attempts -= 1
+            timeout *= 2
         else:
-            logger.info("Send request to Ollama")
-            response = client.chat(
-                model=MODEL,
-                messages=messages,
-                format=expected_fields_model.model_json_schema() if expected_fields_model else '',
-                options={'temperature': temperature},
-                stream=stream
-            )
+            break
+
+    logger.info('@llm: response::: ')
+    logger.info(response)
+    response_content = response.message.content if (response and hasattr(response, "message")) else None
+
+    if not response_content:
+        logger.info("Empty response")
+        raise AssertionError("Received empty response from LLM.")
+    logger.info("Response: %s", response_content)
+    return response_content
+
+
+def get_response(messages, temperature, expected_fields_model=None):
+    """Call Ollama directly via HTTP REST API."""
+    logger.info("Send request to Ollama via HTTP")
+    try:
+        payload = {
+            "model": MODEL,
+            "messages": messages,
+            "stream": False,
+            "options": {
+                "temperature": 0.7,
+                "num_predict": 256,
+                "num_ctx": 2048
+            }
+        }
+        r = requests.post("http://localhost:11434/api/chat", json=payload, timeout=120)
+        r.raise_for_status()
+        data = r.json()
+        logger.info("Ollama raw response: %s", data)
+        content = data.get("message", {}).get("content", "")
+
+        mock = type('MockResponse', (), {
+            'message': type('msg', (), {'content': content})()
+        })()
+        return mock
     except Exception as e:
-        logger.error(f"call ollama client.chat failed: {e}")
+        logger.error(f"Ollama HTTP call failed: {e}")
         return None
 
-    return response
+
+def send_user_feedback(text):
+    logger.info(f"[USER FEEDBACK] {text}")
 
 
 def get_prompt(user, prompt_name):
@@ -247,6 +223,3 @@ def get_complete_prompt(user, most_contexts_strat, const_strategy, avg_freq, tot
         "${strategies}", str(strat_info)
     )
     return prompt
-
-def send_user_feedback(text):
-    logger.info(f"[USER FEEDBACK] {text}")

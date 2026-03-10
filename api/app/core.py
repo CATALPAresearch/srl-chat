@@ -1,6 +1,7 @@
 from collections import OrderedDict
 import json
 import os
+from flask import jsonify
 from xml.sax.saxutils import escape as xmlescape
 import logging
 
@@ -119,8 +120,7 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
 
         turn = update_current_turn(user)
         store_llm_answer(user, llm_message, None, None, turn, step="intro")
-
-        log_action(
+log_action(
             LogAction.REPLY_LLM,
             user=user,
             value={"message_length": len(llm_message), "message_preview": llm_message[:100]},
@@ -132,6 +132,7 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
         )
 
         return llm_message, 200
+>>>>>>> 4f1f643 (feat(lti): fix LTI-Ollama integration for demo - bypass Ollama Python client with direct HTTP calls, fix system prompt format for llama3.2 compatibility, fix empty response issue)
     except Exception as e:
         raise Exception(e)
 
@@ -326,7 +327,7 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                          user.conversation_state.strategy_for_frequency, turn,
                          user.conversation_state.current_conversation_step
                          )
-        return llm_message, 200
+        return jsonify({"message": llm_message}), 200
     except Exception as e:
         db.session.rollback()
         logger.error("Error in reply_core: %s", e)
