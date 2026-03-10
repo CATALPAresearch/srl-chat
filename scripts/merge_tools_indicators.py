@@ -6,7 +6,7 @@ into the new learning_strategies.json, and enrich with precise tool names.
 import json
 from pathlib import Path
 
-CONFIG_DIR = Path(__file__).resolve().parent.parent / "api" / "app" / "config"
+CONFIG_DIR = Path(__file__).resolve().parent.parent / "backend" / "config"
 V1_PATH = CONFIG_DIR / "learning_strategies_v1.json"
 NEW_PATH = CONFIG_DIR / "learning_strategies.json"
 

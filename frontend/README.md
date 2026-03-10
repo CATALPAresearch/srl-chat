@@ -210,28 +210,11 @@ curl -X POST http://localhost:5000/reply \
   -d '{"message": "Hello", "client": "web", "userid": "test123"}'
 ```
 
-## 🏗 Architecture Changes
 
-### From Moodle Plugin → Standalone App
-
-**Removed:**
-
-- `core/ajax` Moodle dependency
-- `core/localstorage` Moodle dependency
-- Course/module context requirements
-- Moodle webservice calls
-
-**Added:**
-
-- Environment detection (standalone/LTI)
-- Direct HTTP API calls with Axios
-- Flexible configuration system
-- LTI provider integration
-
-**Refactored:**
-
-- Store initialization without Moodle context
-- Component communication without Moodle events
-- User management for multiple environments
-
-This setup provides a flexible foundation for both standalone usage and LTI integration while maintaining the core SRL Chat functionality.
+### Testing Detection of Learning Strategies
+```
+cd api
+poetry run pytest tests/ -v -k rag          # RAG tests only
+poetry run pytest tests/ -v -k llm          # LLM tests only (slow)
+poetry run pytest tests/ -v -k "aggregate"  # accuracy report only
+```

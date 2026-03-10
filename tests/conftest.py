@@ -8,11 +8,11 @@ These are **integration tests** that require:
 
 Usage
 -----
-    cd api
-    poetry run pytest tests/ -v              # all tests
-    poetry run pytest tests/ -v -k rag       # RAG tests only
-    poetry run pytest tests/ -v -k llm       # LLM tests only
-    poetry run pytest tests/ -v --timeout=0  # no timeout (for slow LLM tests)
+    cd backend
+    poetry run pytest ../tests/ -v              # all tests
+    poetry run pytest ../tests/ -v -k rag       # RAG tests only
+    poetry run pytest ../tests/ -v -k llm       # LLM tests only
+    poetry run pytest ../tests/ -v --timeout=0  # no timeout (for slow LLM tests)
 """
 
 import os
@@ -23,10 +23,10 @@ import pathlib
 
 import pytest
 
-# Ensure api/ is importable
-API_DIR = pathlib.Path(__file__).resolve().parent.parent
-if str(API_DIR) not in sys.path:
-    sys.path.insert(0, str(API_DIR))
+# Ensure backend/ is importable
+BACKEND_DIR = pathlib.Path(__file__).resolve().parent.parent / "backend"
+if str(BACKEND_DIR) not in sys.path:
+    sys.path.insert(0, str(BACKEND_DIR))
 
 # Force RAG on for tests (so seeding runs)
 os.environ.setdefault("USE_RAG_STRATEGY", "true")
@@ -61,7 +61,7 @@ def db(flask_app):
 # ---------------------------------------------------------------------------
 
 _EVAL_CSV = pathlib.Path(__file__).resolve().parent / "strategy_eval.csv"
-_CODE_MAP = API_DIR / "app" / "config" / "strategy_code_map.json"
+_CODE_MAP = BACKEND_DIR / "config" / "strategy_code_map.json"
 
 
 def _load_code_map() -> dict[str, str]:

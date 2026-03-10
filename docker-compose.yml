@@ -1,6 +1,6 @@
 services:
   api:
-    build: ./api
+    build: ./backend
     environment:
       - PYTHONUNBUFFERED=1
       - BASE_URL=${BASE_URL}
@@ -19,7 +19,7 @@ services:
     ports:
       - 5000:5000
     volumes:
-      - ./api/logs:/api/logs
+      - ./backend/logs:/api/logs
     command: >
       sh -c "python -m db_setup &&
              gunicorn app:app -b 0.0.0.0:5000 --timeout 300"

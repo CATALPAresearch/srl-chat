@@ -4,7 +4,7 @@ import logging
 from pydantic import BaseModel
 from json.decoder import JSONDecodeError
 
-from .db_utils.crud import get_language_by_id, get_all_strategies
+from .database.crud import get_language_by_id, get_all_strategies
 from .llm import (
     get_llm_response_openai,
     get_strategy_analysis_prompt,
@@ -112,7 +112,7 @@ def _strategy_step_rag(user: User, context: str, prev_conversation: list[str]):
 def _strategy_step_llm(user: User, context: str, prev_conversation: list[str]):
     """Original LLM chain-of-thought strategy detection."""
     logger.debug("Retrieving contexts")
-    with open("app/config/interview.json", "r", encoding="utf-8") as file:
+    with open("config/interview.json", "r", encoding="utf-8") as file:
         interview_context = json.load(file)
     user_lang = get_language_by_id(user.language_id)
     strat_info = []

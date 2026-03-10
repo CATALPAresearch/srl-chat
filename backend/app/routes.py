@@ -5,7 +5,7 @@ import os
 
 from app import app, db
 from .core import start_conversation_core, reply_core, reset_conversation
-from .db_utils.crud import get_user, get_language_by_id
+from .database.crud import get_user, get_language_by_id
 from .actions import LogAction
 from .logging_utlis import log_action
 
@@ -15,13 +15,14 @@ cors = CORS(app)
 # Directories for serving the standalone frontend
 _PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
 _FRONTEND_DIR = os.path.join(_PROJECT_ROOT, 'frontend')
+_CONFIG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'config')
 _LTI_STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'static', 'lti')
 
 @app.errorhandler(500)
 def internal_error(error):
     app.logger.error(error)
     db.session.rollback()
-    with open("app/config/translations.json", "r", encoding="utf-8") as file:
+    with open("config/translations.json", "r", encoding="utf-8") as file:
         translations = json.load(file)
     return translations["translations"]["en"]["create_error"], 500
 
@@ -69,7 +70,7 @@ def delete_message():
     except Exception as e:
         app.logger.error("Error on reset conversation: %s - Rolling back DB changes", e)
         db.session.rollback()
-        with open("app/config/translations.json", "r", encoding="utf-8") as file:
+        with open("config/translations.json", "r", encoding="utf-8") as file:
             translations = json.load(file)
         user = get_user(userid, client)
         if user:
@@ -87,7 +88,7 @@ def get_user_language():
         "client": "discord",
         "userid": Discord user ID
     """
-    with open("app/config/translations.json", "r", encoding="utf-8") as file:
+    with open("config/translations.json", "r", encoding="utf-8") as file:
         translations = json.load(file)
     userid = request.args.get('userid')
     client = request.args.get('client')
@@ -102,7 +103,7 @@ def get_user_language():
 @app.route("/translations/<language>", methods=["GET"])
 @cross_origin()
 def get_translations(language):
-    with open("app/config/translations.json", "r", encoding="utf-8") as file:
+    with open("config/translations.json", "r", encoding="utf-8") as file:
         translations = json.load(file)
     if language in list(translations["translations"].keys()):
         return translations["translations"][language]
@@ -153,7 +154,7 @@ def start_conversation_flask():
             step="exception_handled"
         )
 
-        with open("app/config/translations.json", "r", encoding="utf-8") as file:
+        with open("config/translations.json", "r", encoding="utf-8") as file:
             translations = json.load(file)
         return translations["translations"][language]["create_error"], 500
 
@@ -193,7 +194,7 @@ def reply():
             step="exception_handled"
         )
 
-        with open("app/config/translations.json", "r", encoding="utf-8") as file:
+        with open("config/translations.json", "r", encoding="utf-8") as file:
             translations = json.load(file)
 
         if user:

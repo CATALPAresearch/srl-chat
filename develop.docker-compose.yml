@@ -1,6 +1,6 @@
 services:
   api-dev:
-    build: ./api
+    build: ./backend
     environment:
       - PYTHONUNBUFFERED=1
       - BASE_URL=${BASE_URL}
@@ -27,7 +27,7 @@ services:
       postgres-dev:
         condition: service_healthy
     volumes:
-      - ./api:/api
+      - ./backend:/api
   bot-dev:
     build: ./discord
     environment:

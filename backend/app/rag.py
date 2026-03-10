@@ -36,7 +36,7 @@ USE_RAG_STRATEGY = os.getenv("USE_RAG_STRATEGY", "false").lower() == "true"
 RAG_EMBEDDING_MODEL = os.getenv("RAG_EMBEDDING_MODEL", "nomic-embed-text")
 OLLAMA_BASE_URL = os.getenv("BASE_URL", "http://localhost:11434").rstrip("/")
 
-_CONFIG_DIR = pathlib.Path(__file__).resolve().parent / "config"
+_CONFIG_DIR = pathlib.Path(__file__).resolve().parent.parent / "config"
 _STRATEGIES_PATH = _CONFIG_DIR / "learning_strategies.json"
 _CODE_MAP_PATH = _CONFIG_DIR / "strategy_code_map.json"
 

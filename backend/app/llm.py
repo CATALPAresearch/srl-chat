@@ -7,7 +7,7 @@ import logging
 from openai import OpenAI
 from ollama import Client
 
-from .db_utils.crud import get_language_by_id, get_contexts_content, get_strategies_content
+from .database.crud import get_language_by_id, get_contexts_content, get_strategies_content
 
 BASE_URL = os.getenv("BASE_URL")
 API_KEY = os.getenv("API_KEY")
@@ -164,7 +164,7 @@ def get_response(client, messages, temperature, expected_fields_model=None, stre
 
 
 def get_prompt(user, prompt_name):
-    with open("app/config/prompts.json", "r", encoding="utf-8") as file:
+    with open("config/prompts.json", "r", encoding="utf-8") as file:
         prompts = json.load(file)
     user_lang = get_language_by_id(user.language_id)
     prompt = prompts[user_lang.lang_code][prompt_name]
@@ -205,7 +205,7 @@ def get_format_frequency_prompt(user, strategy, reasoning_response):
 
 
 def get_strategy_analysis_prompt(user):
-    with open("app/config/interview.json", "r", encoding="utf-8") as file:
+    with open("config/interview.json", "r", encoding="utf-8") as file:
         interview_context = json.load(file)
     user_lang = get_language_by_id(user.language_id)
     strat_info = []
@@ -216,7 +216,7 @@ def get_strategy_analysis_prompt(user):
 
 
 def get_format_strategy_prompt(user, reasoning_response, conv_length, context, limit):
-    with open("app/config/interview.json", "r", encoding="utf-8") as file:
+    with open("config/interview.json", "r", encoding="utf-8") as file:
         interview_context = json.load(file)
     user_lang = get_language_by_id(user.language_id)
     strat_info = []
@@ -233,7 +233,7 @@ def get_format_strategy_prompt(user, reasoning_response, conv_length, context, l
 
 def get_complete_prompt(user, most_contexts_strat, const_strategy, avg_freq, total_strat, const_strategies):
     prompt = get_prompt(user, "interview_complete")
-    with open("app/config/interview.json", "r", encoding="utf-8") as file:
+    with open("config/interview.json", "r", encoding="utf-8") as file:
         interview_context = json.load(file)
     user_lang = get_language_by_id(user.language_id)
     strat_info = interview_context[user_lang.lang_code]["categories"]

@@ -12,7 +12,7 @@ from .llm import (
     get_frequency_prompt,
     get_context_prompt,
     get_complete_prompt)
-from .db_utils.crud import (
+from .database.crud import (
     get_language,
     get_user,
     first_time_setup,
@@ -55,7 +55,7 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
     Returns: tuple[message, status code]
     """
     try:
-        with open("app/config/translations.json", "r", encoding="utf-8") as file:
+        with open("config/translations.json", "r", encoding="utf-8") as file:
             translations = json.load(file)
 
         if not get_language(language):

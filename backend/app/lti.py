@@ -1,7 +1,7 @@
 from flask import Blueprint, request, redirect, session, send_from_directory
 import os
 
-_LTI_STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'lti')
+_LTI_STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'static', 'lti')
 
 lti_bp = Blueprint("lti", __name__, url_prefix="/lti")
 

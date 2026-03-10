@@ -1,5 +1,5 @@
 from flask import Flask
-from app_config import Config
+from app.config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import MetaData
@@ -53,7 +53,7 @@ db = SQLAlchemy(app, metadata=metadata)
 migrate = Migrate(app, db, render_as_batch=True)
 
 from app import routes, models
-from lti import lti_bp
+from app.lti import lti_bp
 app.register_blueprint(lti_bp)
 
 # Seed RAG strategy embeddings on startup (when enabled)

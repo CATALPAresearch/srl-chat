@@ -8,13 +8,13 @@ whether the detected strategy matches the gold label.
 
 Run
 ---
-    cd api
-    poetry run pytest tests/ -v                        # all
-    poetry run pytest tests/ -v -k rag                 # RAG only
-    poetry run pytest tests/ -v -k llm                 # LLM only (slow!)
-    poetry run pytest tests/ -v -k "rag and top1"      # strict top-1 RAG
-    poetry run pytest tests/ -v -k "rag and top3"      # relaxed top-3 RAG
-    poetry run pytest tests/ -v --timeout 600          # generous timeout
+    cd backend
+    poetry run pytest ../tests/ -v                        # all
+    poetry run pytest ../tests/ -v -k rag                 # RAG only
+    poetry run pytest ../tests/ -v -k llm                 # LLM only (slow!)
+    poetry run pytest ../tests/ -v -k "rag and top1"      # strict top-1 RAG
+    poetry run pytest ../tests/ -v -k "rag and top3"      # relaxed top-3 RAG
+    poetry run pytest ../tests/ -v --timeout 600          # generous timeout
 
 Each test is parametrized over every labelled row in the eval CSV.
 """
@@ -33,7 +33,7 @@ logger = logging.getLogger("test_strategy")
 # Load code map for reverse lookups
 # ---------------------------------------------------------------------------
 _CODE_MAP_PATH = (
-    pathlib.Path(__file__).resolve().parent.parent / "app" / "config" / "strategy_code_map.json"
+    pathlib.Path(__file__).resolve().parent.parent / "backend" / "config" / "strategy_code_map.json"
 )
 with open(_CODE_MAP_PATH, "r", encoding="utf-8") as _f:
     _CODE_MAP: dict[str, str] = json.load(_f)

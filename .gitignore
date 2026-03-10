@@ -1,6 +1,6 @@
 .env
-api/migrations/*
-api/app/__pycache__
+backend/migrations/*
+backend/app/__pycache__
 # Node / Vue
 frontend/node_modules/
 frontend/node_modules/.cache/
@@ -10,8 +10,9 @@ amd/build/
 amd/src/
 
 # Python
-api/.venv/
-api/__pycache__/
+backend/.venv/
+backend/__pycache__/
+__pycache__/
 *.pyc
 
 containers/

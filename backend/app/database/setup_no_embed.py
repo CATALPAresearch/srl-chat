@@ -5,7 +5,7 @@ from sqlalchemy import text
 
 from app import app, db
 from app.models import Language, Context, Strategy, StrategyTranslation
-from app.db_utils.crud import get_language
+from app.database.crud import get_language
 
 app.app_context().push()
 
@@ -14,7 +14,7 @@ db.session.commit()
 db.create_all()
 print("Tables created.")
 
-with open("app/config/interview.json", "r", encoding="utf-8") as f:
+with open("config/interview.json", "r", encoding="utf-8") as f:
     interview_context = json.load(f)
 
 for lang_code in interview_context:

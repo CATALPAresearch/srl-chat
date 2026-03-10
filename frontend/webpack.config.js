@@ -10,7 +10,7 @@ module.exports = (env, options) => {
   exports = {
     entry: "./src/main.js",
     output: {
-      path: path.resolve(__dirname, "../api/static/lti"),
+      path: path.resolve(__dirname, "../backend/static/lti"),
       publicPath: "/static/lti/",
       filename: "app-lazy.js",
       chunkFilename: "[id].app-lazy.js?v=[hash]",

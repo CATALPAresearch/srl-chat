@@ -30,7 +30,7 @@ except ImportError:
 # ---------------------------------------------------------------------------
 PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent
 DOCX_PATH = PROJECT_ROOT / "docs" / "LearningStrategies_draft.docx"
-OUTPUT_PATH = PROJECT_ROOT / "api" / "app" / "config" / "learning_strategies.json"
+OUTPUT_PATH = PROJECT_ROOT / "backend" / "config" / "learning_strategies.json"
 
 # ---------------------------------------------------------------------------
 # Static metadata that cannot be derived from the docx table

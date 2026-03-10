@@ -5,7 +5,7 @@ from sqlalchemy import select, text
 
 from app import app, db
 from app.models import Language, Context, Strategy, StrategyTranslation, StrategyVector
-from app.db_utils.crud import get_language
+from app.database.crud import get_language
 from app.llm import query_embeddings
 
 app.app_context().push()
@@ -28,7 +28,7 @@ def populate_contexts():
     db.session.commit()
     db.create_all()
     app.logger.info("Populating contexts and strategies into DB")
-    with open("app/config/interview.json", "r", encoding="utf-8") as file:
+    with open("config/interview.json", "r", encoding="utf-8") as file:
         interview_context = json.load(file)
     for lang_code in interview_context:
         if get_language(lang_code):
