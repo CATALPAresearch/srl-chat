@@ -15,7 +15,7 @@ SRL Chat is a conversational AI agent that conducts structured interviews with s
 - Structured activity logging to the database (user, unix timestamp, action, value, user agent, IP, context, strategy, turn, step, HTTP status)
 - Detected strategies and frequency ratings stored per user, context, and interview answer
 - Three deployment modes: standalone browser UI, LTI 1.0 integration with Moodle, Docker Compose
-- LTI 1.0 Tool Provider for embedding inside LMS courses (e.g. Moodle, Illias) 
+- LTI 1.0 Tool Provider for embedding inside LMS courses (e.g. Moodle, Illias)
 - Discord bot integration (optional, separate service)
 
 ## Prerequisites
@@ -296,6 +296,70 @@ The key database tables and what they store:
 | `activity_log`         | Structured event log (timestamp, action, value, user agent, IP, ...) |
 | `survey_responses`     | Submitted survey answers as JSON                                     |
 | `strategy_embedding`   | RAG embeddings (pgvector, 768-dim)                                   |
+
+---
+
+## Testing
+
+### Integration tests (pytest)
+
+The `tests/` directory contains integration tests for RAG and LLM strategy detection, parametrized over 517 labelled conversation turns from `strategy_eval.csv`. **Requires running PostgreSQL + Ollama.**
+
+```bash
+cd backend
+
+# Run all tests
+poetry run pytest ../tests/ -v
+
+# RAG tests only (fast, embedding similarity)
+poetry run pytest ../tests/ -v -k rag
+
+# LLM tests only (slow, calls phi3)
+poetry run pytest ../tests/ -v -k llm
+
+# Strict top-1 RAG accuracy
+poetry run pytest ../tests/ -v -k "rag and top1"
+
+# Relaxed top-3 RAG accuracy
+poetry run pytest ../tests/ -v -k "rag and top3"
+
+# With generous timeout for slow LLM tests
+poetry run pytest ../tests/ -v --timeout 600
+
+# No timeout at all
+poetry run pytest ../tests/ -v --timeout=0
+```
+
+### Test with curl
+
+```bash
+# Verify Ollama is running
+curl http://localhost:11434/api/tags
+
+# Start a conversation
+curl -X POST http://localhost:5000/startConversation \
+  -H "Content-Type: application/json" \
+  -d '{"language": "en", "client": "discord", "userid": "testuser1"}'
+
+# Send a reply
+curl -X POST http://localhost:5000/reply \
+  -H "Content-Type: application/json" \
+  -d '{"message": "I usually summarise my notes and use mind maps.", "client": "discord", "userid": "testuser1"}'
+
+# Reset a conversation
+curl -X POST http://localhost:5000/resetConversation \
+  -H "Content-Type: application/json" \
+  -d '{"client": "discord", "userid": "testuser1"}'
+```
+
+### Load testing (Locust)
+
+```bash
+cd backend
+poetry run locust -f ../tests/locustfile.py --host=http://localhost:5000
+```
+
+Then open http://localhost:8089 to configure and start the load test.
 
 ---
 
