@@ -1,6 +1,6 @@
 <template>
-  <div id="chat" class="container-fluid px-2 py-3">
-    <div class="w-100">
+  <div id="chat" class="container-fluid px-2 py-3 chat-ui">
+    <div class="chat-messages" ref="messageList">
       <div v-for="(m, index) in messages" :key="m.id || index">
         <article
           :class="
@@ -124,6 +124,17 @@ export default Vue.extend({
     ...mapState(["strings"]),
   },
   mounted: function () {},
+  watch: {
+    messages: {
+      deep: true,
+      handler() {
+        this.$nextTick(() => {
+          const el = this.$refs.messageList;
+          if (el) el.scrollTop = el.scrollHeight;
+        });
+      },
+    },
+  },
   methods: {
     ...mapGetters({
       //rag_webservice_host: 'getRAGWebserviceHost',
@@ -189,22 +200,34 @@ export default Vue.extend({
   overflow: hidden;
 }
 
+.chat-ui {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-messages {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
 #chat .chat-textarea {
   min-height: 40px;
-  /* Minimum height */
   max-height: 300px;
-  /* Limit maximum height */
   overflow-y: auto;
-  /* Allow scrolling for long content */
   width: 100%;
   resize: none;
-  /* Disable manual resizing */
   font-size: 1.1em;
   padding: 2px;
   margin-right: 2px;
 }
 
 #chat .chat-input {
+  flex-shrink: 0;
   margin-top: 2px;
   padding-top: 10px;
 }

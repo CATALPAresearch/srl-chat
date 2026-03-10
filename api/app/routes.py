@@ -1,6 +1,7 @@
-from flask import request, jsonify
+from flask import request, jsonify, send_from_directory
 from flask_cors import CORS, cross_origin
 import json
+import os
 
 from app import app, db
 from .core import start_conversation_core, reply_core, reset_conversation
@@ -10,6 +11,11 @@ from .logging_utlis import log_action
 
 cors = CORS(app)
 # FixMe: cors = CORS(app, ressources={r"/api/*": {"origin": "http://localhost:80"}})
+
+# Directories for serving the standalone frontend
+_PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
+_FRONTEND_DIR = os.path.join(_PROJECT_ROOT, 'frontend')
+_LTI_STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'static', 'lti')
 
 @app.errorhandler(500)
 def internal_error(error):
@@ -32,7 +38,19 @@ def teardown_request(exception):
 
 @app.route('/')
 def index():
-    return "OK"
+    return send_from_directory(_FRONTEND_DIR, 'index.html')
+
+
+@app.route('/frontend/<path:filename>')
+def serve_frontend_assets(filename):
+    """Serve frontend assets (core stubs, etc.)."""
+    return send_from_directory(_FRONTEND_DIR, filename)
+
+
+@app.route('/static/lti/<path:filename>')
+def serve_lti_static(filename):
+    """Serve LTI static assets (AMD bundle + core stubs for Moodle LTI mode)."""
+    return send_from_directory(_LTI_STATIC_DIR, filename)
 
 
 @app.route("/resetConversation", methods=["POST", "OPTIONS"])
@@ -158,19 +176,9 @@ def reply():
         userid = content["userid"]
         user_message = content["message"]
 
-        with open("app/config/translations.json", "r", encoding="utf-8") as file:
-            translations = json.load(file)
-        user = get_user(userid, client_id)
-        user_lang = get_language_by_id(user.language_id) if user else None
-        busy_msg = translations["translations"][user_lang.lang_code]["busy_message"] \
-            if user_lang else "The agent is working on your answer, please wait..."
+        llm_response, status = reply_core(client_id, userid, user_message)
 
-        response_payload = {"status": "busy", "message": busy_msg}
-
-        llm_response = reply_core(client_id, userid, user_message)
-
-        response_payload.update({"status": "done", "llm_response": llm_response})
-        return response_payload
+        return llm_response, status
 
     except Exception as e:
         app.logger.error("Error on reply: %s - Rolling back DB changes", e)

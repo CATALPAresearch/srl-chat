@@ -107,7 +107,7 @@ def get_llm_response_openai(
         try:
             response = get_response(client, messages, temperature, expected_fields_model, stream=stream)
 
-            # Streaming mode: yield partial tokens
+            # Streaming mode: collect all tokens and return the full string
             if stream and hasattr(response, "__iter__"):
                 for partial in response:
                     token_obj = getattr(partial, "message", None)
@@ -115,8 +115,7 @@ def get_llm_response_openai(
                         token_text = getattr(token_obj, "content", str(token_obj))
                         response_content += token_text
                         send_user_feedback(token_text)  # Live feedback
-                        yield token_text  # send token immediately
-                return  # streaming done
+                return response_content  # return accumulated text
 
             # Non-streaming mode
             response_message = getattr(response, "message", None)

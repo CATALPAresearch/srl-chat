@@ -12,7 +12,7 @@
       </router-link>
     </nav>
 
-    <router-view />
+    <router-view class="chat-app__view" />
   </div>
 </template>
 
@@ -20,7 +20,7 @@
 import Vue from "vue";
 
 export default Vue.extend({
-  name: "ChatApp"
+  name: "ChatApp",
 });
 </script>
 
@@ -29,7 +29,15 @@ export default Vue.extend({
   height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* 👈 important for Moodle iframe */
+  overflow: hidden;
+}
+
+.chat-app__view {
+  flex: 1 1 0;
+  min-height: 0; /* allow flex child to shrink below content size */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .content {

@@ -12,7 +12,7 @@ import uuid
 from urllib.parse import quote
 
 # Konfiguration
-LAUNCH_URL = "http://localhost:5000/launch"
+LAUNCH_URL = "http://localhost:5000/lti/launch"
 CONSUMER_KEY = "moodle_key"
 SHARED_SECRET = "geheimer_schluessel_123"
 

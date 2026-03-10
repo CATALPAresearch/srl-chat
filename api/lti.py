@@ -1,10 +1,10 @@
-from flask import Blueprint, request, Response
+from flask import Blueprint, request, redirect, session, send_from_directory
+import os
+
+_LTI_STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'lti')
 
 lti_bp = Blueprint("lti", __name__, url_prefix="/lti")
 
-
-
-from flask import redirect, session
 
 @lti_bp.route("/launch", methods=["POST"])
 def launch():
@@ -19,7 +19,4 @@ def launch():
 
 @lti_bp.route("/ui", methods=["GET"])
 def lti_ui():
-    return Response(
-        open("static/lti/index.html").read(),
-        mimetype="text/html"
-    )
+    return send_from_directory(_LTI_STATIC_DIR, 'index.html')

@@ -48,7 +48,7 @@ export const store = new Vuex.Store({
       hostname: null,
       model: null,
       prompttemplate: null,
-      chatmodus: "agent", // ✅ Agent chat default (Issue 6)
+      chatmodus: "agent-chat", // Agent chat default
       //
       llmhostname: null,
       llmenabled: null,
@@ -82,16 +82,14 @@ export const store = new Vuex.Store({
 
     setPluginSettings(state, settings) {
       // Local instance settings
-    state.pluginSettings.intro =
+      state.pluginSettings.intro =
         settings.intro !== undefined ? settings.intro : null;
 
-    state.pluginSettings.model =
+      state.pluginSettings.model =
         settings.model !== undefined ? settings.model : null;
 
-    state.pluginSettings.prompttemplate =
+      state.pluginSettings.prompttemplate =
         settings.prompttemplate !== undefined ? settings.prompttemplate : null;
-
-
 
       // Ensure Agent Chat default if missing
       state.pluginSettings.chatmodus =
@@ -140,8 +138,12 @@ export const store = new Vuex.Store({
       state.isAdmin = value;
     },
 
+    setUser(state, userId) {
+      state.user.userId = userId;
+    },
+
     setChatModus(state, value) {
-      state.pluginSettings.chatmodus = value || "agent";
+      state.pluginSettings.chatmodus = value || "agent-chat";
     },
 
     setStrings(state, strings) {
@@ -224,13 +226,10 @@ export const store = new Vuex.Store({
     async loadPluginSettings(context) {
       const cmid = context.getters.getCMID;
 
-      // LTI has no CMID → skip safely
+      // No CMID → skip (standalone / LTI)
       if (!cmid) {
-        if (IS_LTI) {
-          console.log("[LTI] Skipping loadPluginSettings");
-          return;
-        }
-        throw new Error("cmid undefined at loadPluginSettings");
+        console.log("[Store] Skipping loadPluginSettings (no CMID)");
+        return;
       }
 
       const req = await communication.webservice("load_settings", { cmid });
@@ -240,13 +239,11 @@ export const store = new Vuex.Store({
     },
 
     async updatePluginSettings(context) {
-      if (IS_LTI) {
-        console.log("[LTI] Skipping updatePluginSettings");
+      const cmid = context.getters.getCMID;
+      if (!cmid) {
+        console.log("[Store] Skipping updatePluginSettings (no CMID)");
         return;
       }
-
-      const cmid = context.getters.getCMID;
-      if (!cmid) throw new Error("cmid undefined at updatePluginSettings");
 
       await communication.webservice("update_settings", {
         cmid,
@@ -295,7 +292,7 @@ export const store = new Vuex.Store({
 
       context.commit(
         "setLLMModelList",
-        (data.models || []).map((m) => m.name)
+        (data.models || []).map((m) => m.name),
       );
     },
 
@@ -314,7 +311,7 @@ export const store = new Vuex.Store({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-        }
+        },
       );
 
       const data = await response.json();
