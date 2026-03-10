@@ -28,7 +28,8 @@ def populate_contexts():
     db.session.commit()
     db.create_all()
     app.logger.info("Populating contexts and strategies into DB")
-    with open("config/interview.json", "r", encoding="utf-8") as file:
+    from app.config import get_interview_config_path
+    with open(get_interview_config_path(), "r", encoding="utf-8") as file:
         interview_context = json.load(file)
     for lang_code in interview_context:
         if get_language(lang_code):

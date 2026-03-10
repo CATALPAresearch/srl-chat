@@ -14,7 +14,8 @@ db.session.commit()
 db.create_all()
 print("Tables created.")
 
-with open("config/interview.json", "r", encoding="utf-8") as f:
+from app.config import get_interview_config_path
+with open(get_interview_config_path(), "r", encoding="utf-8") as f:
     interview_context = json.load(f)
 
 for lang_code in interview_context:

@@ -112,7 +112,8 @@ def _strategy_step_rag(user: User, context: str, prev_conversation: list[str]):
 def _strategy_step_llm(user: User, context: str, prev_conversation: list[str]):
     """Original LLM chain-of-thought strategy detection."""
     logger.debug("Retrieving contexts")
-    with open("config/interview.json", "r", encoding="utf-8") as file:
+    from .config import get_interview_config_path
+    with open(get_interview_config_path(), "r", encoding="utf-8") as file:
         interview_context = json.load(file)
     user_lang = get_language_by_id(user.language_id)
     strat_info = []

@@ -205,7 +205,8 @@ def get_format_frequency_prompt(user, strategy, reasoning_response):
 
 
 def get_strategy_analysis_prompt(user):
-    with open("config/interview.json", "r", encoding="utf-8") as file:
+    from .config import get_interview_config_path
+    with open(get_interview_config_path(), "r", encoding="utf-8") as file:
         interview_context = json.load(file)
     user_lang = get_language_by_id(user.language_id)
     strat_info = []
@@ -216,7 +217,8 @@ def get_strategy_analysis_prompt(user):
 
 
 def get_format_strategy_prompt(user, reasoning_response, conv_length, context, limit):
-    with open("config/interview.json", "r", encoding="utf-8") as file:
+    from .config import get_interview_config_path
+    with open(get_interview_config_path(), "r", encoding="utf-8") as file:
         interview_context = json.load(file)
     user_lang = get_language_by_id(user.language_id)
     strat_info = []
@@ -233,7 +235,8 @@ def get_format_strategy_prompt(user, reasoning_response, conv_length, context, l
 
 def get_complete_prompt(user, most_contexts_strat, const_strategy, avg_freq, total_strat, const_strategies):
     prompt = get_prompt(user, "interview_complete")
-    with open("config/interview.json", "r", encoding="utf-8") as file:
+    from .config import get_interview_config_path
+    with open(get_interview_config_path(), "r", encoding="utf-8") as file:
         interview_context = json.load(file)
     user_lang = get_language_by_id(user.language_id)
     strat_info = interview_context[user_lang.lang_code]["categories"]

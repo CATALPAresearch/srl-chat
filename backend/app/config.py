@@ -25,5 +25,15 @@ class Config:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # Which interview protocol file to use (filename without .json)
+    # Must correspond to a file in config/interview/<name>.json
+    INTERVIEW_PROTOCOL = os.environ.get("INTERVIEW_PROTOCOL", "interview_default")
+
+
+def get_interview_config_path() -> str:
+    """Return the resolved path to the active interview protocol JSON file."""
+    return os.path.join("config", "interview", f"{Config.INTERVIEW_PROTOCOL}.json")
+
 
 print(f"[DB] Using database: {Config.SQLALCHEMY_DATABASE_URI}")
+print(f"[Interview] Using protocol: {Config.INTERVIEW_PROTOCOL}")
