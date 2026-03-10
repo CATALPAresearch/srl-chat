@@ -68,6 +68,17 @@ class StrategyVector(db.Model):
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
 
 
+class StrategyEmbedding(db.Model):
+    """RAG-based strategy embeddings using Ollama nomic-embed-text (768-dim)."""
+    __tablename__ = "strategy_embedding"
+    strategy_id: so.Mapped[str] = so.mapped_column(sa.String(), primary_key=True)
+    name: so.Mapped[str] = so.mapped_column(sa.String())
+    phase: so.Mapped[str] = so.mapped_column(sa.String(), nullable=True)
+    category: so.Mapped[str] = so.mapped_column(sa.String(), nullable=True)
+    content: so.Mapped[str] = so.mapped_column(sa.String(), nullable=True)
+    embedding: so.Mapped[np.array] = so.mapped_column(Vector(768))
+
+
 class ConversationState(db.Model):
     __tablename__ = "state"
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)

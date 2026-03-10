@@ -79,6 +79,16 @@ typing-extensions = "4.12.2"
 psycopg2-binary = "^2.9.10"
 flask-cors = "^5.0.1"
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^9.0.2"
+pytest-timeout = "^2.4.0"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "timeout: per-test timeout in seconds",
+]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

@@ -56,4 +56,11 @@ from app import routes, models
 from lti import lti_bp
 app.register_blueprint(lti_bp)
 
+# Seed RAG strategy embeddings on startup (when enabled)
+from app.rag import USE_RAG_STRATEGY, seed_strategy_embeddings
+if USE_RAG_STRATEGY:
+    with app.app_context():
+        db.create_all()  # ensure strategy_embedding table exists
+        seed_strategy_embeddings()
+
 

@@ -1,0 +1,652 @@
+[
+  {
+    "strategy_id": "rehearsal_mnemonics",
+    "name": "Rehearsal and mnemonic strategies",
+    "zimmerman_phase": "performance",
+    "category": "Retrieval practice",
+    "definitions": [
+      "Statements indicating student-initiated efforts to memorize material by overt or covert practice."
+    ],
+    "student_phrases": [
+      "Repeat important facts or formulas many times",
+      "Say key ideas out loud",
+      "Use memory tricks (rhymes, acronyms)",
+      "Write information again and again",
+      "Make and review flashcards"
+    ],
+    "methods": [
+      "Repeat important facts or formulas many times",
+      "Say key ideas out loud",
+      "Use memory tricks (rhymes, acronyms)",
+      "Write information again and again",
+      "Make and review flashcards",
+      "Quiz yourself from memory",
+      "Use apps for memorizing (Anki, Quizlet)"
+    ],
+    "tools": [
+      "flashcards",
+      "lists",
+      "memory aids",
+      "Anki",
+      "Quizlet",
+      "Brainscape"
+    ],
+    "positive_indicators": [
+      "I keep repeating it",
+      "I memorize it",
+      "I write it until I remember"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "practice_testing",
+    "name": "Practice testing",
+    "zimmerman_phase": "performance",
+    "category": "Retrieval practice",
+    "definitions": [
+      "Statements indicating student-initiated efforts to practice recalling the material by working through questions."
+    ],
+    "student_phrases": [
+      "Do practice quizzes",
+      "Make your own questions and answer them",
+      "Try to remember material without looking",
+      "Use online quiz tools",
+      "Ask someone to quiz you"
+    ],
+    "methods": [
+      "Do practice quizzes",
+      "Make your own questions and answer them",
+      "Try to remember material without looking",
+      "Use online quiz tools",
+      "Ask someone to quiz you"
+    ],
+    "tools": [
+      "practice tests",
+      "flashcards",
+      "question banks",
+      "Kahoot",
+      "Quizlet",
+      "past exam papers"
+    ],
+    "positive_indicators": [
+      "I quiz myself",
+      "I solve practice questions"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "repetition_over_time",
+    "name": "Repetition over time",
+    "zimmerman_phase": "performance",
+    "category": "Distributed practice",
+    "definitions": [
+      "Statements indicating student-initiated efforts to review material studied in earlier sessions at later times."
+    ],
+    "student_phrases": [
+      "Study the same material again after a few days",
+      "Review notes every week",
+      "Spread study time out instead of cramming",
+      "Use a spaced repetition app",
+      "Set reminders to review old topics"
+    ],
+    "methods": [
+      "Study the same material again after a few days",
+      "Review notes every week",
+      "Spread study time out instead of cramming",
+      "Use a spaced repetition app",
+      "Set reminders to review old topics"
+    ],
+    "tools": [
+      "flashcard apps",
+      "study schedules",
+      "Anki (spaced repetition)",
+      "Leitner box system",
+      "RemNote"
+    ],
+    "positive_indicators": [
+      "I review it again later"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "reviewing_records",
+    "name": "Reviewing previously compiled records",
+    "zimmerman_phase": "performance",
+    "category": "Rereading",
+    "definitions": [
+      "Statements indicating student-initiated efforts to reread tests, notes, or textbooks to prepare for class or further testing."
+    ],
+    "student_phrases": [
+      "Reread your notes",
+      "Go through highlighted textbook parts",
+      "Review past assignments or tests",
+      "Read your summaries again",
+      "Look over old diagrams or charts"
+    ],
+    "methods": [
+      "Reread your notes",
+      "Go through highlighted textbook parts",
+      "Review past assignments or tests",
+      "Read your summaries again",
+      "Look over old diagrams or charts"
+    ],
+    "tools": [
+      "notes",
+      "textbooks",
+      "OneNote",
+      "Notion",
+      "Evernote",
+      "Google Docs"
+    ],
+    "positive_indicators": [
+      "I review my notes"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "highlighting_underlining",
+    "name": "Highlighting and underlining",
+    "zimmerman_phase": "performance",
+    "category": "Selecting, organizing, and transforming key pieces of information",
+    "definitions": [
+      "Statements indicating student-initiated efforts to mark the central points of material to be learned."
+    ],
+    "student_phrases": [
+      "Highlight only the most important words",
+      "Underline main ideas",
+      "Use different colors for different themes",
+      "Add short notes next to highlighted text",
+      "Mark confusing parts to revisit later"
+    ],
+    "methods": [
+      "Highlight only the most important words",
+      "Underline main ideas",
+      "Use different colors for different themes",
+      "Add short notes next to highlighted text",
+      "Mark confusing parts to revisit later"
+    ],
+    "tools": [
+      "highlighters",
+      "pens",
+      "GoodNotes",
+      "Notability",
+      "PDF annotation (Adobe Acrobat)"
+    ],
+    "positive_indicators": [
+      "I mark important sections"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "organization",
+    "name": "Organizing and transforming",
+    "zimmerman_phase": "performance",
+    "category": "Selecting, organizing, and transforming key pieces of information",
+    "definitions": [
+      "Statements indicating student-initiated overt or covert rearrangement of instructional materials to improve learning."
+    ],
+    "student_phrases": [
+      "Make outlines of chapters",
+      "Turn long text into bullet points",
+      "Create summary sheets",
+      "Group similar ideas together",
+      "Rewrite content in your own structure (tables, lists)"
+    ],
+    "methods": [
+      "Make outlines of chapters",
+      "Turn long text into bullet points",
+      "Create summary sheets",
+      "Group similar ideas together",
+      "Rewrite content in your own structure (tables, lists)"
+    ],
+    "tools": [
+      "mind maps",
+      "concept maps",
+      "XMind",
+      "MindMeister",
+      "Notion",
+      "Obsidian",
+      "CmapTools"
+    ],
+    "positive_indicators": [
+      "I organize my material"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "keeping_records",
+    "name": "Keeping records and monitoring",
+    "zimmerman_phase": "performance",
+    "category": "Selecting, organizing, and transforming key pieces of information",
+    "definitions": [
+      "Statements indicating student-initiated efforts to record events or results."
+    ],
+    "student_phrases": [
+      "Take notes during class",
+      "Keep a list of mistakes to fix",
+      "Track vocabulary or formulas you miss",
+      "Keep a learning journal",
+      "Check off what you have completed"
+    ],
+    "methods": [
+      "Take notes during class",
+      "Keep a list of mistakes to fix",
+      "Track vocabulary or formulas you miss",
+      "Keep a learning journal",
+      "Check off what you have completed"
+    ],
+    "tools": [
+      "notebooks",
+      "learning logs",
+      "Notion",
+      "OneNote",
+      "bullet journal",
+      "Google Keep"
+    ],
+    "positive_indicators": [
+      "I write things down"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "visualization",
+    "name": "Visualization",
+    "zimmerman_phase": "performance",
+    "category": "Selecting, organizing, and transforming key pieces of information",
+    "definitions": [
+      "Statements indicating student-initiated efforts to create explanative or organizational drawings to illustrate lesson contents or forming mental images of the material."
+    ],
+    "student_phrases": [
+      "Draw diagrams or pictures",
+      "Make mind maps",
+      "Create flowcharts for processes",
+      "Imagine the information in your mind",
+      "Use visual organizers (timelines, charts)"
+    ],
+    "methods": [
+      "Draw diagrams or pictures",
+      "Make mind maps",
+      "Create flowcharts for processes",
+      "Imagine the information in your mind",
+      "Use visual organizers (timelines, charts)"
+    ],
+    "tools": [
+      "sketches",
+      "diagrams",
+      "Miro",
+      "Excalidraw",
+      "Canva",
+      "draw.io",
+      "whiteboards"
+    ],
+    "positive_indicators": [
+      "I visualize it"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "teaching_preparing_to_teach",
+    "name": "Teaching and preparing to teach",
+    "zimmerman_phase": "performance",
+    "category": "Elaboration",
+    "definitions": [
+      "Statements indicating student-initiated efforts to understand material by explaining it to someone or preparing to do so."
+    ],
+    "student_phrases": [
+      "Explain the topic to a friend",
+      "Pretend you’re teaching a class",
+      "Record yourself teaching",
+      "Teach someone younger or less experienced",
+      "Make a short presentation for practice"
+    ],
+    "methods": [
+      "Explain the topic to a friend",
+      "Pretend you’re teaching a class",
+      "Record yourself teaching",
+      "Teach someone younger or less experienced",
+      "Make a short presentation for practice"
+    ],
+    "tools": [
+      "slides",
+      "study groups",
+      "PowerPoint",
+      "Google Slides",
+      "screen recording (Loom, OBS)"
+    ],
+    "positive_indicators": [
+      "I explain it to others"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "self_explanation",
+    "name": "Self-Explanation",
+    "zimmerman_phase": "performance",
+    "category": "Elaboration",
+    "definitions": [
+      "Statements indicating student-initiated efforts to understand material by verbally or mentally explaining how new information is related to previously learned material."
+    ],
+    "student_phrases": [
+      "Explain each step as you solve a problem",
+      "Talk through how new ideas connect to old ones",
+      "Write down short explanations in your own words",
+      "Ask yourself “Why?” at each step",
+      "Summarize what you just learned"
+    ],
+    "methods": [
+      "Explain each step as you solve a problem",
+      "Talk through how new ideas connect to old ones",
+      "Write down short explanations in your own words",
+      "Ask yourself “Why?” at each step",
+      "Summarize what you just learned"
+    ],
+    "tools": [
+      "notes",
+      "inner speech",
+      "journal / notebook",
+      "voice recorder",
+      "dictation apps"
+    ],
+    "positive_indicators": [
+      "I explain it to myself"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "goal_setting_planning",
+    "name": "Goal setting and planning",
+    "zimmerman_phase": "forethought",
+    "category": "Metacognitive strategies",
+    "definitions": [
+      "Statements indicating student setting of educational goals or subgoals and planning for prioritizing, sequencing, timing, and completing activities related to those goals."
+    ],
+    "student_phrases": [
+      "Write weekly learning goals",
+      "Make to-do lists",
+      "Break big tasks into small steps",
+      "Plan study time on a calendar",
+      "Set deadlines for each part"
+    ],
+    "methods": [
+      "Write weekly learning goals",
+      "Make to-do lists",
+      "Break big tasks into small steps",
+      "Plan study time on a calendar",
+      "Set deadlines for each part"
+    ],
+    "tools": [
+      "to-do lists",
+      "study plans",
+      "Todoist",
+      "Trello",
+      "Google Calendar",
+      "Notion"
+    ],
+    "positive_indicators": [
+      "I plan my learning"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "self_evaluating_regulation",
+    "name": "Self-evaluating and regulation",
+    "zimmerman_phase": "self_reflection",
+    "category": "Metacognitive strategies",
+    "definitions": [
+      "Statements indicating student-initiated evaluations of the quality or progress of their work and their own level of understanding."
+    ],
+    "student_phrases": [
+      "Check your answers",
+      "Ask yourself if you really understand",
+      "Look for what you still don’t get",
+      "Change strategies if something isn’t working",
+      "Use rubrics or checklists to track progress"
+    ],
+    "methods": [
+      "Check your answers",
+      "Ask yourself if you really understand",
+      "Look for what you still don’t get",
+      "Change strategies if something isn’t working",
+      "Use rubrics or checklists to track progress"
+    ],
+    "tools": [
+      "checklists",
+      "feedback notes",
+      "rubrics",
+      "self-assessment forms",
+      "learning analytics dashboards"
+    ],
+    "positive_indicators": [
+      "I check if I did it right"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "environmental_structuring",
+    "name": "Environmental structuring",
+    "zimmerman_phase": "performance",
+    "category": "Resources",
+    "definitions": [
+      "Statements indicating student-initiated efforts to select or arrange the physical setting to make learning easier."
+    ],
+    "student_phrases": [
+      "Study in a quiet place",
+      "Put away your phone",
+      "Clean your desk before studying",
+      "Use earplugs or noise-cancelling headphones",
+      "Choose a place with good light and no distractions"
+    ],
+    "methods": [
+      "Study in a quiet place",
+      "Put away your phone",
+      "Clean your desk before studying",
+      "Use earplugs or noise-cancelling headphones",
+      "Choose a place with good light and no distractions"
+    ],
+    "tools": [
+      "quiet rooms",
+      "headphones",
+      "noise-cancelling headphones",
+      "Freedom (website blocker)",
+      "Cold Turkey",
+      "desk organizer"
+    ],
+    "positive_indicators": [
+      "I make my environment suitable"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "self_consequences",
+    "name": "Self-consequences",
+    "zimmerman_phase": "self_reflection",
+    "category": "Resources",
+    "definitions": [
+      "Statements indicating student arrangement or imagination of rewards or punishment for success or failure."
+    ],
+    "student_phrases": [
+      "Reward yourself after finishing a task",
+      "Set small treats after study sessions",
+      "Use “If I do X, then I can do Y” rules",
+      "Limit fun activities until study goals are done",
+      "Track your rewards to stay motivated"
+    ],
+    "methods": [
+      "Reward yourself after finishing a task",
+      "Set small treats after study sessions",
+      "Use “If I do X, then I can do Y” rules",
+      "Limit fun activities until study goals are done",
+      "Track your rewards to stay motivated",
+      "Use positive self-talk"
+    ],
+    "tools": [
+      "rewards",
+      "break activities",
+      "Habitica",
+      "Streaks (habit tracker)",
+      "reward journal"
+    ],
+    "positive_indicators": [
+      "I reward myself"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "seeking_social_assistance",
+    "name": "Seeking social assistance",
+    "zimmerman_phase": "performance",
+    "category": "Resources",
+    "definitions": [
+      "Statements indicating student-initiated efforts to solicit help from fellow students."
+    ],
+    "student_phrases": [
+      "Ask classmates for help",
+      "Join a study group",
+      "Message a friend about confusing topics",
+      "Work together on practice tasks",
+      "Discuss difficult ideas with peers"
+    ],
+    "methods": [
+      "Ask classmates for help",
+      "Join a study group",
+      "Message a friend about confusing topics",
+      "Work together on practice tasks",
+      "Discuss difficult ideas with peers"
+    ],
+    "tools": [
+      "forums",
+      "study groups",
+      "Discord",
+      "WhatsApp study groups",
+      "Stack Exchange",
+      "university forums / Moodle"
+    ],
+    "positive_indicators": [
+      "I ask for help"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "seeking_selecting_information",
+    "name": "Seeking and selecting information",
+    "zimmerman_phase": "performance",
+    "category": "Resources",
+    "definitions": [
+      "Statements indicating student-initiated efforts to secure further information from nonsocial sources when undertaking a task."
+    ],
+    "student_phrases": [
+      "Look up extra information online",
+      "Read additional articles or textbook pages",
+      "Watch explanation videos",
+      "Search library databases",
+      "Find examples or alternative explanations"
+    ],
+    "methods": [
+      "Look up extra information online",
+      "Read additional articles or textbook pages",
+      "Watch explanation videos",
+      "Search library databases",
+      "Find examples or alternative explanations"
+    ],
+    "tools": [
+      "internet",
+      "libraries",
+      "Google Scholar",
+      "YouTube tutorials",
+      "Khan Academy",
+      "Wikipedia",
+      "library databases"
+    ],
+    "positive_indicators": [
+      "I search for information"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "time_management",
+    "name": "Time and attention management",
+    "zimmerman_phase": "forethought",
+    "category": "Resources",
+    "definitions": [
+      "Statements indicating student-initiated efforts to structure their work periods and break times taking into account other commitments, motivation and focus."
+    ],
+    "student_phrases": [
+      "Use a timer (Pomodoro method)",
+      "Take regular breaks",
+      "Block distracting websites",
+      "Plan your most difficult tasks for your “best”",
+      "Write daily study schedules"
+    ],
+    "methods": [
+      "Use a timer (Pomodoro method)",
+      "Take regular breaks",
+      "Block distracting websites",
+      "Plan your most difficult tasks for your “best”",
+      "Write daily study schedules",
+      "Set limits for break time",
+      "Start with a short study session to “warm up”"
+    ],
+    "tools": [
+      "timers",
+      "calendars",
+      "Forest (Pomodoro app)",
+      "Pomofocus",
+      "Google Calendar",
+      "Toggl Track"
+    ],
+    "positive_indicators": [
+      "I manage my time"
+    ],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  },
+  {
+    "strategy_id": "other",
+    "name": "Other / Externally Regulated",
+    "zimmerman_phase": "other",
+    "category": "Other",
+    "definitions": [
+      "Statements indicating learning behavior that is initiated by other persons such as teachers or parents, and all unclear verbal responses."
+    ],
+    "student_phrases": [],
+    "methods": [],
+    "tools": [],
+    "positive_indicators": [],
+    "literature": [
+      "Zimmerman & Martinez-Pons (1986)"
+    ]
+  }
+]

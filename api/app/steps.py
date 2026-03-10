@@ -15,6 +15,7 @@ from .llm import (
     get_prompt
 )
 from .models import User
+from .rag import USE_RAG_STRATEGY, detect_strategies_rag
 
 ABANDON_AFTER_STEPS = 6
 logger = logging.getLogger('StudyBot')
@@ -61,6 +62,55 @@ def intro_step(user: User, prev_conversation: list[str]):
 
 
 def strategy_step(user: User, context: str, prev_conversation: list[str]):
+    if USE_RAG_STRATEGY:
+        return _strategy_step_rag(user, context, prev_conversation)
+    return _strategy_step_llm(user, context, prev_conversation)
+
+
+def _strategy_step_rag(user: User, context: str, prev_conversation: list[str]):
+    """Detect strategies via pgvector embedding similarity."""
+    logger.info("[RAG] Using embedding-based strategy detection")
+
+    # Extract user messages from the conversation
+    user_messages = [
+        msg["content"] if isinstance(msg, dict) else str(msg)
+        for msg in prev_conversation
+        if (isinstance(msg, dict) and msg.get("role") == "user") or not isinstance(msg, dict)
+    ]
+
+    if not user_messages:
+        return [], "in_progress", get_prompt(user, "system")
+
+    try:
+        strategies = detect_strategies_rag(user_messages, top_k=3)
+    except Exception as e:
+        logger.error("[RAG] Embedding retrieval failed: %s — falling back to LLM", e)
+        return _strategy_step_llm(user, context, prev_conversation)
+
+    # Build a conversational comment via a single LLM call
+    system_prompt = get_prompt(user, "system")
+    comment = get_llm_response_openai(
+        system_prompt
+        + f"\nThe student mentioned these learning strategies: {strategies}."
+        + f"\nContext: {context}."
+        + "\nAcknowledge briefly which strategies you recognised and ask about details.",
+        user_prompt=None,
+        temperature=0.3,
+        prev_conversation=prev_conversation,
+    )
+
+    status = "completed"
+    if strategies in ([], ["008-001"]):
+        status = "in_progress" if len(prev_conversation) < ABANDON_AFTER_STEPS else "abandon"
+        if status == "abandon":
+            strategies = ["other"]
+
+    logger.info("[RAG] Detected strategies: %s  status: %s", strategies, status)
+    return strategies, status, comment
+
+
+def _strategy_step_llm(user: User, context: str, prev_conversation: list[str]):
+    """Original LLM chain-of-thought strategy detection."""
     logger.debug("Retrieving contexts")
     with open("app/config/interview.json", "r", encoding="utf-8") as file:
         interview_context = json.load(file)
