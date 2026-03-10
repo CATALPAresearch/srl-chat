@@ -6651,3 +6651,9 @@ Embedding errors     : 0
 [2026-03-10 22:47:38,813] INFO in rag: [RAG] Matched Organizing and Transforming (004-002) — distance 0.4975
 [2026-03-10 22:47:38,813] INFO in rag: [RAG] Matched Highlighting and Underlining (004-001) — distance 0.5317
 [2026-03-10 22:47:38,813] INFO in rag: [RAG] Matched Teaching and Preparing to Teach (005-001) — distance 0.5351
+[2026-03-10 22:48:23,899] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/api/tests/conftest.py', reloading
+[2026-03-10 22:48:24,046] INFO in _internal:  * Restarting with stat
+[2026-03-10 22:48:24,478] WARNING in __init__: <class 'app_config.Config'>
+[2026-03-10 22:48:25,216] INFO in rag: [RAG] strategy_embedding already contains 18 rows — skipping seed.
+[2026-03-10 22:48:25,222] WARNING in _internal:  * Debugger is active!
+[2026-03-10 22:48:25,235] INFO in _internal:  * Debugger PIN: 951-733-993
