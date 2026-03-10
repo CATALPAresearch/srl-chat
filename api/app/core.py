@@ -120,7 +120,7 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
 
         turn = update_current_turn(user)
         store_llm_answer(user, llm_message, None, None, turn, step="intro")
-log_action(
+        log_action(
             LogAction.REPLY_LLM,
             user=user,
             value={"message_length": len(llm_message), "message_preview": llm_message[:100]},
@@ -131,8 +131,7 @@ log_action(
             http_status=200
         )
 
-        return llm_message, 200
->>>>>>> 4f1f643 (feat(lti): fix LTI-Ollama integration for demo - bypass Ollama Python client with direct HTTP calls, fix system prompt format for llama3.2 compatibility, fix empty response issue)
+        return jsonify({"message": llm_message}), 200
     except Exception as e:
         raise Exception(e)
 

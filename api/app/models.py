@@ -9,7 +9,7 @@ from app import db
 
 
 class Language(db.Model):
-    __tableName__ = "languages"
+    __tablename__ = "languages"
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     lang_code: so.Mapped[str] = so.mapped_column(sa.String(2), index=True, unique=True)
     contexts: so.Mapped[List["Context"]] = so.relationship()
@@ -18,7 +18,7 @@ class Language(db.Model):
 
 
 class User(db.Model):
-    __tableName__ = "users"
+    __tablename__ = "users"
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     client: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
@@ -42,7 +42,7 @@ class User(db.Model):
 
 
 class Context(db.Model):
-    __tableName__ = "contexts"
+    __tablename__ = "contexts"
     id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True)
     context: so.Mapped[str] = so.mapped_column(sa.String())
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
@@ -90,7 +90,7 @@ class TabEvent(db.Model):
 
 
 class ConversationState(db.Model):
-    __tableName__ = "state"
+    __tablename__ = "state"
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
@@ -113,7 +113,7 @@ class ConversationState(db.Model):
 
 
 class ConversationCompletedContexts(db.Model):
-    __tableName__ = "conversation_completed_contexts"
+    __tablename__ = "conversation_completed_contexts"
     conversation_id: so.Mapped["ConversationState"] = so.mapped_column(
         sa.ForeignKey(ConversationState.id, ondelete="CASCADE"), primary_key=True)
     completed_context_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id,
