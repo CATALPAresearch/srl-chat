@@ -1,0 +1,431 @@
+{
+  "id": "srl-o",
+  "title": {
+    "en": "Self-Regulation for Learning Online Questionnaire (SRL-O)",
+    "de": "Fragebogen zur Selbstregulation beim Online-Lernen (SRL-O)"
+  },
+  "description": {
+    "en": "Please rate each statement on a scale from 1 (strongly disagree) to 5 (strongly agree).",
+    "de": "Bitte bewerten Sie jede Aussage auf einer Skala von 1 (stimme gar nicht zu) bis 5 (stimme voll zu)."
+  },
+  "scale": {
+    "min": 1,
+    "max": 5,
+    "labels": {
+      "en": [
+        "Strongly disagree",
+        "Disagree",
+        "Neutral",
+        "Agree",
+        "Strongly agree"
+      ],
+      "de": [
+        "Stimme gar nicht zu",
+        "Stimme nicht zu",
+        "Neutral",
+        "Stimme zu",
+        "Stimme voll zu"
+      ]
+    }
+  },
+  "scales": [
+    {
+      "id": "online_academic_self_efficacy",
+      "title": {
+        "en": "Online Academic Self-efficacy",
+        "de": "Akademische Selbstwirksamkeit beim Online-Lernen"
+      },
+      "items": [
+        {
+          "id": "oase_1",
+          "text": {
+            "en": "I am confident that I will be able to master the content and assignments in this online class.",
+            "de": "Ich bin zuversichtlich, dass ich die Inhalte und Aufgaben in diesem Online-Kurs bewältigen kann."
+          }
+        },
+        {
+          "id": "oase_2",
+          "text": {
+            "en": "I am confident in my ability to successfully persist in this online class, even if I find the content difficult.",
+            "de": "Ich bin zuversichtlich, dass ich diesen Online-Kurs erfolgreich durchhalten kann, auch wenn ich den Inhalt schwierig finde."
+          }
+        },
+        {
+          "id": "oase_3",
+          "text": {
+            "en": "I am confident I can put in the effort required to get a high grade in this online class.",
+            "de": "Ich bin zuversichtlich, dass ich den nötigen Aufwand betreiben kann, um in diesem Online-Kurs eine gute Note zu erzielen."
+          }
+        },
+        {
+          "id": "oase_4",
+          "text": {
+            "en": "I am confident that I can accurately work out what the task is requiring me to do.",
+            "de": "Ich bin zuversichtlich, dass ich genau herausfinden kann, was die Aufgabe von mir verlangt."
+          }
+        }
+      ]
+    },
+    {
+      "id": "online_intrinsic_motivation",
+      "title": {
+        "en": "Online Intrinsic Motivation",
+        "de": "Intrinsische Motivation beim Online-Lernen"
+      },
+      "items": [
+        {
+          "id": "oim_1",
+          "text": {
+            "en": "I always find aspects of the content that arouse my curiosity.",
+            "de": "Ich finde immer Aspekte des Inhalts, die meine Neugier wecken."
+          }
+        },
+        {
+          "id": "oim_2",
+          "text": {
+            "en": "I love learning new things in this online class.",
+            "de": "Ich lerne gerne neue Dinge in diesem Online-Kurs."
+          }
+        },
+        {
+          "id": "oim_3",
+          "text": {
+            "en": "I find studying for this online class enjoyable.",
+            "de": "Ich finde das Lernen für diesen Online-Kurs angenehm."
+          }
+        },
+        {
+          "id": "oim_4",
+          "text": {
+            "en": "I find it very satisfying when I learn new material in this online course.",
+            "de": "Es ist sehr befriedigend für mich, wenn ich neues Material in diesem Online-Kurs lerne."
+          }
+        },
+        {
+          "id": "oim_5",
+          "text": {
+            "en": "I get a sense of achievement when I learn new skills or information.",
+            "de": "Ich habe ein Erfolgserlebnis, wenn ich neue Fähigkeiten oder Informationen lerne."
+          }
+        }
+      ]
+    },
+    {
+      "id": "online_extrinsic_motivation",
+      "title": {
+        "en": "Online Extrinsic Motivation",
+        "de": "Extrinsische Motivation beim Online-Lernen"
+      },
+      "items": [
+        {
+          "id": "oem_1",
+          "text": {
+            "en": "I want to do well in this online course so I can show off to my friends and family.",
+            "de": "Ich möchte in diesem Online-Kurs gut abschneiden, um vor Freunden und Familie damit angeben zu können."
+          }
+        },
+        {
+          "id": "oem_2",
+          "text": {
+            "en": "I want to do well because of others real or perceived expectations of me.",
+            "de": "Ich möchte gut abschneiden wegen der tatsächlichen oder wahrgenommenen Erwartungen anderer an mich."
+          }
+        },
+        {
+          "id": "oem_3",
+          "text": {
+            "en": "I want to get a better grade than others in my online class.",
+            "de": "Ich möchte eine bessere Note als andere in meinem Online-Kurs bekommen."
+          }
+        }
+      ]
+    },
+    {
+      "id": "online_negative_achievement_emotion",
+      "title": {
+        "en": "Online Negative Achievement Emotion",
+        "de": "Negative Leistungsemotionen beim Online-Lernen"
+      },
+      "items": [
+        {
+          "id": "onae_1",
+          "text": {
+            "en": "I feel so helpless that I cannot dedicate all my effort to my online studies.",
+            "de": "Ich fühle mich so hilflos, dass ich nicht alle meine Anstrengungen meinem Online-Studium widmen kann."
+          }
+        },
+        {
+          "id": "onae_2",
+          "text": {
+            "en": "I consider dropping out because I feel overwhelmed by my online studies.",
+            "de": "Ich erwäge abzubrechen, weil ich mich von meinem Online-Studium überfordert fühle."
+          }
+        },
+        {
+          "id": "onae_3",
+          "text": {
+            "en": "While studying, I want to distract myself to lower my anxiety level.",
+            "de": "Beim Lernen möchte ich mich ablenken, um mein Angstniveau zu senken."
+          }
+        },
+        {
+          "id": "onae_4",
+          "text": {
+            "en": "I get so anxious that I don't even want to start studying online.",
+            "de": "Ich bekomme so viel Angst, dass ich gar nicht erst mit dem Online-Lernen beginnen möchte."
+          }
+        },
+        {
+          "id": "onae_5",
+          "text": {
+            "en": "When I have to study online, I start to feel bad.",
+            "de": "Wenn ich online lernen muss, fange ich an, mich schlecht zu fühlen."
+          }
+        }
+      ]
+    },
+    {
+      "id": "planning_and_time_management",
+      "title": {
+        "en": "Planning and Time Management",
+        "de": "Planung und Zeitmanagement"
+      },
+      "items": [
+        {
+          "id": "ptm_1",
+          "text": {
+            "en": "I set short-term (daily or weekly) goals.",
+            "de": "Ich setze mir kurzfristige (tägliche oder wöchentliche) Ziele."
+          }
+        },
+        {
+          "id": "ptm_2",
+          "text": {
+            "en": "I set realistic deadlines for learning.",
+            "de": "Ich setze mir realistische Fristen für das Lernen."
+          }
+        },
+        {
+          "id": "ptm_3",
+          "text": {
+            "en": "I break larger goals into smaller actionable goals.",
+            "de": "Ich unterteile größere Ziele in kleinere, umsetzbare Ziele."
+          }
+        },
+        {
+          "id": "ptm_4",
+          "text": {
+            "en": "I make a list of detailed actions that I need to complete.",
+            "de": "Ich erstelle eine Liste detaillierter Aufgaben, die ich erledigen muss."
+          }
+        },
+        {
+          "id": "ptm_5",
+          "text": {
+            "en": "I plan out my schedule each week so I have the appropriate amount of time available for online study.",
+            "de": "Ich plane meinen Zeitplan jede Woche so, dass ich die passende Zeit für das Online-Studium zur Verfügung habe."
+          }
+        }
+      ]
+    },
+    {
+      "id": "metacognition",
+      "title": {
+        "en": "Metacognition",
+        "de": "Metakognition"
+      },
+      "items": [
+        {
+          "id": "mc_1",
+          "text": {
+            "en": "I think about what learning strategies have worked for me in the past when doing similar assignments/types of study.",
+            "de": "Ich denke darüber nach, welche Lernstrategien in der Vergangenheit bei ähnlichen Aufgaben/Lerntypen für mich funktioniert haben."
+          }
+        },
+        {
+          "id": "mc_2",
+          "text": {
+            "en": "I spend time trying to interpret the task to ensure I understand accurately what I need to do.",
+            "de": "Ich nehme mir Zeit, die Aufgabe zu interpretieren, um sicherzustellen, dass ich genau verstehe, was ich tun muss."
+          }
+        },
+        {
+          "id": "mc_3",
+          "text": {
+            "en": "I usually self-assess my performance once I finish.",
+            "de": "Ich bewerte in der Regel meine Leistung, sobald ich fertig bin."
+          }
+        },
+        {
+          "id": "mc_4",
+          "text": {
+            "en": "I look over past feedback I have received and check that I have made improvements in my current learning.",
+            "de": "Ich überprüfe vergangenes Feedback, das ich erhalten habe, und stelle sicher, dass ich Verbesserungen in meinem aktuellen Lernen gemacht habe."
+          }
+        },
+        {
+          "id": "mc_5",
+          "text": {
+            "en": "I think about how I might improve my work by evaluating it against the marking criteria provided by the teacher.",
+            "de": "Ich denke darüber nach, wie ich meine Arbeit verbessern könnte, indem ich sie anhand der vom Lehrenden bereitgestellten Bewertungskriterien überprüfe."
+          }
+        }
+      ]
+    },
+    {
+      "id": "study_environment",
+      "title": {
+        "en": "Study Environment",
+        "de": "Lernumgebung"
+      },
+      "items": [
+        {
+          "id": "se_1",
+          "text": {
+            "en": "I am able to study for my online course without distraction.",
+            "de": "Ich kann für meinen Online-Kurs ohne Ablenkung lernen."
+          }
+        },
+        {
+          "id": "se_2",
+          "text": {
+            "en": "I have access to a quiet and distraction-free place to study.",
+            "de": "Ich habe Zugang zu einem ruhigen und ablenkungsfreien Lernort."
+          }
+        },
+        {
+          "id": "se_3",
+          "text": {
+            "en": "I know where I can study most efficiently for this online course.",
+            "de": "Ich weiß, wo ich für diesen Online-Kurs am effizientesten lernen kann."
+          }
+        }
+      ]
+    },
+    {
+      "id": "online_effort_regulation",
+      "title": {
+        "en": "Online Effort Regulation",
+        "de": "Anstrengungsregulation beim Online-Lernen"
+      },
+      "items": [
+        {
+          "id": "oer_1",
+          "text": {
+            "en": "I work hard in my online study, even when there are more interesting things to do.",
+            "de": "Ich arbeite in meinem Online-Studium hart, auch wenn es interessantere Dinge gibt."
+          }
+        },
+        {
+          "id": "oer_2",
+          "text": {
+            "en": "When my online study gets difficult, I remain committed to reaching my study goals.",
+            "de": "Wenn mein Online-Studium schwierig wird, bleibe ich meinen Lernzielen treu."
+          }
+        },
+        {
+          "id": "oer_3",
+          "text": {
+            "en": "When my mind begins to wander during a learning session for this online course, I make a special effort to keep concentrating.",
+            "de": "Wenn meine Gedanken während einer Lernsitzung für diesen Online-Kurs abschweifen, strenge ich mich besonders an, mich weiter zu konzentrieren."
+          }
+        },
+        {
+          "id": "oer_4",
+          "text": {
+            "en": "No matter how I am feeling, I persevere with my online study.",
+            "de": "Egal wie ich mich fühle, ich halte an meinem Online-Studium fest."
+          }
+        }
+      ]
+    },
+    {
+      "id": "online_social_support",
+      "title": {
+        "en": "Online Social Support",
+        "de": "Soziale Unterstützung beim Online-Lernen"
+      },
+      "items": [
+        {
+          "id": "oss_1",
+          "text": {
+            "en": "I try to help other students when they ask a question online, I can answer.",
+            "de": "Ich versuche, anderen Studierenden zu helfen, wenn sie online eine Frage stellen, die ich beantworten kann."
+          }
+        },
+        {
+          "id": "oss_2",
+          "text": {
+            "en": "I ask for help from knowledgeable others through online channels when I am not sure what to do in my online class.",
+            "de": "Ich bitte über Online-Kanäle kompetente Personen um Hilfe, wenn ich nicht sicher bin, was ich in meinem Online-Kurs tun soll."
+          }
+        },
+        {
+          "id": "oss_3",
+          "text": {
+            "en": "I ask the teacher and/or my peers to clarify information in my online course.",
+            "de": "Ich bitte den Lehrenden und/oder meine Kommilitonen, Informationen in meinem Online-Kurs zu klären."
+          }
+        },
+        {
+          "id": "oss_4",
+          "text": {
+            "en": "When I have difficulties with my online class, I seek assistance from others through online means (discussion boards, social media, email, instant messaging etc.).",
+            "de": "Wenn ich Schwierigkeiten mit meinem Online-Kurs habe, suche ich über Online-Mittel (Diskussionsforen, soziale Medien, E-Mail, Instant Messaging usw.) Hilfe bei anderen."
+          }
+        },
+        {
+          "id": "oss_5",
+          "text": {
+            "en": "I use email, discussion boards, social media, etc., to connect with the teacher and other students when I need help.",
+            "de": "Ich nutze E-Mail, Diskussionsforen, soziale Medien usw., um mich mit dem Lehrenden und anderen Studierenden zu verbinden, wenn ich Hilfe brauche."
+          }
+        }
+      ]
+    },
+    {
+      "id": "online_task_strategies",
+      "title": {
+        "en": "Online Task Strategies",
+        "de": "Aufgabenstrategien beim Online-Lernen"
+      },
+      "items": [
+        {
+          "id": "ots_1",
+          "text": {
+            "en": "When studying online, I create my own examples of the content to make it more meaningful.",
+            "de": "Beim Online-Lernen erstelle ich eigene Beispiele zum Inhalt, um ihn bedeutsamer zu machen."
+          }
+        },
+        {
+          "id": "ots_2",
+          "text": {
+            "en": "When studying online, I organise my thoughts by making summaries of what I am learning.",
+            "de": "Beim Online-Lernen ordne ich meine Gedanken, indem ich Zusammenfassungen des Gelernten erstelle."
+          }
+        },
+        {
+          "id": "ots_3",
+          "text": {
+            "en": "When studying online, I try and relate the content to what I already know.",
+            "de": "Beim Online-Lernen versuche ich, den Inhalt mit dem zu verknüpfen, was ich bereits weiß."
+          }
+        },
+        {
+          "id": "ots_4",
+          "text": {
+            "en": "When learning the online content, I try and develop my own ideas about it.",
+            "de": "Beim Lernen der Online-Inhalte versuche ich, eigene Ideen dazu zu entwickeln."
+          }
+        },
+        {
+          "id": "ots_5",
+          "text": {
+            "en": "I try and improve my understanding by doing additional work beyond the core content (e.g., doing extra problem-solving activities or extra readings).",
+            "de": "Ich versuche, mein Verständnis zu verbessern, indem ich über den Kerninhalt hinaus zusätzliche Arbeit leiste (z. B. zusätzliche Problemlösungsaufgaben oder zusätzliche Lektüre)."
+          }
+        }
+      ]
+    }
+  ]
+}

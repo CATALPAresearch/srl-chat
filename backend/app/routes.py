@@ -2,12 +2,14 @@ from flask import request, jsonify, send_from_directory
 from flask_cors import CORS, cross_origin
 import json
 import os
+import uuid
 
 from app import app, db
 from .core import start_conversation_core, reply_core, reset_conversation
 from .database.crud import get_user, get_language_by_id
 from .actions import LogAction
 from .logging_utlis import log_action
+from .models import SurveyResponse
 
 cors = CORS(app)
 # FixMe: cors = CORS(app, ressources={r"/api/*": {"origin": "http://localhost:80"}})
@@ -203,3 +205,78 @@ def reply():
         else:
             return translations["translations"]["en"]["create_error"], 500
 
+
+# ---------------------------------------------------------------------------
+# Survey endpoints
+# ---------------------------------------------------------------------------
+
+@app.route("/survey/<survey_id>", methods=["GET"])
+@cross_origin()
+def get_survey(survey_id):
+    """Return the survey definition JSON for the given survey_id."""
+    safe_name = os.path.basename(survey_id)  # prevent path traversal
+    path = os.path.join(_CONFIG_DIR, f"survey_{safe_name}.json")
+    if not os.path.isfile(path):
+        return jsonify({"error": "Survey not found"}), 404
+    with open(path, "r", encoding="utf-8") as f:
+        survey = json.load(f)
+    return jsonify(survey), 200
+
+
+@app.route("/survey/<survey_id>/submit", methods=["POST", "OPTIONS"])
+@cross_origin()
+def submit_survey(survey_id):
+    """
+    Store a completed survey.
+    Expected JSON body:
+    {
+        "userid": "...",
+        "client": "...",
+        "language": "en",
+        "responses": { "oase_1": 4, "oase_2": 5, ... }
+    }
+    """
+    try:
+        content = request.json
+        user_id = content["userid"]
+        client = content["client"]
+        language = content.get("language", "en")
+        responses = content["responses"]
+
+        entry = SurveyResponse(
+            id=str(uuid.uuid4()),
+            survey_id=survey_id,
+            user_id=user_id,
+            user_client=client,
+            language=language,
+            responses=responses,
+        )
+        db.session.add(entry)
+        db.session.commit()
+
+        app.logger.info("Survey %s submitted by user %s/%s", survey_id, user_id, client)
+        return jsonify({"status": "ok", "id": entry.id}), 201
+
+    except Exception as e:
+        app.logger.error("Error saving survey response: %s", e)
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/survey/<survey_id>/results", methods=["GET"])
+@cross_origin()
+def get_survey_results(survey_id):
+    """Return all responses for a given survey (admin/research endpoint)."""
+    rows = SurveyResponse.query.filter_by(survey_id=survey_id).all()
+    results = [
+        {
+            "id": r.id,
+            "user_id": r.user_id,
+            "user_client": r.user_client,
+            "language": r.language,
+            "responses": r.responses,
+            "submitted_at": r.submitted_at.isoformat() if r.submitted_at else None,
+        }
+        for r in rows
+    ]
+    return jsonify(results), 200

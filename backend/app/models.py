@@ -195,6 +195,25 @@ class Archive(db.Model):
     id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True, autoincrement=True)
     archived_conversation: so.Mapped[str] = so.mapped_column(sa.String())
 
+
+class SurveyResponse(db.Model):
+    """Stores one submitted survey (all item responses as JSON)."""
+    __tablename__ = "survey_responses"
+
+    id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
+    survey_id: so.Mapped[str] = so.mapped_column(sa.String(64), nullable=False, index=True)
+    user_id: so.Mapped[str] = so.mapped_column(sa.String(64), nullable=False, index=True)
+    user_client: so.Mapped[str] = so.mapped_column(sa.String(64), nullable=False)
+    language: so.Mapped[str] = so.mapped_column(sa.String(8), nullable=False)
+    responses: so.Mapped[dict] = so.mapped_column(sa.JSON, nullable=False)
+    submitted_at: so.Mapped[datetime.datetime] = so.mapped_column(
+        nullable=False, server_default=sa.func.CURRENT_TIMESTAMP()
+    )
+
+    __table_args__ = (
+        sa.Index("idx_survey_user", "survey_id", "user_id", "user_client"),
+    )
+
 class ActivityLog(db.Model):
     __tablename__ = 'activity_log'
 

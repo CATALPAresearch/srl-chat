@@ -10,6 +10,9 @@
       <router-link to="/document-chat" class="tab" active-class="active">
         Dokumenten-Chat
       </router-link>
+      <router-link to="/survey" class="tab" active-class="active">
+        Survey
+      </router-link>
     </nav>
 
     <router-view class="chat-app__view" />
