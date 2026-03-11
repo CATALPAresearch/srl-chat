@@ -363,6 +363,14 @@ Then open http://localhost:8089 to configure and start the load test.
 
 ---
 
+# Contributors
+
+- Elisabeth Wetchy
+- Niels Seidel (project lead)
+- Prasoon Tiwari
+- Abdulrouf Emsilkh
+- Slavisa Radovic
+
 ## License
 
 See [LICENSE.txt](LICENSE.txt).
