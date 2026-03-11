@@ -363,6 +363,34 @@ Then open http://localhost:8089 to configure and start the load test.
 
 ---
 
+
+
+## Related Software
+
+- tba.
+
+## Citation
+
+**Cite this software:**
+
+```
+tba
+
+```
+
+## Research articles and datasets about Longpage
+
+**Peer-reviewed papers**
+
+- tba
+
+## You may also like ...
+
+- [format_serial3](https//github.com/catalparesearch/format_serial3) - Learning Analytics Dashboard for Moodle Courses
+- [mod_usenet](https//github.com/catalparesearch/mod_usenet) - Usenet client for Moodle
+- [local_ari](https//github.com/catalparesearch/local_ari) - Adaptation Rule Interface
+- [mod_hypercast](https://github.com/nise/mod_hypercast) - Hyperaudio player for course texts supporting audio cues, text2speech conversion, text comments, and collaborative listining experiences
+
 # Contributors
 
 - Elisabeth Wetchy
