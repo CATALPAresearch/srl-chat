@@ -280,3 +280,113 @@ def get_survey_results(survey_id):
         for r in rows
     ]
     return jsonify(results), 200
+
+
+# ---------------------------------------------------------------------------
+# Researcher Dashboard endpoint
+# ---------------------------------------------------------------------------
+
+@app.route("/dashboard/stats", methods=["GET"])
+@cross_origin()
+def get_dashboard_stats():
+    """Return aggregated statistics for the researcher dashboard."""
+    try:
+        from .models import (
+            User, ConversationState, UserStrategy, StrategyTranslation,
+            InterviewAnswer, LlmResponse, SurveyResponse, ActivityLog
+        )
+        import sqlalchemy as sa
+
+        # 1. Total interview attempts (unique users)
+        total_attempts = db.session.query(sa.func.count(User.id)).scalar() or 0
+
+        # 2. Completed vs attempted
+        total_completed = db.session.query(sa.func.count(ConversationState.id))\
+            .filter(ConversationState.interview_completed == True).scalar() or 0
+
+        # 3. Unique students who attempted
+        total_students = db.session.query(
+            sa.func.count(sa.distinct(User.id))
+        ).scalar() or 0
+
+        # 4. Unique students who completed
+        students_completed = db.session.query(
+            sa.func.count(sa.distinct(ConversationState.user_id))
+        ).filter(ConversationState.interview_completed == True).scalar() or 0
+
+        # 5. Avg LLM response time from activity_log
+        try:
+            result = db.session.execute(sa.text("""
+                        SELECT AVG(r.timestamp - s.timestamp)
+                        FROM activity_log r
+                        JOIN activity_log s ON r.user_id = s.user_id
+                        WHERE r.action = 'reply_llm'
+                        AND s.action = 'api_call_start'
+                    """)).scalar()
+            avg_response_time = round(float(result), 1) if result else 0
+        except Exception:
+            db.session.rollback()
+            avg_response_time = 0
+
+        # 6. Strategy distribution
+        strategy_rows = db.session.query(
+            UserStrategy.strategy,
+            sa.func.count(UserStrategy.strategy).label("count")
+        ).group_by(UserStrategy.strategy).all()
+        strategy_distribution = [
+            {"strategy": row.strategy, "count": row.count}
+            for row in strategy_rows
+        ]
+
+        # 7. Avg interview duration (first to last answer per user)
+        first_msg = db.session.query(
+            InterviewAnswer.user_id,
+            sa.func.min(InterviewAnswer.message_time).label("first_time")
+        ).group_by(InterviewAnswer.user_id).subquery()
+
+        last_msg = db.session.query(
+            InterviewAnswer.user_id,
+            sa.func.max(InterviewAnswer.message_time).label("last_time")
+        ).group_by(InterviewAnswer.user_id).subquery()
+
+        avg_duration = db.session.execute(sa.text("""
+                    SELECT AVG(EXTRACT(epoch FROM last_time) - EXTRACT(epoch FROM first_time))
+                    FROM (
+                        SELECT user_id, MIN(message_time) as first_time, MAX(message_time) as last_time
+                        FROM interview_answer
+                        GROUP BY user_id
+                    ) t
+                """)).scalar()
+        avg_duration_minutes = round(float(avg_duration) / 60, 1) if avg_duration else 0
+
+        # 8. Survey responses count
+        try:
+            survey_count = db.session.query(
+                sa.func.count(SurveyResponse.id)
+            ).scalar() or 0
+        except Exception:
+            db.session.rollback()
+            survey_count = 0
+
+        # 9. Turns per completed interview
+        avg_turns = db.session.query(
+            sa.func.avg(ConversationState.current_turn)
+        ).filter(ConversationState.interview_completed == True).scalar()
+        avg_turns = round(float(avg_turns), 1) if avg_turns else 0
+
+        return jsonify({
+            "total_attempts": total_attempts,
+            "total_completed": total_completed,
+            "total_students": total_students,
+            "students_completed": students_completed,
+            "completion_rate": round(total_completed / total_attempts * 100, 1) if total_attempts > 0 else 0,
+            "avg_response_time_seconds": avg_response_time,
+            "avg_duration_minutes": avg_duration_minutes,
+            "avg_turns_completed": avg_turns,
+            "survey_count": survey_count,
+            "strategy_distribution": strategy_distribution,
+        }), 200
+
+    except Exception as e:
+        app.logger.error("Error fetching dashboard stats: %s", e)
+        return jsonify({"error": str(e)}), 500
