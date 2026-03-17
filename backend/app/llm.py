@@ -91,76 +91,60 @@ def get_llm_response_openai(
     if client is None:
         client = get_client()
 
-    messages = [{"role": "system", "content": system_prompt}]
-    if prev_conversation:
-        messages.extend(prev_conversation)
-    if user_prompt:
-        messages.append({"role": "user", "content": user_prompt})
+        # Use user/assistant format instead of system role for llama3.2 compatibility
+        messages = [
+            {"role": "user", "content": system_prompt},
+            {"role": "assistant", "content": "Understood, I will conduct the interview."},
+        ]
+        if prev_conversation:
+            messages.extend(prev_conversation)
+        if user_prompt:
+            messages.append({"role": "user", "content": user_prompt})
 
-    send_user_feedback("Agent is working on your request...")
+        attempts = 5
+        timeout = 0
+        response = get_response(messages, temperature, expected_fields_model)
+        while attempts > 0:
+            if response is None or not hasattr(response, "message") or response.message.content == "":
+                response = get_response(messages, temperature + 0.1, expected_fields_model)
+                time.sleep(timeout)
+                attempts -= 1
+                timeout *= 2
+            else:
+                break
 
-    attempts = 3
-    timeout = 2  # seconds, for retry backoff
-    response_content = ""
+        logger.info('@llm: response::: ')
+        logger.info(response)
+        response_content = response.message.content if (response and hasattr(response, "message")) else None
 
-    while attempts > 0:
-        try:
-            response = get_response(client, messages, temperature, expected_fields_model, stream=stream)
-
-            # Streaming mode: collect all tokens and return the full string
-            if stream and hasattr(response, "__iter__"):
-                for partial in response:
-                    token_obj = getattr(partial, "message", None)
-                    if token_obj:
-                        token_text = getattr(token_obj, "content", str(token_obj))
-                        response_content += token_text
-                        send_user_feedback(token_text)  # Live feedback
-                return response_content  # return accumulated text
-
-            # Non-streaming mode
-            response_message = getattr(response, "message", None)
-            response_content = getattr(response_message, "content", None) if response_message else None
-
-            if response_content:
-                return response_content
-
-        except Exception as e:
-            logger.error(f"LLM call failed: {e}")
-            attempts -= 1
-            time.sleep(timeout)
-            timeout *= 2  # exponential backoff
-
-    raise AssertionError("Failed to get response from LLM after retries.")
-
-def get_response(client, messages, temperature, expected_fields_model=None, stream=True):
-    """
-    Send request to LLM (Ollama or OpenAI) and return the response.
-    If `stream=True`, response will be a generator yielding partial outputs.
-    """
-    response = None
+        if not response_content:
+            logger.info("Empty response")
+            raise AssertionError("Received empty response from LLM.")
+        logger.info("Response: %s", response_content)
+        return response_content
+def get_response(messages, temperature, expected_fields_model=None):
+    """Call Ollama directly via HTTP REST API."""
+    logger.info("Send request to Ollama via HTTP")
     try:
-        if evil:
-            logger.info("Send request to OpenAI")
-            response = client.chat(
-                model=MODEL,
-                messages=messages,
-                temperature=temperature,
-                stream=stream  # allow streaming
-            )
-        else:
-            logger.info("Send request to Ollama")
-            response = client.chat(
-                model=MODEL,
-                messages=messages,
-                format=expected_fields_model.model_json_schema() if expected_fields_model else '',
-                options={'temperature': temperature},
-                stream=stream
-            )
+        payload = {
+            "model": MODEL,
+            "messages": messages,
+            "stream": False,
+            "options": {
+                "temperature": temperature,
+                "num_predict": 256,
+                "num_ctx": 2048
+            }
+        }
+        r = requests.post("http://localhost:11434/api/chat", json=payload, timeout=120)
+        data = r.json()
+        logger.info("Ollama raw response: %s", data)
+        content = data.get("message", {}).get("content", "")
+        mock = type('MockResponse', (), {'message': type('msg', (), {'content': content})()})()
+        return mock
     except Exception as e:
-        logger.error(f"call ollama client.chat failed: {e}")
+        logger.error(f"HTTP call to Ollama failed: {e}")
         return None
-
-    return response
 
 
 def get_prompt(user, prompt_name):
