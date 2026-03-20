@@ -297,69 +297,47 @@ def get_dashboard_stats():
         )
         import sqlalchemy as sa
 
-        # 1. Total interview attempts (unique users)
-        total_attempts = db.session.query(sa.func.count(User.id)).scalar() or 0
-
-        # 2. Completed vs attempted
-        total_completed = db.session.query(sa.func.count(ConversationState.id))\
-            .filter(ConversationState.interview_completed == True).scalar() or 0
-
-        # 3. Unique students who attempted
+        # 1. Total unique students
         total_students = db.session.query(
             sa.func.count(sa.distinct(User.id))
         ).scalar() or 0
 
-        # 4. Unique students who completed
-        students_completed = db.session.query(
-            sa.func.count(sa.distinct(ConversationState.user_id))
+        # 2. Completed interviews
+        total_completed = db.session.query(
+            sa.func.count(ConversationState.id)
         ).filter(ConversationState.interview_completed == True).scalar() or 0
 
-        # 5. Avg LLM response time from activity_log
+        # 3. Avg interview duration + variance + std deviation
+        duration_result = db.session.execute(sa.text("""
+            SELECT
+                AVG(EXTRACT(epoch FROM last_time) - EXTRACT(epoch FROM first_time)) as avg_dur,
+                VARIANCE(EXTRACT(epoch FROM last_time) - EXTRACT(epoch FROM first_time)) as var_dur,
+                STDDEV(EXTRACT(epoch FROM last_time) - EXTRACT(epoch FROM first_time)) as std_dur
+            FROM (
+                SELECT user_id, MIN(message_time) as first_time, MAX(message_time) as last_time
+                FROM interview_answer
+                GROUP BY user_id
+            ) t
+        """)).fetchone()
+        avg_duration_minutes = round(float(duration_result[0]) / 60, 1) if duration_result[0] else 0
+        var_duration_minutes = round(float(duration_result[1]) / 3600, 1) if duration_result[1] else 0
+        std_duration_minutes = round(float(duration_result[2]) / 60, 1) if duration_result[2] else 0
+
+        # 4. Avg LLM response time
         try:
             result = db.session.execute(sa.text("""
-                        SELECT AVG(r.timestamp - s.timestamp)
-                        FROM activity_log r
-                        JOIN activity_log s ON r.user_id = s.user_id
-                        WHERE r.action = 'reply_llm'
-                        AND s.action = 'api_call_start'
-                    """)).scalar()
+                SELECT AVG(r.timestamp - s.timestamp)
+                FROM activity_log r
+                JOIN activity_log s ON r.user_id = s.user_id
+                WHERE r.action = 'reply_llm'
+                AND s.action = 'api_call_start'
+            """)).scalar()
             avg_response_time = round(float(result), 1) if result else 0
         except Exception:
             db.session.rollback()
             avg_response_time = 0
 
-        # 6. Strategy distribution
-        strategy_rows = db.session.query(
-            UserStrategy.strategy,
-            sa.func.count(UserStrategy.strategy).label("count")
-        ).group_by(UserStrategy.strategy).all()
-        strategy_distribution = [
-            {"strategy": row.strategy, "count": row.count}
-            for row in strategy_rows
-        ]
-
-        # 7. Avg interview duration (first to last answer per user)
-        first_msg = db.session.query(
-            InterviewAnswer.user_id,
-            sa.func.min(InterviewAnswer.message_time).label("first_time")
-        ).group_by(InterviewAnswer.user_id).subquery()
-
-        last_msg = db.session.query(
-            InterviewAnswer.user_id,
-            sa.func.max(InterviewAnswer.message_time).label("last_time")
-        ).group_by(InterviewAnswer.user_id).subquery()
-
-        avg_duration = db.session.execute(sa.text("""
-                    SELECT AVG(EXTRACT(epoch FROM last_time) - EXTRACT(epoch FROM first_time))
-                    FROM (
-                        SELECT user_id, MIN(message_time) as first_time, MAX(message_time) as last_time
-                        FROM interview_answer
-                        GROUP BY user_id
-                    ) t
-                """)).scalar()
-        avg_duration_minutes = round(float(avg_duration) / 60, 1) if avg_duration else 0
-
-        # 8. Survey responses count
+        # 5. Survey responses count
         try:
             survey_count = db.session.query(
                 sa.func.count(SurveyResponse.id)
@@ -368,23 +346,91 @@ def get_dashboard_stats():
             db.session.rollback()
             survey_count = 0
 
-        # 9. Turns per completed interview
-        avg_turns = db.session.query(
+        # 6. Drop-off analysis - at which step students left
+        dropoff_rows = db.session.query(
+            ConversationState.current_conversation_step,
+            sa.func.count(ConversationState.id).label("count")
+        ).filter(
+            ConversationState.interview_completed == False
+        ).group_by(
+            ConversationState.current_conversation_step
+        ).all()
+        dropoff_distribution = [
+            {"step": row.current_conversation_step or "not_started", "count": row.count}
+            for row in dropoff_rows
+        ]
+
+        # 7. Strategy distribution
+        strategy_rows = db.session.query(
+            UserStrategy.strategy,
+            sa.func.count(UserStrategy.strategy).label("count")
+        ).group_by(UserStrategy.strategy).order_by(
+            sa.func.count(UserStrategy.strategy).desc()
+        ).all()
+        strategy_distribution = [
+            {"strategy": row.strategy, "count": row.count}
+            for row in strategy_rows
+        ]
+
+        # 8. Re-attempts - students with more than one session
+        reattempt_rows = db.session.execute(sa.text("""
+            SELECT COUNT(*) as reattempts
+            FROM (
+                SELECT user_id, COUNT(*) as session_count
+                FROM state
+                GROUP BY user_id
+                HAVING COUNT(*) > 1
+            ) t
+        """)).scalar() or 0
+
+        # 9. Avg turns per completed vs incomplete interview
+        avg_turns_completed = db.session.query(
             sa.func.avg(ConversationState.current_turn)
         ).filter(ConversationState.interview_completed == True).scalar()
-        avg_turns = round(float(avg_turns), 1) if avg_turns else 0
+        avg_turns_completed = round(float(avg_turns_completed), 1) if avg_turns_completed else 0
+
+        avg_turns_incomplete = db.session.query(
+            sa.func.avg(ConversationState.current_turn)
+        ).filter(ConversationState.interview_completed == False).scalar()
+        avg_turns_incomplete = round(float(avg_turns_incomplete), 1) if avg_turns_incomplete else 0
+
+        # 10. Language distribution
+        from .models import Language
+        lang_rows = db.session.query(
+            Language.lang_code,
+            sa.func.count(User.id).label("count")
+        ).join(Language, User.language_id == Language.id
+               ).group_by(Language.lang_code).all()
+        language_distribution = [
+            {"language": row.lang_code, "count": row.count}
+            for row in lang_rows
+        ]
+
+        # 11. Avg messages per interview
+        avg_messages = db.session.execute(sa.text("""
+                    SELECT AVG(msg_count) FROM (
+                        SELECT user_id, COUNT(*) as msg_count
+                        FROM interview_answer
+                        GROUP BY user_id
+                    ) t
+                """)).scalar()
+        avg_messages = round(float(avg_messages), 1) if avg_messages else 0
 
         return jsonify({
-            "total_attempts": total_attempts,
-            "total_completed": total_completed,
             "total_students": total_students,
-            "students_completed": students_completed,
-            "completion_rate": round(total_completed / total_attempts * 100, 1) if total_attempts > 0 else 0,
-            "avg_response_time_seconds": avg_response_time,
+            "total_completed": total_completed,
             "avg_duration_minutes": avg_duration_minutes,
-            "avg_turns_completed": avg_turns,
+            "var_duration_minutes": var_duration_minutes,
+            "std_duration_minutes": std_duration_minutes,
+            "avg_response_time_seconds": avg_response_time,
             "survey_count": survey_count,
+            "reattempts": int(reattempt_rows),
+            "avg_turns_completed": avg_turns_completed,
+            "avg_turns_incomplete": avg_turns_incomplete,
+            "dropoff_distribution": dropoff_distribution,
             "strategy_distribution": strategy_distribution,
+            "language_distribution": language_distribution,
+            "avg_messages_per_interview": avg_messages,
         }), 200
 
     except Exception as e:
