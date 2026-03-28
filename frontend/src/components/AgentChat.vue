@@ -63,6 +63,7 @@ export default Vue.extend({
       host: "http://localhost:5000",
       chatStarted: false,
       userInput: "",
+      tabHiddenAt: null,
     };
   },
 
@@ -74,6 +75,7 @@ export default Vue.extend({
 
     startChat: async function () {
       console.log("Started Chat");
+      this.setupTabVisibilityTracking();
       let _this = this;
       // curl -X POST http://localhost:5000/startConversation -H "Content-Type: application/json" -d '{ "language": "en", "client": "discord", "userid": "none"}'
       await axios
@@ -147,6 +149,28 @@ export default Vue.extend({
             id: this.getNextMessageId(),
           });
         });
+    },
+   setupTabVisibilityTracking: function () {
+      const _this = this;
+      document.addEventListener("visibilitychange", function () {
+        const event = document.hidden ? "tab_hidden" : "tab_visible";
+        const timestamp = Math.floor(Date.now() / 1000);
+
+        if (document.hidden) {
+          _this.tabHiddenAt = timestamp;
+        }
+
+        axios.post(_this.host + "/log/tab_event", {
+          userid: _this.$store.getters.getUser,
+          client: "discord",
+          event: event,
+          timestamp: timestamp,
+        }).catch(function (error) {
+          console.warn("Tab event logging failed:", error);
+        });
+
+        console.log("Tab visibility changed:", event, "at", timestamp);
+      });
     },
   },
 });
