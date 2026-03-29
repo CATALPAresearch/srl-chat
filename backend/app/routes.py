@@ -3,6 +3,7 @@ from flask_cors import CORS, cross_origin
 import json
 import os
 import uuid
+import sqlalchemy as sa
 
 from app import app, db
 from .core import start_conversation_core, reply_core, reset_conversation
@@ -280,3 +281,69 @@ def get_survey_results(survey_id):
         for r in rows
     ]
     return jsonify(results), 200
+
+
+# ---------------------------------------------------------------------------
+# Mouse trace logging
+# ---------------------------------------------------------------------------
+
+@app.route("/log/mouse_traces", methods=["POST", "OPTIONS"])
+@cross_origin()
+def log_mouse_traces():
+    try:
+        content = request.json
+        userid = content.get("userid")
+        client = content.get("client")
+        session_id = content.get("session_id")
+        traces = content.get("traces", [])
+
+        if not userid or not client or not traces:
+            return jsonify({"error": "Missing required fields"}), 400
+
+        with db.engine.connect() as conn:
+            for trace in traces:
+                conn.execute(sa.text("""
+                    INSERT INTO mouse_traces (user_id, user_client, x, y, page_width, page_height, timestamp, session_id)
+                    VALUES (:user_id, :user_client, :x, :y, :page_width, :page_height, :timestamp, :session_id)
+                """), {
+                    "user_id": userid,
+                    "user_client": client,
+                    "x": trace.get("x", 0),
+                    "y": trace.get("y", 0),
+                    "page_width": trace.get("page_width"),
+                    "page_height": trace.get("page_height"),
+                    "timestamp": trace.get("timestamp"),
+                    "session_id": session_id
+                })
+            conn.commit()
+
+        app.logger.info("Stored %d mouse traces for user %s/%s", len(traces), userid, client)
+        return jsonify({"status": "stored", "count": len(traces)}), 200
+
+    except Exception as e:
+        app.logger.error("Error storing mouse traces: %s", e)
+        return jsonify({"error": str(e)}), 500
+@app.route("/log/tab_event", methods=["POST", "OPTIONS"])
+@cross_origin()
+def log_tab_event():
+    try:
+        content = request.json
+        userid = content.get("userid")
+        client = content.get("client")
+        event = content.get("event")
+        timestamp = content.get("timestamp")
+        if event not in ["tab_hidden", "tab_visible"]:
+            return jsonify({"error": "Invalid event type"}), 400
+        user = get_user(userid, client)
+        log_action(
+            LogAction.TAB_HIDDEN if event == "tab_hidden" else LogAction.TAB_VISIBLE,
+            user=user if user else None,
+            value={"event": event, "timestamp": timestamp},
+            http_status=200,
+            step="tab_event"
+        )
+        app.logger.info("Tab event: %s for user %s/%s", event, userid, client)
+        return jsonify({"status": "logged", "event": event}), 200
+    except Exception as e:
+        app.logger.error("Error logging tab event: %s", e)
+        return jsonify({"error": str(e)}), 500

@@ -262,3 +262,15 @@ class ActivityLog(db.Model):
             'step': self.step,
             'http_status': self.http_status
         }
+
+class MouseTrace(db.Model):
+    __tablename__ = "mouse_traces"
+    id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True, autoincrement=True)
+    user_id: so.Mapped[str] = so.mapped_column(sa.String(64), nullable=False, index=True)
+    user_client: so.Mapped[str] = so.mapped_column(sa.String(64), nullable=False)
+    x: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False)
+    y: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False)
+    page_width: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer, nullable=True)
+    page_height: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer, nullable=True)
+    timestamp: so.Mapped[int] = so.mapped_column(sa.BigInteger, nullable=False, index=True)
+    session_id: so.Mapped[Optional[str]] = so.mapped_column(sa.String(64), nullable=True)

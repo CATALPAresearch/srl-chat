@@ -69,3 +69,7 @@ class LogAction(str, Enum):
     # ============ Translation & Config ============
     TRANSLATION_REQUESTED = "translation_requested"
     TRANSLATION_ERROR = "translation_error"
+
+    # ============ Tab Visibility ============
+    TAB_HIDDEN = "tab_hidden"
+    TAB_VISIBLE = "tab_visible"
