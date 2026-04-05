@@ -216,6 +216,8 @@ def try_get_json_completion(
             json_string = re.search(regex, llm_message_raw).group()
             json_output = json.loads(json_string)
             for field in expected_fields:
+                if field not in json_output:
+                    json_output[field] = ""
                 if not json_output[field]:
                     continue
             json_valid = True

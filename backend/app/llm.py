@@ -91,37 +91,37 @@ def get_llm_response_openai(
     if client is None:
         client = get_client()
 
-        # Use user/assistant format instead of system role for llama3.2 compatibility
-        messages = [
-            {"role": "user", "content": system_prompt},
-            {"role": "assistant", "content": "Understood, I will conduct the interview."},
-        ]
-        if prev_conversation:
-            messages.extend(prev_conversation)
-        if user_prompt:
-            messages.append({"role": "user", "content": user_prompt})
+    # Use user/assistant format instead of system role for llama3.2 compatibility
+    messages = [
+        {"role": "user", "content": system_prompt},
+        {"role": "assistant", "content": "Understood, I will conduct the interview."},
+    ]
+    if prev_conversation:
+        messages.extend(prev_conversation)
+    if user_prompt:
+        messages.append({"role": "user", "content": user_prompt})
 
-        attempts = 5
-        timeout = 0
-        response = get_response(messages, temperature, expected_fields_model)
-        while attempts > 0:
-            if response is None or not hasattr(response, "message") or response.message.content == "":
-                response = get_response(messages, temperature + 0.1, expected_fields_model)
-                time.sleep(timeout)
-                attempts -= 1
-                timeout *= 2
-            else:
-                break
+    attempts = 5
+    timeout = 0
+    response = get_response(messages, temperature, expected_fields_model)
+    while attempts > 0:
+        if response is None or not hasattr(response, "message") or response.message.content == "":
+            response = get_response(messages, temperature + 0.1, expected_fields_model)
+            time.sleep(timeout)
+            attempts -= 1
+            timeout *= 2
+        else:
+            break
 
-        logger.info('@llm: response::: ')
-        logger.info(response)
-        response_content = response.message.content if (response and hasattr(response, "message")) else None
+    logger.info('@llm: response::: ')
+    logger.info(response)
+    response_content = response.message.content if (response and hasattr(response, "message")) else None
 
-        if not response_content:
-            logger.info("Empty response")
-            raise AssertionError("Received empty response from LLM.")
-        logger.info("Response: %s", response_content)
-        return response_content
+    if not response_content:
+        logger.info("Empty response")
+        raise AssertionError("Received empty response from LLM.")
+    logger.info("Response: %s", response_content)
+    return response_content
 def get_response(messages, temperature, expected_fields_model=None):
     """Call Ollama directly via HTTP REST API."""
     logger.info("Send request to Ollama via HTTP")
@@ -132,8 +132,8 @@ def get_response(messages, temperature, expected_fields_model=None):
             "stream": False,
             "options": {
                 "temperature": temperature,
-                "num_predict": 256,
-                "num_ctx": 2048
+                "num_predict": 512,
+                "num_ctx": 4096
             }
         }
         r = requests.post("http://localhost:11434/api/chat", json=payload, timeout=120)
