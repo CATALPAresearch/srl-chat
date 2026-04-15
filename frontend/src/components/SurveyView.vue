@@ -25,9 +25,19 @@
 
     <!-- ---------- SURVEY FORM ---------- -->
     <div v-else-if="survey" class="survey-form">
-      <h3>{{ survey.title[lang] || survey.title.en }}</h3>
+      <h3>
+        {{
+          typeof survey.title === "string"
+            ? survey.title
+            : survey.title[lang] || survey.title.en
+        }}
+      </h3>
       <p class="survey-desc">
-        {{ survey.description[lang] || survey.description.en }}
+        {{
+          typeof survey.description === "string"
+            ? survey.description
+            : survey.description[lang] || survey.description.en
+        }}
       </p>
 
       <form @submit.prevent="submitSurvey">
@@ -37,7 +47,12 @@
           class="survey-scale"
         >
           <h5 class="scale-title">
-            {{ sIdx + 1 }}. {{ scale.title[lang] || scale.title.en }}
+            {{ sIdx + 1 }}.
+            {{
+              typeof scale.title === "string"
+                ? scale.title
+                : scale.title[lang] || scale.title.en
+            }}
           </h5>
 
           <table class="survey-table">
@@ -57,7 +72,11 @@
                 :class="{ unanswered: showValidation && !responses[item.id] }"
               >
                 <td class="item-text-col">
-                  {{ item.text[lang] || item.text.en }}
+                  {{
+                    typeof item.text === "string"
+                      ? item.text
+                      : item.text[lang] || item.text.en
+                  }}
                 </td>
                 <td v-for="v in scaleRange" :key="v" class="likert-col">
                   <label class="likert-radio-label">
@@ -127,11 +146,8 @@ export default Vue.extend({
 
   computed: {
     lang() {
-      // Use the browser language or default to English
-      const nav = (navigator.language || "en").substring(0, 2);
-      return this.survey && this.survey.title && this.survey.title[nav]
-        ? nav
-        : "en";
+      // Use the store language (defaults to German)
+      return this.$store.getters.getLanguage || "de";
     },
 
     scaleRange() {
@@ -152,17 +168,38 @@ export default Vue.extend({
     },
   },
 
+  watch: {
+    lang(newLang, oldLang) {
+      if (newLang !== oldLang) {
+        this.loading = true;
+        this.survey = null;
+        this.responses = {};
+        this.showValidation = false;
+        this.errorMsg = "";
+        this.loadSurvey();
+      }
+    },
+  },
+
   methods: {
     scaleLabel(value) {
       if (!this.survey) return "";
-      const labels =
-        this.survey.scale.labels[this.lang] || this.survey.scale.labels.en;
+      const labels = Array.isArray(this.survey.scale.labels)
+        ? this.survey.scale.labels
+        : this.survey.scale.labels[this.lang] || this.survey.scale.labels.en;
       return labels[value - this.survey.scale.min] || "";
     },
 
     async loadSurvey() {
       try {
-        const res = await axios.get(`${this.host}/survey/${this.surveyId}`);
+        const params = {
+          lang: this.lang,
+          userid: this.$store.getters.getUser,
+          client: "standalone",
+        };
+        const res = await axios.get(`${this.host}/survey/${this.surveyId}`, {
+          params,
+        });
         this.survey = res.data;
 
         // Pre-populate responses keys so Vue reactivity tracks them

@@ -1,4 +1,4 @@
-from flask import request, jsonify, send_from_directory
+from flask import request, jsonify, send_from_directory, session
 from flask_cors import CORS, cross_origin
 import json
 import os
@@ -103,12 +103,24 @@ def get_user_language():
     user = get_user(userid, client)
     if user:
         user_lang = get_language_by_id(user.language_id)
-        return user_lang.lang_code, 200
+        lang_code = user_lang.lang_code if user_lang else 'de'
+        return lang_code, 200
     else:
-        return translations["translations"]["en"]["create_error"], 500
+        return 'de', 200  # Default to German for new / standalone users
 
 
-@app.route("/translations/<language>", methods=["GET"])
+@app.route("/user_role/", methods=["GET"])
+@cross_origin()
+def get_user_role():
+    """
+    Return the role ('student' or 'teacher') for the requesting user.
+    Priority: LTI session role → default 'student'.
+    Query params: userid, client (unused for now, reserved for DB lookup).
+    """
+    role = session.get("lti_role", "student")
+    return role, 200
+
+
 @cross_origin()
 def get_translations(language):
     with open("config/translations.json", "r", encoding="utf-8") as file:
@@ -219,11 +231,41 @@ def reply():
 @app.route("/survey/<survey_id>", methods=["GET"])
 @cross_origin()
 def get_survey(survey_id):
-    """Return the survey definition JSON for the given survey_id."""
+    """
+    Return the survey definition JSON for the given survey_id.
+    Query params:
+        - lang: language code (en, de). If not provided, uses user's language_id.
+        - userid: user ID (required if lang not provided)
+        - client: client identifier (required if lang not provided)
+    Default language: de
+    """
     safe_name = os.path.basename(survey_id)  # prevent path traversal
-    path = os.path.join(_CONFIG_DIR, f"survey_{safe_name}.json")
+    
+    # Determine language
+    lang = request.args.get('lang')
+    if not lang:
+        # Try to get user's language
+        userid = request.args.get('userid')
+        client = request.args.get('client')
+        if userid and client:
+            user = get_user(userid, client)
+            if user:
+                user_lang = get_language_by_id(user.language_id)
+                lang = user_lang.lang_code if user_lang else 'de'
+            else:
+                lang = 'de'  # Default to German
+        else:
+            lang = 'de'  # Default to German
+    
+    # Try language-specific file first
+    path = os.path.join(_CONFIG_DIR, f"survey_{safe_name}_{lang}.json")
+    if not os.path.isfile(path):
+        # Fallback to generic file (bilingual)
+        path = os.path.join(_CONFIG_DIR, f"survey_{safe_name}.json")
+    
     if not os.path.isfile(path):
         return jsonify({"error": "Survey not found"}), 404
+    
     with open(path, "r", encoding="utf-8") as f:
         survey = json.load(f)
     return jsonify(survey), 200
@@ -267,6 +309,80 @@ def submit_survey(survey_id):
         app.logger.error("Error saving survey response: %s", e)
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/student/results", methods=["GET"])
+@cross_origin()
+def get_student_results():
+    """
+    Return interview strategies and survey responses for a single student.
+    Query params: userid, client
+    """
+    from .models import UserStrategy, StrategyTranslation, SurveyResponse, InterviewAnswer
+    userid = request.args.get("userid")
+    client = request.args.get("client", "standalone")
+    if not userid:
+        return jsonify({"error": "userid required"}), 400
+
+    user = get_user(userid, client)
+    if not user:
+        return jsonify({"strategies": [], "survey": None, "interview_completed": False}), 200
+
+    user_lang = get_language_by_id(user.language_id)
+    lang_id = user_lang.id if user_lang else None
+
+    # --- Strategies mentioned by this user ---
+    rows = db.session.execute(
+        db.select(UserStrategy, StrategyTranslation)
+        .outerjoin(
+            StrategyTranslation,
+            (StrategyTranslation.strategy == UserStrategy.strategy) &
+            (StrategyTranslation.language_id == lang_id)
+        )
+        .where(UserStrategy.user_id == userid)
+        .where(UserStrategy.user_client == client)
+    ).all()
+
+    strategies = []
+    seen = set()
+    for us, st in rows:
+        if us.strategy not in seen:
+            seen.add(us.strategy)
+            strategies.append({
+                "id": us.strategy,
+                "name": st.name if st else us.strategy,
+                "description": st.description if st else "",
+                "frequency": us.frequency,
+            })
+
+    # --- Latest survey response ---
+    survey_row = (
+        SurveyResponse.query
+        .filter_by(user_id=userid, user_client=client)
+        .order_by(SurveyResponse.submitted_at.desc())
+        .first()
+    )
+    survey = None
+    if survey_row:
+        survey = {
+            "survey_id": survey_row.survey_id,
+            "language": survey_row.language,
+            "submitted_at": survey_row.submitted_at.isoformat() if survey_row.submitted_at else None,
+            "responses": survey_row.responses,
+        }
+
+    # --- Interview completion status ---
+    from .models import ConversationState
+    state = ConversationState.query.filter_by(
+        user_id=userid, user_client=client
+    ).first()
+    interview_completed = bool(state and state.interview_completed)
+
+    return jsonify({
+        "strategies": strategies,
+        "survey": survey,
+        "interview_completed": interview_completed,
+    }), 200
 
 
 @app.route("/survey/<survey_id>/results", methods=["GET"])

@@ -40,6 +40,8 @@ export const store = new Vuex.Store({
     user: {
       userId: null,
     },
+    language: "de", // Default to German
+    role: "student", // 'student' | 'teacher' — loaded from backend / LTI
     informedConsentAgreement: false,
 
     // plugin context
@@ -142,6 +144,14 @@ export const store = new Vuex.Store({
       state.user.userId = userId;
     },
 
+    setLanguage(state, lang) {
+      state.language = lang || "de";
+    },
+
+    setRole(state, role) {
+      state.role = role === "teacher" ? "teacher" : "student";
+    },
+
     setChatModus(state, value) {
       state.pluginSettings.chatmodus = value || "agent-chat";
     },
@@ -216,6 +226,14 @@ export const store = new Vuex.Store({
 
     getUser(state) {
       return state.user.userId;
+    },
+
+    getLanguage(state) {
+      return state.language;
+    },
+
+    getRole(state) {
+      return state.role;
     },
   },
 

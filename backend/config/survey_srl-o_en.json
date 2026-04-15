@@ -1,0 +1,254 @@
+{
+  "id": "srl-o",
+  "title": "Self-Regulation for Learning Online Questionnaire (SRL-O)",
+  "description": "Please rate each statement on a scale from 1 (strongly disagree) to 5 (strongly agree).",
+  "scale": {
+    "min": 1,
+    "max": 5,
+    "labels": [
+      "Strongly disagree",
+      "Disagree",
+      "Neutral",
+      "Agree",
+      "Strongly agree"
+    ]
+  },
+  "scales": [
+    {
+      "id": "online_academic_self_efficacy",
+      "title": "Online Academic Self-efficacy",
+      "items": [
+        {
+          "id": "oase_1",
+          "text": "I am confident that I will be able to master the content and assignments in this online class."
+        },
+        {
+          "id": "oase_2",
+          "text": "I am confident in my ability to successfully persist in this online class, even if I find the content difficult."
+        },
+        {
+          "id": "oase_3",
+          "text": "I am confident I can put in the effort required to get a high grade in this online class."
+        },
+        {
+          "id": "oase_4",
+          "text": "I am confident that I can accurately work out what the task is requiring me to do."
+        }
+      ]
+    },
+    {
+      "id": "online_intrinsic_motivation",
+      "title": "Online Intrinsic Motivation",
+      "items": [
+        {
+          "id": "oim_1",
+          "text": "I always find aspects of the content that arouse my curiosity."
+        },
+        {
+          "id": "oim_2",
+          "text": "I love learning new things in this online class."
+        },
+        {
+          "id": "oim_3",
+          "text": "I find studying for this online class enjoyable."
+        },
+        {
+          "id": "oim_4",
+          "text": "I find it very satisfying when I learn new material in this online course."
+        },
+        {
+          "id": "oim_5",
+          "text": "I get a sense of achievement when I learn new skills or information."
+        }
+      ]
+    },
+    {
+      "id": "online_extrinsic_motivation",
+      "title": "Online Extrinsic Motivation",
+      "items": [
+        {
+          "id": "oem_1",
+          "text": "I want to do well in this online course so I can show off to my friends and family."
+        },
+        {
+          "id": "oem_2",
+          "text": "I want to do well because of others real or perceived expectations of me."
+        },
+        {
+          "id": "oem_3",
+          "text": "I want to get a better grade than others in my online class."
+        }
+      ]
+    },
+    {
+      "id": "online_negative_achievement_emotion",
+      "title": "Online Negative Achievement Emotion",
+      "items": [
+        {
+          "id": "onae_1",
+          "text": "I feel so helpless that I cannot dedicate all my effort to my online studies."
+        },
+        {
+          "id": "onae_2",
+          "text": "I consider dropping out because I feel overwhelmed by my online studies."
+        },
+        {
+          "id": "onae_3",
+          "text": "While studying, I want to distract myself to lower my anxiety level."
+        },
+        {
+          "id": "onae_4",
+          "text": "I get so anxious that I don't even want to start studying online."
+        },
+        {
+          "id": "onae_5",
+          "text": "When I have to study online, I start to feel bad."
+        }
+      ]
+    },
+    {
+      "id": "planning_and_time_management",
+      "title": "Planning and Time Management",
+      "items": [
+        {
+          "id": "ptm_1",
+          "text": "I set short-term (daily or weekly) goals."
+        },
+        {
+          "id": "ptm_2",
+          "text": "I set realistic deadlines for learning."
+        },
+        {
+          "id": "ptm_3",
+          "text": "I break larger goals into smaller actionable goals."
+        },
+        {
+          "id": "ptm_4",
+          "text": "I make a list of detailed actions that I need to complete."
+        },
+        {
+          "id": "ptm_5",
+          "text": "I plan out my schedule each week so I have the appropriate amount of time available for online study."
+        }
+      ]
+    },
+    {
+      "id": "metacognition",
+      "title": "Metacognition",
+      "items": [
+        {
+          "id": "mc_1",
+          "text": "I think about what learning strategies have worked for me in the past when doing similar assignments/types of study."
+        },
+        {
+          "id": "mc_2",
+          "text": "I spend time trying to interpret the task to ensure I understand accurately what I need to do."
+        },
+        {
+          "id": "mc_3",
+          "text": "I usually self-assess my performance once I finish."
+        },
+        {
+          "id": "mc_4",
+          "text": "I look over past feedback I have received and check that I have made improvements in my current learning."
+        },
+        {
+          "id": "mc_5",
+          "text": "I think about how I might improve my work by evaluating it against the marking criteria provided by the teacher."
+        }
+      ]
+    },
+    {
+      "id": "study_environment",
+      "title": "Study Environment",
+      "items": [
+        {
+          "id": "se_1",
+          "text": "I am able to study for my online course without distraction."
+        },
+        {
+          "id": "se_2",
+          "text": "I have access to a quiet and distraction-free place to study."
+        },
+        {
+          "id": "se_3",
+          "text": "I know where I can study most efficiently for this online course."
+        }
+      ]
+    },
+    {
+      "id": "online_effort_regulation",
+      "title": "Online Effort Regulation",
+      "items": [
+        {
+          "id": "oer_1",
+          "text": "I work hard in my online study, even when there are more interesting things to do."
+        },
+        {
+          "id": "oer_2",
+          "text": "When my online study gets difficult, I remain committed to reaching my study goals."
+        },
+        {
+          "id": "oer_3",
+          "text": "When my mind begins to wander during a learning session for this online course, I make a special effort to keep concentrating."
+        },
+        {
+          "id": "oer_4",
+          "text": "No matter how I am feeling, I persevere with my online study."
+        }
+      ]
+    },
+    {
+      "id": "online_social_support",
+      "title": "Online Social Support",
+      "items": [
+        {
+          "id": "oss_1",
+          "text": "I try to help other students when they ask a question online, I can answer."
+        },
+        {
+          "id": "oss_2",
+          "text": "I ask for help from knowledgeable others through online channels when I am not sure what to do in my online class."
+        },
+        {
+          "id": "oss_3",
+          "text": "I ask the teacher and/or my peers to clarify information in my online course."
+        },
+        {
+          "id": "oss_4",
+          "text": "When I have difficulties with my online class, I seek assistance from others through online means (discussion boards, social media, email, instant messaging etc.)."
+        },
+        {
+          "id": "oss_5",
+          "text": "I use email, discussion boards, social media, etc., to connect with the teacher and other students when I need help."
+        }
+      ]
+    },
+    {
+      "id": "online_task_strategies",
+      "title": "Online Task Strategies",
+      "items": [
+        {
+          "id": "ots_1",
+          "text": "When studying online, I create my own examples of the content to make it more meaningful."
+        },
+        {
+          "id": "ots_2",
+          "text": "When studying online, I organise my thoughts by making summaries of what I am learning."
+        },
+        {
+          "id": "ots_3",
+          "text": "When studying online, I try and relate the content to what I already know."
+        },
+        {
+          "id": "ots_4",
+          "text": "When learning the online content, I try and develop my own ideas about it."
+        },
+        {
+          "id": "ots_5",
+          "text": "I try and improve my understanding by doing additional work beyond the core content (e.g., doing extra problem-solving activities or extra readings)."
+        }
+      ]
+    }
+  ]
+}

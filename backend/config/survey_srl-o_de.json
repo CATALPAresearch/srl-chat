@@ -1,0 +1,254 @@
+{
+  "id": "srl-o",
+  "title": "Fragebogen zur Selbstregulation beim Online-Lernen (SRL-O)",
+  "description": "Bitte bewerten Sie jede Aussage auf einer Skala von 1 (stimme gar nicht zu) bis 5 (stimme voll zu).",
+  "scale": {
+    "min": 1,
+    "max": 5,
+    "labels": [
+      "Stimme gar nicht zu",
+      "Stimme nicht zu",
+      "Neutral",
+      "Stimme zu",
+      "Stimme voll zu"
+    ]
+  },
+  "scales": [
+    {
+      "id": "online_academic_self_efficacy",
+      "title": "Akademische Selbstwirksamkeit beim Online-Lernen",
+      "items": [
+        {
+          "id": "oase_1",
+          "text": "Ich bin zuversichtlich, dass ich die Inhalte und Aufgaben in diesem Online-Kurs bewältigen kann."
+        },
+        {
+          "id": "oase_2",
+          "text": "Ich bin zuversichtlich, dass ich diesen Online-Kurs erfolgreich durchhalten kann, auch wenn ich den Inhalt schwierig finde."
+        },
+        {
+          "id": "oase_3",
+          "text": "Ich bin zuversichtlich, dass ich den nötigen Aufwand betreiben kann, um in diesem Online-Kurs eine gute Note zu erzielen."
+        },
+        {
+          "id": "oase_4",
+          "text": "Ich bin zuversichtlich, dass ich genau herausfinden kann, was die Aufgabe von mir verlangt."
+        }
+      ]
+    },
+    {
+      "id": "online_intrinsic_motivation",
+      "title": "Intrinsische Motivation beim Online-Lernen",
+      "items": [
+        {
+          "id": "oim_1",
+          "text": "Ich finde immer Aspekte des Inhalts, die meine Neugier wecken."
+        },
+        {
+          "id": "oim_2",
+          "text": "Ich lerne gerne neue Dinge in diesem Online-Kurs."
+        },
+        {
+          "id": "oim_3",
+          "text": "Ich finde das Lernen für diesen Online-Kurs angenehm."
+        },
+        {
+          "id": "oim_4",
+          "text": "Es ist sehr befriedigend für mich, wenn ich neues Material in diesem Online-Kurs lerne."
+        },
+        {
+          "id": "oim_5",
+          "text": "Ich habe ein Erfolgserlebnis, wenn ich neue Fähigkeiten oder Informationen lerne."
+        }
+      ]
+    },
+    {
+      "id": "online_extrinsic_motivation",
+      "title": "Extrinsische Motivation beim Online-Lernen",
+      "items": [
+        {
+          "id": "oem_1",
+          "text": "Ich möchte in diesem Online-Kurs gut abschneiden, um vor Freunden und Familie damit angeben zu können."
+        },
+        {
+          "id": "oem_2",
+          "text": "Ich möchte gut abschneiden wegen der tatsächlichen oder wahrgenommenen Erwartungen anderer an mich."
+        },
+        {
+          "id": "oem_3",
+          "text": "Ich möchte eine bessere Note als andere in meinem Online-Kurs bekommen."
+        }
+      ]
+    },
+    {
+      "id": "online_negative_achievement_emotion",
+      "title": "Negative Leistungsemotionen beim Online-Lernen",
+      "items": [
+        {
+          "id": "onae_1",
+          "text": "Ich fühle mich so hilflos, dass ich nicht alle meine Anstrengungen meinem Online-Studium widmen kann."
+        },
+        {
+          "id": "onae_2",
+          "text": "Ich erwäge abzubrechen, weil ich mich von meinem Online-Studium überfordert fühle."
+        },
+        {
+          "id": "onae_3",
+          "text": "Beim Lernen möchte ich mich ablenken, um mein Angstniveau zu senken."
+        },
+        {
+          "id": "onae_4",
+          "text": "Ich bekomme so viel Angst, dass ich gar nicht erst mit dem Online-Lernen beginnen möchte."
+        },
+        {
+          "id": "onae_5",
+          "text": "Wenn ich online lernen muss, fange ich an, mich schlecht zu fühlen."
+        }
+      ]
+    },
+    {
+      "id": "planning_and_time_management",
+      "title": "Planung und Zeitmanagement",
+      "items": [
+        {
+          "id": "ptm_1",
+          "text": "Ich setze mir kurzfristige (tägliche oder wöchentliche) Ziele."
+        },
+        {
+          "id": "ptm_2",
+          "text": "Ich setze mir realistische Fristen für das Lernen."
+        },
+        {
+          "id": "ptm_3",
+          "text": "Ich unterteile größere Ziele in kleinere, umsetzbare Ziele."
+        },
+        {
+          "id": "ptm_4",
+          "text": "Ich erstelle eine Liste detaillierter Aufgaben, die ich erledigen muss."
+        },
+        {
+          "id": "ptm_5",
+          "text": "Ich plane meinen Zeitplan jede Woche so, dass ich die passende Zeit für das Online-Studium zur Verfügung habe."
+        }
+      ]
+    },
+    {
+      "id": "metacognition",
+      "title": "Metakognition",
+      "items": [
+        {
+          "id": "mc_1",
+          "text": "Ich denke darüber nach, welche Lernstrategien in der Vergangenheit bei ähnlichen Aufgaben/Lerntypen für mich funktioniert haben."
+        },
+        {
+          "id": "mc_2",
+          "text": "Ich nehme mir Zeit, die Aufgabe zu interpretieren, um sicherzustellen, dass ich genau verstehe, was ich tun muss."
+        },
+        {
+          "id": "mc_3",
+          "text": "Ich bewerte in der Regel meine Leistung, sobald ich fertig bin."
+        },
+        {
+          "id": "mc_4",
+          "text": "Ich überprüfe vergangenes Feedback, das ich erhalten habe, und stelle sicher, dass ich Verbesserungen in meinem aktuellen Lernen gemacht habe."
+        },
+        {
+          "id": "mc_5",
+          "text": "Ich denke darüber nach, wie ich meine Arbeit verbessern könnte, indem ich sie anhand der vom Lehrenden bereitgestellten Bewertungskriterien überprüfe."
+        }
+      ]
+    },
+    {
+      "id": "study_environment",
+      "title": "Lernumgebung",
+      "items": [
+        {
+          "id": "se_1",
+          "text": "Ich kann für meinen Online-Kurs ohne Ablenkung lernen."
+        },
+        {
+          "id": "se_2",
+          "text": "Ich habe Zugang zu einem ruhigen und ablenkungsfreien Lernort."
+        },
+        {
+          "id": "se_3",
+          "text": "Ich weiß, wo ich für diesen Online-Kurs am effizientesten lernen kann."
+        }
+      ]
+    },
+    {
+      "id": "online_effort_regulation",
+      "title": "Anstrengungsregulation beim Online-Lernen",
+      "items": [
+        {
+          "id": "oer_1",
+          "text": "Ich arbeite in meinem Online-Studium hart, auch wenn es interessantere Dinge gibt."
+        },
+        {
+          "id": "oer_2",
+          "text": "Wenn mein Online-Studium schwierig wird, bleibe ich meinen Lernzielen treu."
+        },
+        {
+          "id": "oer_3",
+          "text": "Wenn meine Gedanken während einer Lernsitzung für diesen Online-Kurs abschweifen, strenge ich mich besonders an, mich weiter zu konzentrieren."
+        },
+        {
+          "id": "oer_4",
+          "text": "Egal wie ich mich fühle, ich halte an meinem Online-Studium fest."
+        }
+      ]
+    },
+    {
+      "id": "online_social_support",
+      "title": "Soziale Unterstützung beim Online-Lernen",
+      "items": [
+        {
+          "id": "oss_1",
+          "text": "Ich versuche, anderen Studierenden zu helfen, wenn sie online eine Frage stellen, die ich beantworten kann."
+        },
+        {
+          "id": "oss_2",
+          "text": "Ich bitte über Online-Kanäle kompetente Personen um Hilfe, wenn ich nicht sicher bin, was ich in meinem Online-Kurs tun soll."
+        },
+        {
+          "id": "oss_3",
+          "text": "Ich bitte den Lehrenden und/oder meine Kommilitonen, Informationen in meinem Online-Kurs zu klären."
+        },
+        {
+          "id": "oss_4",
+          "text": "Wenn ich Schwierigkeiten mit meinem Online-Kurs habe, suche ich über Online-Mittel (Diskussionsforen, soziale Medien, E-Mail, Instant Messaging usw.) Hilfe bei anderen."
+        },
+        {
+          "id": "oss_5",
+          "text": "Ich nutze E-Mail, Diskussionsforen, soziale Medien usw., um mich mit dem Lehrenden und anderen Studierenden zu verbinden, wenn ich Hilfe brauche."
+        }
+      ]
+    },
+    {
+      "id": "online_task_strategies",
+      "title": "Aufgabenstrategien beim Online-Lernen",
+      "items": [
+        {
+          "id": "ots_1",
+          "text": "Beim Online-Lernen erstelle ich eigene Beispiele zum Inhalt, um ihn bedeutsamer zu machen."
+        },
+        {
+          "id": "ots_2",
+          "text": "Beim Online-Lernen ordne ich meine Gedanken, indem ich Zusammenfassungen des Gelernten erstelle."
+        },
+        {
+          "id": "ots_3",
+          "text": "Beim Online-Lernen versuche ich, den Inhalt mit dem zu verknüpfen, was ich bereits weiß."
+        },
+        {
+          "id": "ots_4",
+          "text": "Beim Lernen der Online-Inhalte versuche ich, eigene Ideen dazu zu entwickeln."
+        },
+        {
+          "id": "ots_5",
+          "text": "Ich versuche, mein Verständnis zu verbessern, indem ich über den Kerninhalt hinaus zusätzliche Arbeit leiste (z. B. zusätzliche Problemlösungsaufgaben oder zusätzliche Lektüre)."
+        }
+      ]
+    }
+  ]
+}

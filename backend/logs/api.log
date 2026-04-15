@@ -9479,3 +9479,130 @@ Now we're going to talk a bit more specifically... If you could share the subjec
 [2026-04-15 11:56:02,413] WARNING in __init__: <class 'app.config.Config'>
 [2026-04-15 11:56:02,922] WARNING in _internal:  * Debugger is active!
 [2026-04-15 11:56:02,931] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 11:56:21,810] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:56:21] "GET /survey/srl-o HTTP/1.1" 200 -
+[2026-04-15 12:09:13,952] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/routes.py', reloading
+[2026-04-15 12:09:14,491] INFO in _internal:  * Restarting with stat
+[2026-04-15 12:09:14,953] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 12:09:15,515] WARNING in _internal:  * Debugger is active!
+[2026-04-15 12:09:15,526] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 12:10:36,989] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:10:36] "GET / HTTP/1.1" 200 -
+[2026-04-15 12:10:37,620] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:10:37] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 12:10:37,749] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:10:37] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 12:10:38,168] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:10:38] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 12:10:38,169] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:10:38] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 12:10:38,402] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:10:38] "GET /survey/srl-o?lang=de&userid=user_1776247838297&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:10:38,563] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:10:38] "[35m[1mGET /user_language/?userid=user_1776247838297&client=standalone HTTP/1.1[0m" 500 -
+[2026-04-15 12:10:56,537] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:10:56] "GET / HTTP/1.1" 200 -
+[2026-04-15 12:10:56,984] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:10:56] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 12:10:57,066] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:10:57] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 12:10:57,264] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:10:57] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 12:10:57,264] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:10:57] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 12:10:57,333] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:10:57] "[35m[1mGET /user_language/?userid=user_1776247857285&client=standalone HTTP/1.1[0m" 500 -
+[2026-04-15 12:11:07,110] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:11:07] "GET /survey/srl-o?lang=de&userid=user_1776247857285&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:11:19,071] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:11:19] "GET /survey/srl-o?lang=de&userid=user_1776247857285&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:11:25,350] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:11:25] "GET / HTTP/1.1" 200 -
+[2026-04-15 12:11:25,924] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:11:25] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 12:11:25,948] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:11:25] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 12:11:26,095] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:11:26] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 12:11:26,096] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:11:26] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 12:11:26,315] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:11:26] "GET /survey/srl-o?lang=de&userid=user_1776247886135&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:11:26,336] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:11:26] "[35m[1mGET /user_language/?userid=user_1776247886135&client=standalone HTTP/1.1[0m" 500 -
+[2026-04-15 12:32:09,234] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:32:09] "GET / HTTP/1.1" 200 -
+[2026-04-15 12:32:09,830] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:32:09] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 12:32:09,932] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:32:09] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 12:32:10,298] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:32:10] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 12:32:10,299] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:32:10] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 12:32:10,545] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:32:10] "GET /survey/srl-o?lang=de&userid=user_1776249130387&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:32:10,609] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:32:10] "[35m[1mGET /user_language/?userid=user_1776249130387&client=standalone HTTP/1.1[0m" 500 -
+[2026-04-15 12:32:14,055] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:32:14] "GET /survey/srl-o?lang=en&userid=user_1776249130387&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:32:15,603] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:32:15] "GET /survey/srl-o?lang=de&userid=user_1776249130387&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:32:17,984] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:32:17] "GET /survey/srl-o?lang=en&userid=user_1776249130387&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:32:20,165] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:32:20] "GET /survey/srl-o?lang=de&userid=user_1776249130387&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:32:29,302] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:32:29] "GET /survey/srl-o?lang=en&userid=user_1776249130387&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:32:32,301] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:32:32] "GET /survey/srl-o?lang=de&userid=user_1776249130387&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:32:42,232] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:32:42] "GET /survey/srl-o?lang=de&userid=user_1776249130387&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:39:24,087] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/routes.py', reloading
+[2026-04-15 12:39:24,464] INFO in _internal:  * Restarting with stat
+[2026-04-15 12:39:24,988] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 12:39:25,632] WARNING in _internal:  * Debugger is active!
+[2026-04-15 12:39:25,644] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 12:39:39,297] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/routes.py', reloading
+[2026-04-15 12:39:39,493] INFO in _internal:  * Restarting with stat
+[2026-04-15 12:39:39,930] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 12:39:40,562] WARNING in _internal:  * Debugger is active!
+[2026-04-15 12:39:40,580] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 12:39:46,639] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:39:46] "GET / HTTP/1.1" 200 -
+[2026-04-15 12:39:47,000] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:39:47] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 12:39:47,074] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:39:47] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 12:39:47,287] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:39:47] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 12:39:47,287] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:39:47] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 12:39:47,778] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:39:47] "GET /user_language/?userid=user_1776249587306&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:39:53,386] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:39:53] "GET /survey/srl-o?lang=de&userid=user_1776249587306&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:41:11,018] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:41:11] "GET /dashboard/stats HTTP/1.1" 200 -
+[2026-04-15 12:41:41,876] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:41:41] "GET / HTTP/1.1" 200 -
+[2026-04-15 12:41:42,492] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:41:42] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 12:41:42,520] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:41:42] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 12:41:42,734] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:41:42] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 12:41:42,736] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:41:42] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 12:41:42,936] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:41:42] "GET /user_language/?userid=user_1776249702779&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:41:44,082] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:41:44] "GET /dashboard/stats HTTP/1.1" 200 -
+[2026-04-15 12:41:46,439] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:41:46] "GET /survey/srl-o?lang=de&userid=user_1776249702779&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:41:50,834] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:41:50] "GET /dashboard/stats HTTP/1.1" 200 -
+[2026-04-15 12:41:59,065] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:41:59] "GET /survey/srl-o?lang=en&userid=user_1776249702779&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:46:50,264] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/lti.py', reloading
+[2026-04-15 12:46:50,959] INFO in _internal:  * Restarting with stat
+[2026-04-15 12:46:51,530] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 12:46:52,312] WARNING in _internal:  * Debugger is active!
+[2026-04-15 12:46:52,321] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 12:47:06,282] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/routes.py', reloading
+[2026-04-15 12:47:06,779] INFO in _internal:  * Restarting with stat
+[2026-04-15 12:47:07,465] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 12:47:08,129] WARNING in _internal:  * Debugger is active!
+[2026-04-15 12:47:08,143] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 12:50:29,306] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:50:29] "GET / HTTP/1.1" 200 -
+[2026-04-15 12:50:29,697] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:50:29] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 12:50:29,809] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:50:29] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 12:50:30,172] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:50:30] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 12:50:30,172] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:50:30] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 12:50:30,239] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:50:30] "GET /user_role/ HTTP/1.1" 200 -
+[2026-04-15 12:50:30,413] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:50:30] "GET /user_language/?userid=user_1776250230211&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:51:22,784] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 12:51:22] "GET /survey/srl-o?lang=de&userid=user_1776250230211&client=standalone HTTP/1.1" 200 -
+[2026-04-15 12:52:03,253] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/lti.py', reloading
+[2026-04-15 12:52:04,041] INFO in _internal:  * Restarting with stat
+[2026-04-15 12:52:04,976] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 12:52:05,735] WARNING in _internal:  * Debugger is active!
+[2026-04-15 12:52:05,744] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 12:56:30,438] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/routes.py', reloading
+[2026-04-15 12:56:30,771] INFO in _internal:  * Restarting with stat
+[2026-04-15 12:56:31,253] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 12:56:31,746] WARNING in _internal:  * Debugger is active!
+[2026-04-15 12:56:31,755] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 13:00:01,842] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 13:00:01] "GET / HTTP/1.1" 200 -
+[2026-04-15 13:00:02,450] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 13:00:02] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 13:00:02,520] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 13:00:02] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 13:00:02,743] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 13:00:02] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 13:00:02,744] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 13:00:02] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 13:00:03,071] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 13:00:03] "GET /user_role/ HTTP/1.1" 200 -
+[2026-04-15 13:00:03,260] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 13:00:03] "GET /user_language/?userid=user_1776250802799&client=standalone HTTP/1.1" 200 -
+[2026-04-15 13:00:13,428] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 13:00:13] "GET /student/results?userid=user_1776250802799&client=standalone HTTP/1.1" 200 -
+[2026-04-15 13:00:32,154] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 13:00:32] "GET /survey/srl-o?lang=de&userid=user_1776250802799&client=standalone HTTP/1.1" 200 -
+[2026-04-15 13:08:41,139] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 13:08:41] "GET /dashboard/stats HTTP/1.1" 200 -
+[2026-04-15 13:10:02,652] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 13:10:02] "GET /survey/srl-o?lang=de&userid=user_1776250802799&client=standalone HTTP/1.1" 200 -
+[2026-04-15 13:10:05,163] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 13:10:05] "GET /survey/srl-o?lang=en&userid=user_1776250802799&client=standalone HTTP/1.1" 200 -
+[2026-04-15 13:10:06,201] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 13:10:06] "GET /survey/srl-o?lang=de&userid=user_1776250802799&client=standalone HTTP/1.1" 200 -
+[2026-04-15 13:10:28,313] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 13:10:28] "GET /survey/srl-o?lang=en&userid=user_1776250802799&client=standalone HTTP/1.1" 200 -
+[2026-04-15 13:11:13,073] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 13:11:13] "GET /student/results?userid=user_1776250802799&client=standalone HTTP/1.1" 200 -
+[2026-04-15 13:12:13,827] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 13:12:13] "GET /dashboard/stats HTTP/1.1" 200 -
+[2026-04-15 14:12:36,997] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 14:12:36] "GET / HTTP/1.1" 200 -
+[2026-04-15 14:12:37,446] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 14:12:37] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 14:12:37,507] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 14:12:37] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 14:12:37,683] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 14:12:37] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 14:12:37,684] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 14:12:37] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 14:12:37,730] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 14:12:37] "GET /user_role/ HTTP/1.1" 200 -
+[2026-04-15 14:12:37,861] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 14:12:37] "GET /user_language/?userid=user_1776255157713&client=standalone HTTP/1.1" 200 -
+[2026-04-15 14:12:39,612] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 14:12:39] "GET /dashboard/stats HTTP/1.1" 200 -
+[2026-04-15 15:28:02,557] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/routes.py', reloading
+[2026-04-15 15:28:03,775] INFO in _internal:  * Restarting with stat
+[2026-04-15 15:28:04,588] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 15:28:05,228] WARNING in _internal:  * Debugger is active!
+[2026-04-15 15:28:05,240] INFO in _internal:  * Debugger PIN: 425-712-072
