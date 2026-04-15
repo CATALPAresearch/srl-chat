@@ -13,7 +13,8 @@ const routes = [
   { path: "/llm-chat", component: LLMChat },
   { path: "/document-chat", component: RAGChat },
   { path: "/survey", component: SurveyView },
-  { path: "/dashboard", component: ResearcherDashboard },
+  { path: "/dashboard/researcher", component: ResearcherDashboard },
+  //{ path: "/dashboard/teacher", component: TeacherDashboard },
 ];
 export default new VueRouter({
   mode: "hash",

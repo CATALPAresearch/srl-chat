@@ -19,6 +19,7 @@ _PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__
 _FRONTEND_DIR = os.path.join(_PROJECT_ROOT, 'frontend')
 _CONFIG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'config')
 _LTI_STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'static', 'lti')
+_STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'static')
 
 @app.errorhandler(500)
 def internal_error(error):
@@ -54,6 +55,11 @@ def serve_frontend_assets(filename):
 def serve_lti_static(filename):
     """Serve LTI static assets (AMD bundle + core stubs for Moodle LTI mode)."""
     return send_from_directory(_LTI_STATIC_DIR, filename)
+
+
+@app.route('/static/favicon.ico')
+def serve_favicon():
+    return send_from_directory(_STATIC_DIR, 'favicon.ico')
 
 
 @app.route("/resetConversation", methods=["POST", "OPTIONS"])

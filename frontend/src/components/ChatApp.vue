@@ -2,19 +2,16 @@
   <div class="chat-app">
     <nav class="content mb-3 tabs">
       <router-link to="/agent-chat" class="tab" active-class="active">
-        SRL-Interview
-      </router-link>
-      <router-link to="/llm-chat" class="tab" active-class="active">
-        LLM-Chat
-      </router-link>
-      <router-link to="/document-chat" class="tab" active-class="active">
-        Dokumenten-Chat
+        Interview zu Lernstrategien
       </router-link>
       <router-link to="/survey" class="tab" active-class="active">
-        Survey
+        Umfrage
       </router-link>
-      <router-link to="/dashboard" class="tab" active-class="active">
-        Dashboard
+      <router-link to="/dashboard/teacher" class="tab" active-class="active">
+        Lehrenden Dashboard
+      </router-link>
+      <router-link to="/dashboard/reseacher" class="tab" active-class="active">
+        Researcher Dashboard
       </router-link>
     </nav>
     <router-view class="chat-app__view" />

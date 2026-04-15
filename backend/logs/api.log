@@ -9287,3 +9287,195 @@ Now that we have this scenario laid out before you, I'd be interested in hearing
 [2026-03-11 13:14:50,910] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 13:14:50] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
 [2026-03-11 13:14:50,979] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 13:14:50] "GET /static/lti/core/ajax.js HTTP/1.1" 200 -
 [2026-03-11 13:14:50,980] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 13:14:50] "GET /static/lti/core/localstorage.js HTTP/1.1" 200 -
+[2026-03-11 15:22:20,494] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 15:22:20] "GET / HTTP/1.1" 200 -
+[2026-03-11 15:22:20,786] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 15:22:20] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+[2026-03-11 15:22:20,814] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 15:22:20] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-03-11 15:22:20,891] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 15:22:20] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-03-11 15:22:20,891] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 15:22:20] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-03-11 15:22:27,631] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 15:22:27] "GET / HTTP/1.1" 200 -
+[2026-03-11 15:22:27,787] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 15:22:27] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+[2026-03-11 15:22:27,822] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 15:22:27] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-03-11 15:22:27,891] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 15:22:27] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-03-11 15:22:27,891] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 15:22:27] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-03-11 15:22:32,124] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 15:22:32] "GET / HTTP/1.1" 200 -
+[2026-03-11 15:22:32,239] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 15:22:32] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+[2026-03-11 15:22:32,263] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 15:22:32] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-03-11 15:22:32,310] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 15:22:32] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-03-11 15:22:32,311] INFO in _internal: 127.0.0.1 - - [11/Mar/2026 15:22:32] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 11:28:23,554] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 11:28:25,104] INFO in _internal: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.178.34:5000
+[2026-04-15 11:28:25,104] INFO in _internal: [33mPress CTRL+C to quit[0m
+[2026-04-15 11:28:25,107] INFO in _internal:  * Restarting with stat
+[2026-04-15 11:28:25,571] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 11:28:26,185] WARNING in _internal:  * Debugger is active!
+[2026-04-15 11:28:26,202] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 11:28:30,738] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:28:30] "GET / HTTP/1.1" 200 -
+[2026-04-15 11:28:31,885] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:28:31] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 11:28:31,917] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:28:31] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+[2026-04-15 11:28:32,131] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:28:32] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 11:28:32,131] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:28:32] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 11:28:39,225] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:28:39] "GET / HTTP/1.1" 200 -
+[2026-04-15 11:28:39,710] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:28:39] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 11:28:39,725] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:28:39] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+[2026-04-15 11:28:39,863] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:28:39] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 11:28:39,864] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:28:39] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 11:28:48,770] INFO in routes: Starting new conversation (en) for user: user_1776245319904 - discord
+[2026-04-15 11:28:49,264] ERROR in logging_utlis: Failed to log action LogAction.API_CALL_START: 'str' object has no attribute 'id'
+[2026-04-15 11:28:49,308] INFO in core: Created new user (en): user_1776245319904 - discord
+[2026-04-15 11:28:49,316] INFO in llm: System Prompt: You are an interviewer conducting an interview that will be evaluated scientifically. Your tone should be friendly but neutral. Refer back to the user's answers, but do not comment positively or negatively on them. You are guiding a student through an interview to assess their study skills. Start the conversation with a friendly greeting. Ask the student which subject the degree they are studying is about.
+[2026-04-15 11:28:49,317] INFO in llm: User Prompt: None
+[2026-04-15 11:28:49,340] INFO in llm: Send request to Ollama via HTTP
+[2026-04-15 11:28:53,712] INFO in routes: Starting new conversation (en) for user: user_1776245319904 - discord
+[2026-04-15 11:28:53,766] INFO in core: Created new user (en): user_1776245319904 - discord
+[2026-04-15 11:28:53,794] INFO in llm: System Prompt: You are an interviewer conducting an interview that will be evaluated scientifically. Your tone should be friendly but neutral. Refer back to the user's answers, but do not comment positively or negatively on them. You are guiding a student through an interview to assess their study skills. Start the conversation with a friendly greeting. Ask the student which subject the degree they are studying is about.
+[2026-04-15 11:28:53,794] INFO in llm: User Prompt: None
+[2026-04-15 11:28:53,794] INFO in llm: Send request to Ollama via HTTP
+[2026-04-15 11:29:03,737] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:29:03] "GET /survey/srl-o HTTP/1.1" 200 -
+[2026-04-15 11:29:05,318] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:29:05] "GET /dashboard/stats HTTP/1.1" 200 -
+[2026-04-15 11:29:33,065] INFO in llm: Ollama raw response: {'model': 'phi3:latest', 'created_at': '2026-04-15T09:29:33.049098Z', 'message': {'role': 'assistant', 'content': " Here's how it might go:\n\n\nHello there! It’s great to have this opportunity to chat with you today. To start off our conversation and get a sense of your academic journey, could you please tell me which subject or field your degree is focused on?"}, 'done': True, 'done_reason': 'stop', 'total_duration': 43662493333, 'load_duration': 35906954125, 'prompt_eval_count': 101, 'prompt_eval_duration': 5053699125, 'eval_count': 58, 'eval_duration': 2650451753}
+[2026-04-15 11:29:33,068] INFO in llm: @llm: response::: 
+[2026-04-15 11:29:33,068] INFO in llm: <app.llm.MockResponse object at 0x10eefac90>
+[2026-04-15 11:29:33,069] INFO in llm: Response:  Here's how it might go:
+
+
+Hello there! It’s great to have this opportunity to chat with you today. To start off our conversation and get a sense of your academic journey, could you please tell me which subject or field your degree is focused on?
+[2026-04-15 11:29:33,334] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:29:33] "POST /startConversation HTTP/1.1" 200 -
+[2026-04-15 11:29:36,759] INFO in llm: Ollama raw response: {'model': 'phi3:latest', 'created_at': '2026-04-15T09:29:36.756513Z', 'message': {'role': 'assistant', 'content': " Here's how it might go:\n\n\nHello there! It’s great to have this opportunity to chat with you today. To get us started on a good note and tailor our conversation effectively, could you please tell me which subject your degree is focused on? Understanding that can help guide the rest of our discussion about study strategies relevant to your field."}, 'done': True, 'done_reason': 'stop', 'total_duration': 42957789833, 'load_duration': 31495075250, 'prompt_eval_count': 101, 'prompt_eval_duration': 54991750, 'eval_count': 77, 'eval_duration': 3593969287}
+[2026-04-15 11:29:36,760] INFO in llm: @llm: response::: 
+[2026-04-15 11:29:36,761] INFO in llm: <app.llm.MockResponse object at 0x10ef40590>
+[2026-04-15 11:29:36,761] INFO in llm: Response:  Here's how it might go:
+
+
+Hello there! It’s great to have this opportunity to chat with you today. To get us started on a good note and tailor our conversation effectively, could you please tell me which subject your degree is focused on? Understanding that can help guide the rest of our discussion about study strategies relevant to your field.
+[2026-04-15 11:29:36,808] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:29:36] "POST /startConversation HTTP/1.1" 200 -
+[2026-04-15 11:33:57,739] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:33:57] "GET /dashboard/stats?date_from=1775606400&date_to=1776902400 HTTP/1.1" 200 -
+[2026-04-15 11:34:00,543] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:34:00] "GET /dashboard/stats HTTP/1.1" 200 -
+[2026-04-15 11:48:30,316] INFO in core: Started reply_core
+[2026-04-15 11:48:30,479] INFO in core: ......................
+[2026-04-15 11:48:30,479] INFO in core: conversation step: intro
+[2026-04-15 11:48:30,554] INFO in core: hello
+
+[2026-04-15 11:48:30,555] INFO in core: Replying to user: user_1776245319904 - discord. Step: intro
+[2026-04-15 11:48:30,556] INFO in core: @intro step, Entered intro step
+[2026-04-15 11:48:30,560] INFO in steps: @ steps, try_get_json_completion:: call get_llm_response_openai
+[2026-04-15 11:48:30,561] INFO in llm: System Prompt: Only answer in valid json format with the following fields: - study_subject: The subject the user has stated they're studying - 'status', the only possible values: - 'in_progress' if the user has not yet said what they're studying - 'completed' when the user given a valid answer about their study subject - 'abandon', if the user has not provided a valid study subject response after 6 exchanged messages - 'comment' your comment to the userYou are an interviewer conducting an interview that will be evaluated scientifically. Your tone should be friendly but neutral. Refer back to the user's answers, but do not comment positively or negatively on them. You are guiding a student through an interview to assess their study skills.
+[2026-04-15 11:48:30,561] INFO in llm: User Prompt: None
+[2026-04-15 11:48:30,561] INFO in llm: Send request to Ollama via HTTP
+[2026-04-15 11:48:32,295] INFO in routes: Starting new conversation (en) for user: user_1776245319904 - discord
+[2026-04-15 11:48:32,787] INFO in core: Created new user (en): user_1776245319904 - discord
+[2026-04-15 11:48:32,837] INFO in llm: System Prompt: You are an interviewer conducting an interview that will be evaluated scientifically. Your tone should be friendly but neutral. Refer back to the user's answers, but do not comment positively or negatively on them. You are guiding a student through an interview to assess their study skills. Start the conversation with a friendly greeting. Ask the student which subject the degree they are studying is about.
+[2026-04-15 11:48:32,837] INFO in llm: User Prompt: None
+[2026-04-15 11:48:32,837] INFO in llm: Send request to Ollama via HTTP
+[2026-04-15 11:48:41,419] INFO in llm: Ollama raw response: {'model': 'phi3:latest', 'created_at': '2026-04-15T09:48:41.411396Z', 'message': {'role': 'assistant', 'content': '{\n  "study_subject": null,\n  "status": "in_progress",\n}\n\nHello! It\'s a pleasure to meet you as well. I understand that finding the right subject can be challenging at times; let’s try narrowing it down together so we can proceed efficiently with our conversation about study skills and strategies tailored specifically for your academic pursuits.'}, 'done': True, 'done_reason': 'stop', 'total_duration': 10807907125, 'load_duration': 1008176333, 'prompt_eval_count': 269, 'prompt_eval_duration': 5773551416, 'eval_count': 85, 'eval_duration': 3949038460}
+[2026-04-15 11:48:41,422] INFO in llm: @llm: response::: 
+[2026-04-15 11:48:41,422] INFO in llm: <app.llm.MockResponse object at 0x10f8f61e0>
+[2026-04-15 11:48:41,422] INFO in llm: Response: {
+  "study_subject": null,
+  "status": "in_progress",
+}
+
+Hello! It's a pleasure to meet you as well. I understand that finding the right subject can be challenging at times; let’s try narrowing it down together so we can proceed efficiently with our conversation about study skills and strategies tailored specifically for your academic pursuits.
+[2026-04-15 11:48:41,422] INFO in steps: @ steps, try_get_json_completion:: LLM response: {
+  "study_subject": null,
+  "status": "in_progress",
+}
+
+Hello! It's a pleasure to meet you as well. I understand that finding the right subject can be challenging at times; let’s try narrowing it down together so we can proceed efficiently with our conversation about study skills and strategies tailored specifically for your academic pursuits.
+[2026-04-15 11:48:41,424] INFO in steps: Invalid JSON, trying again
+[2026-04-15 11:48:41,424] INFO in steps: @ steps, try_get_json_completion:: call get_llm_response_openai
+[2026-04-15 11:48:41,424] INFO in llm: System Prompt: Only answer in valid json format with the following fields: - study_subject: The subject the user has stated they're studying - 'status', the only possible values: - 'in_progress' if the user has not yet said what they're studying - 'completed' when the user given a valid answer about their study subject - 'abandon', if the user has not provided a valid study subject response after 6 exchanged messages - 'comment' your comment to the userYou are an interviewer conducting an interview that will be evaluated scientifically. Your tone should be friendly but neutral. Refer back to the user's answers, but do not comment positively or negatively on them. You are guiding a student through an interview to assess their study skills.
+[2026-04-15 11:48:41,425] INFO in llm: User Prompt: None
+[2026-04-15 11:48:41,425] INFO in llm: Send request to Ollama via HTTP
+[2026-04-15 11:48:46,572] INFO in llm: Ollama raw response: {'model': 'phi3:latest', 'created_at': '2026-04-15T09:48:46.564815Z', 'message': {'role': 'assistant', 'content': " Here's how it might go:\n\n\nHello and welcome! It’s great to have you here for this assessment of your study skills as a chemistry major at our university. To begin with, could you please tell me which specific aspect or topic within Chemistry are you focusing on in your studies? Understanding the depth of your concentration will help us tailor questions that can effectively gauge how well-prepared you feel to tackle complex problems and concepts related to this area."}, 'done': True, 'done_reason': 'stop', 'total_duration': 13724710709, 'load_duration': 13680750, 'prompt_eval_count': 101, 'prompt_eval_duration': 484252167, 'eval_count': 103, 'eval_duration': 4591489036}
+[2026-04-15 11:48:46,573] INFO in llm: @llm: response::: 
+[2026-04-15 11:48:46,574] INFO in llm: <app.llm.MockResponse object at 0x10f8f7830>
+[2026-04-15 11:48:46,574] INFO in llm: Response:  Here's how it might go:
+
+
+Hello and welcome! It’s great to have you here for this assessment of your study skills as a chemistry major at our university. To begin with, could you please tell me which specific aspect or topic within Chemistry are you focusing on in your studies? Understanding the depth of your concentration will help us tailor questions that can effectively gauge how well-prepared you feel to tackle complex problems and concepts related to this area.
+[2026-04-15 11:48:46,647] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:48:46] "POST /startConversation HTTP/1.1" 200 -
+[2026-04-15 11:48:52,798] INFO in llm: Ollama raw response: {'model': 'phi3:latest', 'created_at': '2026-04-15T09:48:52.793326Z', 'message': {'role': 'assistant', 'content': '{\n  "study_subject": null,\n  "status": "in_progress",\n}\n\nHello! It’s wonderful to meet you as well. I\'m here to help guide our conversation and ensure we cover all the necessary points for your interview preparation. To begin with a clear direction, could you please share which subject or field of study is at the core of your degree? This will allow us to concentrate on areas that are most pertinent to your academic journey.'}, 'done': True, 'done_reason': 'stop', 'total_duration': 11358553000, 'load_duration': 36260292, 'prompt_eval_count': 269, 'prompt_eval_duration': 1159638334, 'eval_count': 105, 'eval_duration': 4985074127}
+[2026-04-15 11:48:52,799] INFO in llm: @llm: response::: 
+[2026-04-15 11:48:52,799] INFO in llm: <app.llm.MockResponse object at 0x10ef40110>
+[2026-04-15 11:48:52,799] INFO in llm: Response: {
+  "study_subject": null,
+  "status": "in_progress",
+}
+
+Hello! It’s wonderful to meet you as well. I'm here to help guide our conversation and ensure we cover all the necessary points for your interview preparation. To begin with a clear direction, could you please share which subject or field of study is at the core of your degree? This will allow us to concentrate on areas that are most pertinent to your academic journey.
+[2026-04-15 11:48:52,799] INFO in steps: @ steps, try_get_json_completion:: LLM response: {
+  "study_subject": null,
+  "status": "in_progress",
+}
+
+Hello! It’s wonderful to meet you as well. I'm here to help guide our conversation and ensure we cover all the necessary points for your interview preparation. To begin with a clear direction, could you please share which subject or field of study is at the core of your degree? This will allow us to concentrate on areas that are most pertinent to your academic journey.
+[2026-04-15 11:48:52,799] INFO in steps: Invalid JSON, trying again
+[2026-04-15 11:48:52,799] INFO in steps: @ steps, try_get_json_completion:: call get_llm_response_openai
+[2026-04-15 11:48:52,800] INFO in llm: System Prompt: Only answer in valid json format with the following fields: - study_subject: The subject the user has stated they're studying - 'status', the only possible values: - 'in_progress' if the user has not yet said what they're studying - 'completed' when the user given a valid answer about their study subject - 'abandon', if the user has not provided a valid study subject response after 6 exchanged messages - 'comment' your comment to the userYou are an interviewer conducting an interview that will be evaluated scientifically. Your tone should be friendly but neutral. Refer back to the user's answers, but do not comment positively or negatively on them. You are guiding a student through an interview to assess their study skills.
+[2026-04-15 11:48:52,800] INFO in llm: User Prompt: None
+[2026-04-15 11:48:52,800] INFO in llm: Send request to Ollama via HTTP
+[2026-04-15 11:48:56,151] INFO in llm: Ollama raw response: {'model': 'phi3:latest', 'created_at': '2026-04-15T09:48:56.147924Z', 'message': {'role': 'assistant', 'content': "Thank you for sharing! It seems like we're ready to delve into some common interview scenarios and questions related to [study_subject]. Remember, I’m here just as much to help guide the conversation on study skills as anything else. Let me know if there are specific areas within your studies that concern or interest you more than others!"}, 'done': True, 'done_reason': 'stop', 'total_duration': 3343169291, 'load_duration': 42604375, 'prompt_eval_count': 269, 'prompt_eval_duration': 57060208, 'eval_count': 72, 'eval_duration': 3187087790}
+[2026-04-15 11:48:56,152] INFO in llm: @llm: response::: 
+[2026-04-15 11:48:56,153] INFO in llm: <app.llm.MockResponse object at 0x10ef404d0>
+[2026-04-15 11:48:56,153] INFO in llm: Response: Thank you for sharing! It seems like we're ready to delve into some common interview scenarios and questions related to [study_subject]. Remember, I’m here just as much to help guide the conversation on study skills as anything else. Let me know if there are specific areas within your studies that concern or interest you more than others!
+[2026-04-15 11:48:56,153] INFO in steps: @ steps, try_get_json_completion:: LLM response: Thank you for sharing! It seems like we're ready to delve into some common interview scenarios and questions related to [study_subject]. Remember, I’m here just as much to help guide the conversation on study skills as anything else. Let me know if there are specific areas within your studies that concern or interest you more than others!
+[2026-04-15 11:48:56,153] INFO in steps: Invalid JSON, trying again
+[2026-04-15 11:48:56,153] INFO in steps: @ steps, try_get_json_completion:: call get_llm_response_openai
+[2026-04-15 11:48:56,158] INFO in llm: System Prompt: Only answer in valid json format with the following fields: - study_subject: The subject the user has stated they're studying - 'status', the only possible values: - 'in_progress' if the user has not yet said what they're studying - 'completed' when the user given a valid answer about their study subject - 'abandon', if the user has not provided a valid study subject response after 6 exchanged messages - 'comment' your comment to the userYou are an interviewer conducting an interview that will be evaluated scientifically. Your tone should be friendly but neutral. Refer back to the user's answers, but do not comment positively or negatively on them. You are guiding a student through an interview to assess their study skills.
+[2026-04-15 11:48:56,163] INFO in llm: User Prompt: None
+[2026-04-15 11:48:56,164] INFO in llm: Send request to Ollama via HTTP
+[2026-04-15 11:48:58,963] INFO in llm: Ollama raw response: {'model': 'phi3:latest', 'created_at': '2026-04-15T09:48:58.958428Z', 'message': {'role': 'assistant', 'content': '{\n   "study_subject": null,\n   "status": "in_progress"\n}\n\nNow we\'re going to talk a bit more specifically... If you could share the subject of your studies with me? It’s essential for providing personalized advice.'}, 'done': True, 'done_reason': 'stop', 'total_duration': 2774905042, 'load_duration': 59086000, 'prompt_eval_count': 269, 'prompt_eval_duration': 59151125, 'eval_count': 60, 'eval_duration': 2601153454}
+[2026-04-15 11:48:58,964] INFO in llm: @llm: response::: 
+[2026-04-15 11:48:58,964] INFO in llm: <app.llm.MockResponse object at 0x10ef3b380>
+[2026-04-15 11:48:58,964] INFO in llm: Response: {
+   "study_subject": null,
+   "status": "in_progress"
+}
+
+Now we're going to talk a bit more specifically... If you could share the subject of your studies with me? It’s essential for providing personalized advice.
+[2026-04-15 11:48:58,964] INFO in steps: @ steps, try_get_json_completion:: LLM response: {
+   "study_subject": null,
+   "status": "in_progress"
+}
+
+Now we're going to talk a bit more specifically... If you could share the subject of your studies with me? It’s essential for providing personalized advice.
+[2026-04-15 11:48:58,965] INFO in steps: JSON is valid
+[2026-04-15 11:48:58,965] INFO in core: @intro step, got subject
+[2026-04-15 11:48:58,965] INFO in core: None
+[2026-04-15 11:48:58,965] INFO in core: @intro status: in_progress
+[2026-04-15 11:48:59,027] ERROR in core: Error in reply_core: replace() argument 2 must be str, not None
+[2026-04-15 11:48:59,041] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:48:59] "[35m[1mPOST /reply HTTP/1.1[0m" 500 -
+[2026-04-15 11:49:26,514] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:49:26] "GET / HTTP/1.1" 200 -
+[2026-04-15 11:49:31,716] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:49:31] "GET / HTTP/1.1" 200 -
+[2026-04-15 11:49:32,210] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:49:32] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+[2026-04-15 11:49:32,274] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:49:32] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 11:49:32,354] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:49:32] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 11:49:32,356] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:49:32] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 11:52:18,767] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:52:18] "GET / HTTP/1.1" 200 -
+[2026-04-15 11:52:19,105] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:52:19] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 11:52:19,135] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:52:19] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+[2026-04-15 11:52:19,296] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:52:19] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 11:52:19,296] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:52:19] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 11:54:35,660] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:54:35] "GET / HTTP/1.1" 200 -
+[2026-04-15 11:54:35,992] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:54:35] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 11:54:36,029] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:54:36] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 11:54:36,098] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:54:36] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 11:54:36,098] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 11:54:36] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 11:55:17,956] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/routes.py', reloading
+[2026-04-15 11:55:18,453] INFO in _internal:  * Restarting with stat
+[2026-04-15 11:55:19,011] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 11:55:19,641] WARNING in _internal:  * Debugger is active!
+[2026-04-15 11:55:19,654] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 11:55:29,194] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/routes.py', reloading
+[2026-04-15 11:55:29,373] INFO in _internal:  * Restarting with stat
+[2026-04-15 11:55:29,761] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 11:55:30,293] WARNING in _internal:  * Debugger is active!
+[2026-04-15 11:55:30,305] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 11:56:01,814] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/routes.py', reloading
+[2026-04-15 11:56:02,017] INFO in _internal:  * Restarting with stat
+[2026-04-15 11:56:02,413] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 11:56:02,922] WARNING in _internal:  * Debugger is active!
+[2026-04-15 11:56:02,931] INFO in _internal:  * Debugger PIN: 425-712-072
