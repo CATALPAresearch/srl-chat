@@ -666,3 +666,49 @@ def get_dashboard_stats():
     except Exception as e:
         app.logger.error("Error fetching dashboard stats: %s", e)
         return jsonify({"error": str(e)}), 500
+
+
+# ---------------------------------------------------------------------------
+# Tab visibility logging
+# ---------------------------------------------------------------------------
+
+@app.route("/log/tab_event", methods=["POST", "OPTIONS"])
+@cross_origin()
+def log_tab_event():
+    """
+    Log when a user leaves or returns to the browser tab.
+    Expected JSON body:
+    {
+        "userid": "...",
+        "client": "...",
+        "event": "tab_hidden" or "tab_visible",
+        "timestamp": 1234567890
+    }
+    """
+    try:
+        content = request.json
+        userid = content.get("userid")
+        client = content.get("client")
+        event = content.get("event")
+        timestamp = content.get("timestamp")
+
+        if event not in ["tab_hidden", "tab_visible"]:
+            return jsonify({"error": "Invalid event type"}), 400
+
+        action = LogAction.TAB_HIDDEN if event == "tab_hidden" else LogAction.TAB_VISIBLE
+        user = get_user(userid, client)
+
+        log_action(
+            action,
+            user=user if user else None,
+            value={"event": event, "timestamp": timestamp, "userid": userid, "client": client},
+            http_status=200,
+            step="tab_event"
+        )
+
+        app.logger.info("Tab event: %s for user %s/%s", event, userid, client)
+        return jsonify({"status": "logged", "event": event}), 200
+
+    except Exception as e:
+        app.logger.error("Error logging tab event: %s", e)
+        return jsonify({"error": str(e)}), 500
