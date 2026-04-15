@@ -161,14 +161,16 @@ export default Vue.extend({
           _this.tabHiddenAt = timestamp;
         }
 
-        axios.post(_this.host + "/log/tab_event", {
-          userid: _this.$store.getters.getUser,
-          client: "discord",
-          event: event,
-          timestamp: timestamp,
-        }).catch(function (error) {
-          console.warn("Tab event logging failed:", error);
-        });
+        axios
+          .post(_this.host + "/log/tab_event", {
+            userid: _this.$store.getters.getUser,
+            client: "discord",
+            event: event,
+            timestamp: timestamp,
+          })
+          .catch(function (error) {
+            console.warn("Tab event logging failed:", error);
+          });
 
         console.log("Tab visibility changed:", event, "at", timestamp);
       });

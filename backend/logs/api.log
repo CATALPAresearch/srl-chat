@@ -9606,3 +9606,43 @@ Now we're going to talk a bit more specifically... If you could share the subjec
 [2026-04-15 15:28:04,588] WARNING in __init__: <class 'app.config.Config'>
 [2026-04-15 15:28:05,228] WARNING in _internal:  * Debugger is active!
 [2026-04-15 15:28:05,240] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 15:38:06,177] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/routes.py', reloading
+[2026-04-15 15:38:06,628] INFO in _internal:  * Restarting with stat
+[2026-04-15 15:38:07,089] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 15:38:07,548] WARNING in _internal:  * Debugger is active!
+[2026-04-15 15:38:07,559] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 15:38:15,014] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/lti.py', reloading
+[2026-04-15 15:38:15,256] INFO in _internal:  * Restarting with stat
+[2026-04-15 15:38:15,706] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 15:38:16,097] WARNING in _internal:  * Debugger is active!
+[2026-04-15 15:38:16,108] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 15:38:23,474] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/lti.py', reloading
+[2026-04-15 15:38:23,653] INFO in _internal:  * Restarting with stat
+[2026-04-15 15:38:24,153] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 15:38:24,863] WARNING in _internal:  * Debugger is active!
+[2026-04-15 15:38:24,871] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 15:39:37,282] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/core.py', reloading
+[2026-04-15 15:39:37,530] INFO in _internal:  * Restarting with stat
+[2026-04-15 15:39:37,961] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 15:39:38,412] WARNING in _internal:  * Debugger is active!
+[2026-04-15 15:39:38,420] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 15:40:51,831] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/config.py', reloading
+[2026-04-15 15:40:52,283] INFO in _internal:  * Restarting with stat
+[2026-04-15 15:41:42,535] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 15:41:43,528] INFO in _internal: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.178.34:5000
+[2026-04-15 15:41:43,528] INFO in _internal: [33mPress CTRL+C to quit[0m
+[2026-04-15 15:41:43,531] INFO in _internal:  * Restarting with stat
+[2026-04-15 15:41:44,560] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 15:41:45,361] WARNING in _internal:  * Debugger is active!
+[2026-04-15 15:41:45,393] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 15:43:46,648] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/routes.py', reloading
+[2026-04-15 15:43:46,860] INFO in _internal:  * Restarting with stat
+[2026-04-15 15:43:47,394] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 15:43:47,929] WARNING in _internal:  * Debugger is active!
+[2026-04-15 15:43:47,940] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 15:44:02,592] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/routes.py', reloading
+[2026-04-15 15:44:02,862] INFO in _internal:  * Restarting with stat
+[2026-04-15 15:44:03,248] WARNING in __init__: <class 'app.config.Config'>
