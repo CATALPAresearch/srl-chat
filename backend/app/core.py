@@ -1,6 +1,7 @@
 from collections import OrderedDict
 import json
 import os
+from flask import jsonify
 from xml.sax.saxutils import escape as xmlescape
 import logging
 
@@ -131,7 +132,7 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
             http_status=200
         )
 
-        return llm_message, 200
+        return jsonify({"message": llm_message}), 200
     except Exception as e:
         raise Exception(e)
 
@@ -326,7 +327,7 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                          user.conversation_state.strategy_for_frequency, turn,
                          user.conversation_state.current_conversation_step
                          )
-        return llm_message, 200
+        return jsonify({"message": llm_message}), 200
     except Exception as e:
         db.session.rollback()
         logger.error("Error in reply_core: %s", e)

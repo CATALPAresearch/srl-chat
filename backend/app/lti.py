@@ -1,4 +1,5 @@
-from flask import Blueprint, request, redirect, session, send_from_directory
+from flask import Blueprint, request, redirect, session, Response
+from urllib.parse import quote
 import os
 
 _LTI_STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'static', 'lti')
@@ -25,15 +26,21 @@ def _normalize_role(raw_roles: str) -> str:
 @lti_bp.route("/launch", methods=["POST"])
 def launch():
     p = request.form.to_dict()
-    userid = f"{p.get('context_id')}:{p.get('user_id')}"
+    context_id = p.get('context_id', 'ctx')
+    user_id = p.get('user_id', 'user')
+    userid = f"{context_id}:{user_id}"
 
-    # store LTI context (minimal)
     session["lti_user"] = userid
     session["lti_context"] = p.get("context_id")
     session["lti_role"] = _normalize_role(p.get("roles", ""))
 
-    return redirect("/lti/ui")
+    return redirect(f"/lti/ui?userid={quote(userid)}")
 
 @lti_bp.route("/ui", methods=["GET"])
 def lti_ui():
-    return send_from_directory(_LTI_STATIC_DIR, 'index.html')
+    userid = request.args.get("userid", "lti-anonymous")
+    index_path = os.path.join(_LTI_STATIC_DIR, 'index.html')
+    with open(index_path, "r", encoding="utf-8") as f:
+        html = f.read()
+    html = html.replace("__LTI_USERID__", userid)
+    return Response(html, mimetype="text/html")

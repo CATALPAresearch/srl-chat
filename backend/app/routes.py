@@ -190,7 +190,6 @@ def reply():
         "message": message
     }
     """
-    global userid, client
     try:
         content = request.json
         client_id = content["client"]
@@ -205,7 +204,7 @@ def reply():
         app.logger.error("Error on reply: %s - Rolling back DB changes", e)
         db.session.rollback()
 
-        user = get_user(userid, client)
+        user = get_user(userid, client_id)
         log_action(
             LogAction.DB_ROLLBACK,
             user=user if user else None,
