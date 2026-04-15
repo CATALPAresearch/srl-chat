@@ -13,8 +13,10 @@
       <router-link to="/survey" class="tab" active-class="active">
         Survey
       </router-link>
+      <router-link to="/dashboard" class="tab" active-class="active">
+        Dashboard
+      </router-link>
     </nav>
-
     <router-view class="chat-app__view" />
   </div>
 </template>
@@ -37,10 +39,10 @@ export default Vue.extend({
 
 .chat-app__view {
   flex: 1 1 0;
-  min-height: 0; /* allow flex child to shrink below content size */
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .content {
