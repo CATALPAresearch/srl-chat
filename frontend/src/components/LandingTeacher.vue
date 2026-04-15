@@ -229,7 +229,7 @@
                   }}
                 </button>
               </router-link>
-              <router-link to="/dashboard/researcher">
+              <router-link to="/dashboard/teacher">
                 <button class="btn btn-outline-secondary mb-2">
                   {{
                     lang === "de"
