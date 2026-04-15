@@ -373,16 +373,24 @@ def get_student_results():
         }
 
     # --- Interview completion status ---
-    from .models import ConversationState
+    from .models import ConversationState, Context
     state = ConversationState.query.filter_by(
         user_id=userid, user_client=client
     ).first()
     interview_completed = bool(state and state.interview_completed)
 
+    # --- Progress: completed contexts vs total contexts ---
+    answers_count = len(state.completed_contexts) if state else 0
+    total_contexts = db.session.query(Context).filter(
+        Context.language_id == lang_id
+    ).count() if lang_id else 0
+
     return jsonify({
         "strategies": strategies,
         "survey": survey,
         "interview_completed": interview_completed,
+        "answers_count": answers_count,
+        "total_contexts": total_contexts,
     }), 200
 
 

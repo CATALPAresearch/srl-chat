@@ -9781,3 +9781,25 @@ Now we're going to talk a bit more specifically... If you could share the subjec
 [2026-04-15 16:59:17,107] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:59:17] "GET /user_language/?userid=user_1776265157052&client=standalone HTTP/1.1" 200 -
 [2026-04-15 16:59:17,110] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:59:17] "GET /student/results?userid=user_1776265157052&client=agent-chat HTTP/1.1" 200 -
 [2026-04-15 16:59:17,110] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:59:17] "GET /student/results?userid=user_1776265157052&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 17:07:44,833] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 17:07:44] "GET /protocols HTTP/1.1" 200 -
+[2026-04-15 17:07:49,510] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/routes.py', reloading
+[2026-04-15 17:07:50,512] INFO in _internal:  * Restarting with stat
+[2026-04-15 17:07:51,441] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 17:07:52,210] WARNING in _internal:  * Debugger is active!
+[2026-04-15 17:07:52,220] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 17:07:54,001] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 17:07:54] "GET /dashboard/stats HTTP/1.1" 200 -
+[2026-04-15 17:08:17,419] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/routes.py', reloading
+[2026-04-15 17:08:17,703] INFO in _internal:  * Restarting with stat
+[2026-04-15 17:08:18,318] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 17:08:18,773] WARNING in _internal:  * Debugger is active!
+[2026-04-15 17:08:18,781] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 17:08:20,945] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 17:08:20] "GET / HTTP/1.1" 200 -
+[2026-04-15 17:08:21,253] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 17:08:21] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 17:08:21,349] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 17:08:21] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 17:08:21,612] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 17:08:21] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 17:08:21,614] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 17:08:21] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 17:08:21,680] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 17:08:21] "GET /user_role/ HTTP/1.1" 200 -
+[2026-04-15 17:08:21,825] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 17:08:21] "GET /user_language/?userid=user_1776265701654&client=standalone HTTP/1.1" 200 -
+[2026-04-15 17:08:21,826] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 17:08:21] "GET /student/results?userid=user_1776265701654&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 17:08:21,835] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 17:08:21] "GET /student/results?userid=user_1776265701654&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 17:08:25,693] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 17:08:25] "GET /dashboard/stats HTTP/1.1" 200 -

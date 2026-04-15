@@ -369,9 +369,12 @@ export default Vue.extend({
 
         this.progressStats[2].value =
           strategies.length > 0 ? String(strategies.length) : "–";
-        if (data.survey_response) {
+        if (data.survey) {
           this.progressStats[1].value = "✓";
         }
+        const total = data.total_contexts || 7;
+        const done = data.answers_count || 0;
+        this.progressStats[0].value = `${done} / ${total}`;
       } catch {
         // backend unreachable or no data — keep defaults
       }

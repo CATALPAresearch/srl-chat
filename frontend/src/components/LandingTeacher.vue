@@ -296,6 +296,7 @@
 
 <script>
 import Vue from "vue";
+import axios from "axios";
 import ChatInformedConsent from "./ChatInformedConsent.vue";
 
 const CONSENT_KEY = "srl_informed_consent";
@@ -308,18 +309,7 @@ export default Vue.extend({
   data() {
     return {
       showConsentModal: false,
-      kpis: [
-        {
-          value: "17",
-          labelDe: "Interview absolviert",
-          labelEn: "Interview done",
-        },
-        {
-          value: "71%",
-          labelDe: "Abschlussquote",
-          labelEn: "Completion rate",
-        },
-      ],
+      dashboardStats: null,
     };
   },
 
@@ -329,6 +319,23 @@ export default Vue.extend({
     },
     consentGiven() {
       return this.$store.getters.getInformedConsentAgreement === "yes";
+    },
+    kpis() {
+      const s = this.dashboardStats;
+      const done = s ? s.total_completed : "–";
+      const total = s ? s.total_students : 0;
+      const rate =
+        s && total > 0
+          ? Math.round((s.total_completed / total) * 100) + "%"
+          : "–";
+      return [
+        {
+          value: done,
+          labelDe: "Interview absolviert",
+          labelEn: "Interview done",
+        },
+        { value: rate, labelDe: "Abschlussquote", labelEn: "Completion rate" },
+      ];
     },
   },
 
@@ -353,9 +360,19 @@ export default Vue.extend({
     } else if (this.$store.getters.getInformedConsentAgreement === false) {
       this.$store.commit("setInformedConsentAgreement", "none");
     }
+    this.loadStats();
   },
 
   methods: {
+    async loadStats() {
+      try {
+        const base = window.SRL_BACKEND_URL || "";
+        const res = await axios.get(`${base}/dashboard/stats`);
+        this.dashboardStats = res.data;
+      } catch {
+        // backend unreachable — kpis stay "–"
+      }
+    },
     openConsentModal() {
       this.$store.commit("setInformedConsentAgreement", "none");
       this.showConsentModal = true;
