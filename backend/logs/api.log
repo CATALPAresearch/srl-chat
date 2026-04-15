@@ -9646,3 +9646,110 @@ Now we're going to talk a bit more specifically... If you could share the subjec
 [2026-04-15 15:44:02,592] INFO in _internal:  * Detected change in '/Users/nise/Documents/proj_002_aple/MAS-webui/srl-chat/backend/app/routes.py', reloading
 [2026-04-15 15:44:02,862] INFO in _internal:  * Restarting with stat
 [2026-04-15 15:44:03,248] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 16:11:06,608] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 16:11:07,366] INFO in _internal: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.178.34:5000
+[2026-04-15 16:11:07,366] INFO in _internal: [33mPress CTRL+C to quit[0m
+[2026-04-15 16:11:07,368] INFO in _internal:  * Restarting with stat
+[2026-04-15 16:11:07,704] WARNING in __init__: <class 'app.config.Config'>
+[2026-04-15 16:11:08,078] WARNING in _internal:  * Debugger is active!
+[2026-04-15 16:11:08,089] INFO in _internal:  * Debugger PIN: 425-712-072
+[2026-04-15 16:11:12,464] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:11:12] "GET / HTTP/1.1" 200 -
+[2026-04-15 16:11:12,957] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:11:12] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 16:11:13,027] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:11:13] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 16:11:13,170] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:11:13] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 16:11:13,171] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:11:13] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 16:11:13,417] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:11:13] "GET /user_role/ HTTP/1.1" 200 -
+[2026-04-15 16:11:14,122] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:11:14] "GET /user_language/?userid=user_1776262273388&client=standalone HTTP/1.1" 200 -
+[2026-04-15 16:12:36,432] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:12:36] "GET /student/results?userid=user_1776262273388&client=standalone HTTP/1.1" 200 -
+[2026-04-15 16:18:45,272] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:18:45] "GET / HTTP/1.1" 200 -
+[2026-04-15 16:18:45,680] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:18:45] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 16:18:45,743] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:18:45] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 16:18:45,958] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:18:45] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 16:18:45,959] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:18:45] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 16:18:46,134] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:18:46] "GET /user_role/ HTTP/1.1" 200 -
+[2026-04-15 16:18:46,215] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:18:46] "GET /student/results?userid=user_1776262725996&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 16:18:46,231] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:18:46] "GET /user_language/?userid=user_1776262725996&client=standalone HTTP/1.1" 200 -
+[2026-04-15 16:19:37,422] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:19:37] "GET /student/results?userid=user_1776262725996&client=standalone HTTP/1.1" 200 -
+[2026-04-15 16:19:39,725] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:19:39] "GET /student/results?userid=user_1776262725996&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 16:20:34,700] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:20:34] "GET / HTTP/1.1" 200 -
+[2026-04-15 16:20:35,027] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:20:35] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 16:20:35,072] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:20:35] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 16:20:35,152] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:20:35] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 16:20:35,152] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:20:35] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 16:20:35,263] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:20:35] "GET /user_role/ HTTP/1.1" 200 -
+[2026-04-15 16:20:35,266] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:20:35] "GET /user_language/?userid=user_1776262835178&client=standalone HTTP/1.1" 200 -
+[2026-04-15 16:20:35,269] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:20:35] "GET /student/results?userid=user_1776262835178&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 16:21:33,797] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:21:33] "GET / HTTP/1.1" 200 -
+[2026-04-15 16:21:34,145] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:21:34] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 16:21:34,159] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:21:34] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 16:21:34,316] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:21:34] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 16:21:34,316] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:21:34] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 16:21:34,502] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:21:34] "GET /user_role/ HTTP/1.1" 200 -
+[2026-04-15 16:21:34,549] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:21:34] "GET /user_language/?userid=user_1776262894427&client=standalone HTTP/1.1" 200 -
+[2026-04-15 16:21:34,552] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:21:34] "GET /student/results?userid=user_1776262894427&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 16:30:43,264] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:30:43] "GET / HTTP/1.1" 200 -
+[2026-04-15 16:30:43,540] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:30:43] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 16:30:43,599] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:30:43] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 16:30:43,778] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:30:43] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 16:30:43,778] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:30:43] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 16:30:43,847] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:30:43] "GET /user_role/ HTTP/1.1" 200 -
+[2026-04-15 16:30:43,955] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:30:43] "GET /user_language/?userid=user_1776263443807&client=standalone HTTP/1.1" 200 -
+[2026-04-15 16:30:43,956] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:30:43] "GET /student/results?userid=user_1776263443807&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 16:31:44,626] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:31:44] "GET / HTTP/1.1" 200 -
+[2026-04-15 16:31:45,038] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:31:45] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 16:31:45,151] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:31:45] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 16:31:45,529] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:31:45] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 16:31:45,529] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:31:45] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 16:31:45,851] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:31:45] "GET /user_role/ HTTP/1.1" 200 -
+[2026-04-15 16:31:45,931] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:31:45] "GET /student/results?userid=user_1776263505566&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 16:31:45,931] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:31:45] "GET /user_language/?userid=user_1776263505566&client=standalone HTTP/1.1" 200 -
+[2026-04-15 16:32:53,413] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:32:53] "GET / HTTP/1.1" 200 -
+[2026-04-15 16:34:57,618] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:34:57] "GET / HTTP/1.1" 200 -
+[2026-04-15 16:34:57,994] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:34:57] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 16:34:58,087] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:34:58] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 16:34:58,290] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:34:58] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 16:34:58,291] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:34:58] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 16:34:58,358] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:34:58] "GET /user_role/ HTTP/1.1" 200 -
+[2026-04-15 16:34:58,377] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:34:58] "GET /student/results?userid=user_1776263698338&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 16:34:58,380] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:34:58] "GET /user_language/?userid=user_1776263698338&client=standalone HTTP/1.1" 200 -
+[2026-04-15 16:36:14,595] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:36:14] "GET /student/results?userid=user_1776263698338&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 16:36:18,361] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:36:18] "GET /student/results?userid=user_1776263698338&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 16:36:22,652] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:36:22] "GET /student/results?userid=user_1776263698338&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 16:36:43,602] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:36:43] "GET / HTTP/1.1" 200 -
+[2026-04-15 16:36:44,362] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:36:44] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 16:36:44,417] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:36:44] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 16:36:44,767] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:36:44] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 16:36:44,769] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:36:44] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 16:36:44,903] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:36:44] "GET /user_role/ HTTP/1.1" 200 -
+[2026-04-15 16:36:44,909] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:36:44] "GET /user_language/?userid=user_1776263804878&client=standalone HTTP/1.1" 200 -
+[2026-04-15 16:36:44,911] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:36:44] "GET /student/results?userid=user_1776263804878&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 16:37:01,310] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:37:01] "GET / HTTP/1.1" 200 -
+[2026-04-15 16:37:01,561] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:37:01] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 16:37:01,598] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:37:01] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 16:37:01,755] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:37:01] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 16:37:01,757] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:37:01] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 16:37:01,829] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:37:01] "GET /user_role/ HTTP/1.1" 200 -
+[2026-04-15 16:37:01,831] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:37:01] "GET /student/results?userid=user_1776263821788&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 16:37:01,836] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:37:01] "GET /user_language/?userid=user_1776263821788&client=standalone HTTP/1.1" 200 -
+[2026-04-15 16:39:47,912] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:39:47] "GET /student/results?userid=user_1776263821788&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 16:39:56,739] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:39:56] "GET / HTTP/1.1" 200 -
+[2026-04-15 16:39:57,147] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:39:57] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 16:39:57,219] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:39:57] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 16:39:57,484] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:39:57] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 16:39:57,484] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:39:57] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 16:39:57,539] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:39:57] "GET /user_role/ HTTP/1.1" 200 -
+[2026-04-15 16:39:57,540] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:39:57] "GET /student/results?userid=user_1776263997520&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 16:39:57,543] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:39:57] "GET /user_language/?userid=user_1776263997520&client=standalone HTTP/1.1" 200 -
+[2026-04-15 16:39:57,584] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:39:57] "GET /student/results?userid=user_1776263997520&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 16:40:43,630] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:40:43] "GET / HTTP/1.1" 200 -
+[2026-04-15 16:40:43,818] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:40:43] "GET /static/favicon.ico HTTP/1.1" 200 -
+[2026-04-15 16:40:43,883] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:40:43] "GET /static/lti/app-lazy.js HTTP/1.1" 200 -
+[2026-04-15 16:40:43,979] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:40:43] "GET /frontend/core/ajax.js HTTP/1.1" 200 -
+[2026-04-15 16:40:43,979] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:40:43] "GET /frontend/core/localstorage.js HTTP/1.1" 200 -
+[2026-04-15 16:40:44,045] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:40:44] "GET /user_role/ HTTP/1.1" 200 -
+[2026-04-15 16:40:44,050] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:40:44] "GET /student/results?userid=user_1776264044000&client=agent-chat HTTP/1.1" 200 -
+[2026-04-15 16:40:44,054] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:40:44] "GET /user_language/?userid=user_1776264044000&client=standalone HTTP/1.1" 200 -
+[2026-04-15 16:40:44,213] INFO in _internal: 127.0.0.1 - - [15/Apr/2026 16:40:44] "GET /student/results?userid=user_1776264044000&client=agent-chat HTTP/1.1" 200 -
