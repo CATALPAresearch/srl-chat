@@ -11,6 +11,9 @@
         <router-link to="/survey" class="tab" active-class="active">
           {{ lang === 'de' ? 'Umfrage' : 'Survey' }}
         </router-link>
+        <router-link to="/protocols" class="tab" active-class="active">
+          Protocols
+        </router-link>
         <router-link to="/dashboard/researcher" class="tab" active-class="active">
           Researcher Dashboard
         </router-link>

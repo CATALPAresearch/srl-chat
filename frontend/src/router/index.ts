@@ -4,6 +4,7 @@ import AgentChat from "../components/AgentChat.vue";
 import LLMChat from "../components/LLMChat.vue";
 import RAGChat from "../components/RAGChat.vue";
 import SurveyView from "../components/SurveyView.vue";
+import ProtocolEditor from "../components/ProtocolEditor.vue";
 import ResearcherDashboard from "../components/ResearcherDashboard.vue";
 import LandingPage from "../components/LandingPage.vue";
 import StudentResults from "../components/StudentResults.vue";
@@ -15,6 +16,7 @@ const routes = [
   { path: "/llm-chat", component: LLMChat },
   { path: "/document-chat", component: RAGChat },
   { path: "/survey", component: SurveyView },
+  { path: "/protocols", component: ProtocolEditor },
   { path: "/results", component: StudentResults },
   { path: "/dashboard/researcher", component: ResearcherDashboard },
 ];
