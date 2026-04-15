@@ -64,6 +64,12 @@ export default Vue.extend({
       chatStarted: false,
       userInput: "",
       tabHiddenAt: null,
+      mouseTraceBuffer: [],
+      mouseSessionId: null,
+      mouseTraceInterval: null,
+      mouseSampleInterval: null,
+      lastMouseX: undefined,
+      lastMouseY: undefined,
     };
   },
 
@@ -76,6 +82,7 @@ export default Vue.extend({
     startChat: async function () {
       console.log("Started Chat");
       this.setupTabVisibilityTracking();
+      this.setupMouseTracking();
       let _this = this;
       // curl -X POST http://localhost:5000/startConversation -H "Content-Type: application/json" -d '{ "language": "en", "client": "discord", "userid": "none"}'
       await axios
@@ -175,6 +182,56 @@ export default Vue.extend({
         console.log("Tab visibility changed:", event, "at", timestamp);
       });
     },
+
+    setupMouseTracking: function () {
+      const _this = this;
+      this.mouseSessionId = "session_" + Date.now();
+
+      // Sample mouse position every 2 seconds
+      this.mouseSampleInterval = setInterval(function () {
+        if (_this.lastMouseX !== undefined && _this.lastMouseY !== undefined) {
+          _this.mouseTraceBuffer.push({
+            x: _this.lastMouseX,
+            y: _this.lastMouseY,
+            page_width: window.innerWidth,
+            page_height: window.innerHeight,
+            timestamp: Math.floor(Date.now() / 1000),
+          });
+        }
+      }, 2000);
+
+      // Send batch every 10 seconds
+      this.mouseTraceInterval = setInterval(function () {
+        if (_this.mouseTraceBuffer.length > 0) {
+          const batch = _this.mouseTraceBuffer.splice(0);
+          axios
+            .post(_this.host + "/log/mouse_traces", {
+              userid: _this.$store.getters.getUser,
+              client: "discord",
+              session_id: _this.mouseSessionId,
+              traces: batch,
+            })
+            .catch(function (error) {
+              console.warn("Mouse trace logging failed:", error);
+            });
+        }
+      }, 10000);
+
+      // Track mouse position
+      document.addEventListener("mousemove", function (e) {
+        _this.lastMouseX = e.clientX;
+        _this.lastMouseY = e.clientY;
+      });
+    },
+
+    stopMouseTracking: function () {
+      if (this.mouseTraceInterval) clearInterval(this.mouseTraceInterval);
+      if (this.mouseSampleInterval) clearInterval(this.mouseSampleInterval);
+    },
+  },
+
+  beforeDestroy() {
+    this.stopMouseTracking();
   },
 });
 </script>
