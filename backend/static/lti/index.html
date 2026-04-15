@@ -4,47 +4,42 @@
   <meta charset="UTF-8" />
   <title>SRL Agent</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- LTI mode flag -->
-  <script>
-    window.SRL_CLIENT = "lti";
-  </script>
-
   <style>
-    html,
-    body {
+    html, body {
       margin: 0;
       height: 100%;
       overflow: hidden;
     }
-
-    #app {
+    #OpenChatApp {
       height: 100%;
     }
   </style>
 </head>
 <body>
-  <div id="app"></div>
-
-  <!-- RequireJS (needed for Moodle-style AMD bundles) -->
+  <div id="OpenChatApp"></div>
   <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
-
   <script>
+    window.SRL_CLIENT = "lti";
+    window.SRL_USERID = "__LTI_USERID__";
+
     require.config({
       baseUrl: "/static/lti",
       waitSeconds: 30,
-
-      /*
-       * Map Moodle AMD namespaces to local LTI stubs
-       */
       paths: {
         core: "/static/lti/core"
       }
     });
-
-    // Load the AMD bundle produced by webpack (DO NOT add .js)
-    require(["app-lazy"], function () {
-      console.log("SRL Agent LTI UI loaded");
+    require(["app-lazy"], function(m) {
+      console.log("SRL Agent LTI UI loaded, user:", window.SRL_USERID);
+      m.initOpenChat({
+        page_instance_id: 1,
+        system_name: "SRL Agent",
+        course_id: 1,
+        is_admin: false,
+        course_module_id: 1,
+        context_id: 1,
+        user_id: window.SRL_USERID,
+      });
     });
   </script>
 </body>

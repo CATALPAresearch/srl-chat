@@ -120,7 +120,6 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
 
         turn = update_current_turn(user)
         store_llm_answer(user, llm_message, None, None, turn, step="intro")
-
         log_action(
             LogAction.REPLY_LLM,
             user=user,

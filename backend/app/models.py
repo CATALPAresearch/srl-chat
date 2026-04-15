@@ -67,6 +67,27 @@ class StrategyVector(db.Model):
     embedding: so.Mapped[np.array] = so.mapped_column(Vector(384))
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
 
+class TabEvent(db.Model):
+    __tablename__ = "tab_events"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    user_id = db.Column(db.String(64), nullable=False)
+    user_client = db.Column(db.String(64), nullable=False)
+
+    event_type = db.Column(db.String(32), nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False)
+
+    __table_args__ = (
+        db.ForeignKeyConstraint(
+            [user_id, user_client],
+            ["users.id", "users.client"],
+            ondelete="CASCADE"
+        ),
+    )
+
+
+
 
 class StrategyEmbedding(db.Model):
     """RAG-based strategy embeddings using Ollama nomic-embed-text (768-dim)."""
