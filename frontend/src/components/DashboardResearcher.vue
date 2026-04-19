@@ -244,9 +244,9 @@
           <div class="rd-chart-sub">most recent interview started<br/><code>interview_answer.message_time</code></div>
         </div>
         <div class="rd-chart-card rd-chart-narrow rd-info-card">
-          <div class="rd-chart-title">Avg Time Between Responses</div>
+          <div class="rd-chart-title">Avg Turn Duration</div>
           <div class="rd-big-stat">{{ stats.avg_response_gap_seconds != null ? stats.avg_response_gap_seconds + 's' : '—' }}</div>
-          <div class="rd-chart-sub">avg seconds between student messages · proxy for thinking time</div>
+          <div class="rd-chart-sub">avg seconds per turn · includes LLM response time + student reading &amp; typing time</div>
         </div>
       </div>
 
