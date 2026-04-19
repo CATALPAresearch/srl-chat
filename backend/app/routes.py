@@ -547,15 +547,26 @@ def get_dashboard_stats():
             for row in dropoff_rows
         ]
 
-        # 7. Strategy distribution
-        strategy_rows = db.session.query(
-            UserStrategy.strategy,
-            sa.func.count(UserStrategy.strategy).label("count")
-        ).group_by(UserStrategy.strategy).order_by(
-            sa.func.count(UserStrategy.strategy).desc()
-        ).all()
+        # 7. Strategy distribution with English names
+        strategy_rows = db.session.execute(sa.text("""
+                    SELECT us.strategy, COUNT(*) as count,
+                        COALESCE(
+                            (SELECT st2.name FROM strategy_translation st2
+                             JOIN languages l2 ON l2.id = st2.language_id
+                             WHERE st2.strategy = us.strategy AND l2.lang_code = 'en'
+                             LIMIT 1),
+                            (SELECT st3.name FROM strategy_translation st3
+                             JOIN languages l3 ON l3.id = st3.language_id
+                             WHERE st3.strategy = us.strategy AND l3.lang_code = 'de'
+                             LIMIT 1),
+                            us.strategy
+                        ) as strategy_name
+                    FROM user_strategy us
+                    GROUP BY us.strategy
+                    ORDER BY count DESC
+                """)).fetchall()
         strategy_distribution = [
-            {"strategy": row.strategy, "count": row.count}
+            {"strategy": row[0], "name": row[2], "count": row[1]}
             for row in strategy_rows
         ]
 
@@ -651,6 +662,28 @@ def get_dashboard_stats():
             db.session.rollback()
             response_time_by_step = []
 
+            # 16. Last activity
+            last_activity = db.session.execute(sa.text(f"""
+                    SELECT MAX(message_time) FROM interview_answer WHERE 1=1 {ia_date_filter}
+                """)).scalar()
+            last_activity_str = last_activity.strftime("%Y-%m-%d %H:%M") if last_activity else None
+
+            # 17. Avg time between student responses (thinking time proxy)
+            try:
+                gap_result = db.session.execute(sa.text(f"""
+                        SELECT AVG(gap_seconds) FROM (
+                            SELECT
+                                EXTRACT(epoch FROM message_time - LAG(message_time) OVER (PARTITION BY user_id ORDER BY message_time)) as gap_seconds
+                            FROM interview_answer
+                            WHERE 1=1 {ia_date_filter}
+                        ) t
+                        WHERE gap_seconds > 0 AND gap_seconds < 3600
+                    """)).scalar()
+                avg_response_gap = round(float(gap_result), 1) if gap_result else 0
+            except Exception:
+                db.session.rollback()
+                avg_response_gap = 0
+
         return jsonify({
             "total_students": total_students,
             "total_completed": total_completed,
@@ -671,6 +704,8 @@ def get_dashboard_stats():
             "completion_funnel": funnel,
             "weekly_activity": weekly_activity,
             "response_time_by_step": response_time_by_step,
+            "last_activity": last_activity_str,
+            "avg_response_gap_seconds": avg_response_gap,
         }), 200
 
     except Exception as e:
@@ -892,3 +927,28 @@ def import_protocol():
         return jsonify({"status": "imported", "name": safe_name}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/dashboard/courses", methods=["GET"])
+@cross_origin()
+def get_dashboard_courses():
+    """Return list of distinct courses from LTI context data."""
+    try:
+        # Once LTI context_id and context_title are stored in users table,
+        # this query will return real course data.
+        # Currently returns empty as course storage is not yet implemented.
+        # TODO: Add context_id and context_title columns to users table during LTI launch.
+        rows = db.session.execute(sa.text("""
+            SELECT DISTINCT context_id, context_title, COUNT(*) as students
+            FROM users
+            WHERE context_id IS NOT NULL
+            GROUP BY context_id, context_title
+            ORDER BY students DESC
+        """)).fetchall()
+        return jsonify([
+            {"id": r[0], "name": r[1] or r[0], "students": r[2]}
+            for r in rows
+        ]), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify([]), 200
