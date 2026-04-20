@@ -23,16 +23,8 @@
       </div>
     </div>
 
-    <!-- Loading -->
-    <div v-if="loading" class="row justify-content-center">
-      <div class="col-md-10 text-center py-5 text-muted">
-        <font-awesome-icon icon="spinner" spin class="mr-2" />
-        {{ lang === "de" ? "Lade Ergebnisse…" : "Loading results…" }}
-      </div>
-    </div>
-
     <!-- Error -->
-    <div v-else-if="error" class="row justify-content-center">
+    <div v-if="error" class="row justify-content-center">
       <div class="col-md-10">
         <div class="alert alert-danger">{{ error }}</div>
       </div>

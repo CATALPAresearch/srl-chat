@@ -2,7 +2,7 @@
   <div id="container" class="content agent-chat" role="main">
     <div class="chat-header mb-3 w100">
       <h3 class="d-flex justify-content-betweenx xalign-items-center mb-3">
-        <span id="chat-title">Agent-Chat</span>
+        <span id="chat-title" hidden>Agent-Chat</span>
         <button
           hidden
           @click="$store.commit('toggleShowSettings', 1)"
@@ -34,7 +34,16 @@
     >
       Beginne das Interview
     </button>
+    <div v-if="is_loading && messages.length === 0" class="text-center my-3">
+      <font-awesome-icon
+        class="fa-spin fa-2x"
+        icon="spinner"
+        aria-hidden="true"
+      />
+      <span class="sr-only">Chat wird gestartet</span>
+    </div>
     <ChatUI
+      v-if="chatStarted"
       :messages="messages"
       :is_loading="is_loading"
       @requestChatResponse="requestAgentChat"
@@ -88,6 +97,7 @@ export default Vue.extend({
 
     startChat: async function () {
       console.log("Started Chat");
+      this.is_loading = true;
       this.setupTabVisibilityTracking();
       this.setupMouseTracking();
       let _this = this;
