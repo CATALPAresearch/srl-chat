@@ -20,3 +20,6 @@ __pycache__/
 containers/
 
 .vscode
+
+api.log.*
+backend/logs

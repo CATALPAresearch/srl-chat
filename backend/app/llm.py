@@ -136,7 +136,7 @@ def get_response(messages, temperature, expected_fields_model=None):
                 "num_ctx": 4096
             }
         }
-        r = requests.post("http://localhost:11434/api/chat", json=payload, timeout=120)
+        r = requests.post(BASE_URL.rstrip("/") + "/api/chat", json=payload, timeout=120)
         data = r.json()
         logger.info("Ollama raw response: %s", data)
         content = data.get("message", {}).get("content", "")
