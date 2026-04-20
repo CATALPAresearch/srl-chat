@@ -11,10 +11,21 @@ import {
   faThumbsUp,
   faCheck,
   faSpinner,
+  faArrowUp,
+  faCommentDots,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-library.add(faCopy, faCog, faThumbsDown, faThumbsUp, faCheck, faSpinner);
+library.add(
+  faCopy,
+  faCog,
+  faThumbsDown,
+  faThumbsUp,
+  faCheck,
+  faSpinner,
+  faArrowUp,
+  faCommentDots,
+);
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 // Set API host: prefer SRL_CONFIG.apiBaseUrl, then current origin

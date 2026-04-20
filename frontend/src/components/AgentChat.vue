@@ -27,12 +27,11 @@
     </div>
 
     <button
-      hidden
       v-if="!chatStarted"
       @click="startChat"
       class="btn btn-primary start-btn w-25"
     >
-      Beginne das Interview
+      Start Chat
     </button>
     <ChatUI
       :messages="messages"
@@ -63,6 +62,7 @@ export default Vue.extend({
       messageId: 0,
       error_msg: "",
       is_loading: false,
+      host: "http://localhost:5000",
       chatStarted: false,
       userInput: "",
       tabHiddenAt: null,
@@ -73,16 +73,6 @@ export default Vue.extend({
       lastMouseX: undefined,
       lastMouseY: undefined,
     };
-  },
-
-  mounted() {
-    this.startChat();
-  },
-
-  computed: {
-    host() {
-      return this.$store.getters.getApiHost;
-    },
   },
 
   methods: {
@@ -96,13 +86,6 @@ export default Vue.extend({
       this.setupTabVisibilityTracking();
       this.setupMouseTracking();
       let _this = this;
-      this.is_loading = true;
-      const bot_placeholder = {
-        message: "",
-        author: "bot",
-        id: this.getNextMessageId(),
-      };
-      const bot_pos = this.messages.push(bot_placeholder) - 1;
       // curl -X POST http://localhost:5000/startConversation -H "Content-Type: application/json" -d '{ "language": "en", "client": "discord", "userid": "none"}'
       await axios
         .post(this.host + "/startConversation", {
@@ -113,11 +96,11 @@ export default Vue.extend({
         .then((response) => {
           _this.is_loading = false;
           console.log("/startConversation: ", response);
-          _this.$set(_this.messages, bot_pos, {
+          _this.messages.push({
             message:
               (response.data && response.data.message) || "Chat started!",
             author: "bot",
-            id: bot_placeholder.id,
+            id: _this.getNextMessageId(),
           });
           _this.chatStarted = true;
         })
