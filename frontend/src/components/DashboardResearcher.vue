@@ -949,6 +949,7 @@ export default {
                 backgroundColor: "rgba(37,99,176,0.08)",
                 fill: true,
                 tension: 0.4,
+                yAxisID: "y-responses",
               },
               {
                 label: "Users",
@@ -957,6 +958,7 @@ export default {
                 backgroundColor: "rgba(37,99,176,0.04)",
                 fill: true,
                 tension: 0.4,
+                yAxisID: "y-users",
               },
             ],
           },
@@ -967,8 +969,17 @@ export default {
             scales: {
               yAxes: [
                 {
+                  id: "y-responses",
+                  position: "left",
                   ticks: intTicks,
-                  scaleLabel: { ...LABEL_STYLE, labelString: "Count" },
+                  scaleLabel: { ...LABEL_STYLE, labelString: "Responses" },
+                },
+                {
+                  id: "y-users",
+                  position: "right",
+                  ticks: intTicks,
+                  gridLines: { drawOnChartArea: false },
+                  scaleLabel: { ...LABEL_STYLE, labelString: "Users" },
                 },
               ],
               xAxes: [{ scaleLabel: { ...LABEL_STYLE, labelString: "Week" } }],

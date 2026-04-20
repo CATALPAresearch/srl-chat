@@ -166,7 +166,9 @@ export default Vue.extend({
           console.log("/reply: ", response);
           this.$set(this.messages, bot_pos, {
             author: "bot",
-            message: (response.data && response.data.message) || response.data,
+            message: (response.data && typeof response.data.message === "string")
+              ? response.data.message
+              : (typeof response.data === "string" ? response.data : ""),
             id: bot_placeholder.id,
           });
           this.wait_video_generation = false;

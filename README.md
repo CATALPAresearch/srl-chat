@@ -330,6 +330,41 @@ poetry run pytest ../tests/ -v --timeout 600
 poetry run pytest ../tests/ -v --timeout=0
 ```
 
+### Interview completion test
+
+`tests/test_interview_completion.py` runs a full end-to-end interview using the Flask test client (no browser or running server required). It drives the entire protocol — intro → strategy detection → frequency rating → completion — via a canned answer script and asserts that `interview_completed` is set in the database.
+
+**Prerequisites:** PostgreSQL running and the database initialised (see [Database setup](#database-setup)). Ollama must be reachable at the `BASE_URL` configured in `.env`.
+
+```bash
+cd backend
+
+# Run the interview completion test (prints per-turn dialogue and final stats)
+poetry run pytest ../tests/test_interview_completion.py -v -s
+```
+
+Example output:
+
+```
+[BOT] Hello! Welcome to the SRL interview. Which subject are you studying?
+[USER turn 1] I'm studying Computer Science.
+[BOT] Great! Let's move on to…
+…
+✓ Interview marked completed after 11 turns
+
+============================================================
+INTERVIEW COMPLETION TEST — STATS
+============================================================
+  Total turns taken : 11
+  Max turns allowed : 80
+  Steps visited     : ['complete', 'frequency', 'strategy']
+  Status codes seen : [200]
+  Errors            : 0
+  Interview done    : True
+============================================================
+1 passed in 57.90s
+```
+
 ### Test with curl
 
 ```bash
@@ -362,8 +397,6 @@ poetry run locust -f ../tests/locustfile.py --host=http://localhost:5000
 Then open http://localhost:8089 to configure and start the load test.
 
 ---
-
-
 
 ## Related Software
 
