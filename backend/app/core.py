@@ -2,13 +2,12 @@ from collections import OrderedDict
 import json
 import os
 from flask import jsonify
-from xml.sax.saxutils import escape as xmlescape
 import logging
 
 from . import db
 from .actions import LogAction
 from .llm import (
-    get_llm_response_openai,
+    get_llm_response,
     get_prompt,
     get_frequency_prompt,
     get_context_prompt,
@@ -41,7 +40,6 @@ from .database.crud import (
 from .logging_utlis import log_action
 from .steps import strategy_step, frequency_step, validate_strategies, intro_step
 
-MODEL = os.getenv("MODEL")
 logger = logging.getLogger("StudyBot")
 
 
@@ -61,7 +59,6 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
 
         if not get_language(language):
             msg = translations["language_not_supported_message"]
-            response = xmlescape(msg, {"ä": "&auml;", "ö": "&ouml;", "ü": "&uuml;"})
 
             log_action(
                 LogAction.LANGUAGE_NOT_SUPPORTED,
@@ -70,7 +67,7 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
                 step="language_validation"
             )
 
-            return response, 400
+            return msg, 400
 
         user = get_user(userid, client)
 
@@ -116,7 +113,7 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
         intro_prompt = get_prompt(user, "intro")
         update_current_conversation_step(user, "intro")
 
-        llm_message = get_llm_response_openai(system_prompt + " " + intro_prompt, None, 0.1)
+        llm_message = get_llm_response(system_prompt + " " + intro_prompt, None, 0.1)
 
         turn = update_current_turn(user)
         store_llm_answer(user, llm_message, None, None, turn, step="intro")
@@ -132,8 +129,8 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
         )
 
         return jsonify({"message": llm_message}), 200
-    except Exception as e:
-        raise Exception(e)
+    except Exception:
+        raise
 
 
 def reply_core(client, userid, user_message) -> tuple[str, int]:
@@ -164,8 +161,6 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
             )
 
             return "User not found. Start a conversation first.", 400
-            # language = "en"  # TODO - ask first time
-            # return start_conversation(language, client, userid)
 
         # Retrieve current context
         current_context_id = user.conversation_state.current_context
@@ -200,7 +195,11 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
         logger.info(user_message)
 
         if user.conversation_state.interview_completed:
-            return sign_off_interview(user)
+            llm_message = sign_off_interview(user)
+            store_llm_answer(user, llm_message, current_context,
+                             user.conversation_state.strategy_for_frequency, turn,
+                             user.conversation_state.current_conversation_step)
+            return jsonify({"message": llm_message}), 200
 
         logger.info("Replying to user: %s - %s. Step: %s", user.id, user.client, conversation_step)
 
@@ -228,7 +227,7 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                     context_prompt = get_context_prompt(current_context.context, user)
                     update_current_conversation_step(user, "strategy")
 
-                    llm_message = get_llm_response_openai(context_prompt + "  " + system_prompt, None, 0.1)
+                    llm_message = get_llm_response(context_prompt + "  " + system_prompt, None, 0.1)
 
                     log_action(
                         LogAction.REPLY_LLM,
@@ -402,7 +401,7 @@ def ask_about_frequency(user, current_context):
             update_current_conversation_step(user, "frequency")
             update_most_recent_strategy_for_frequency(user, strategy)
             conversation_so_far = retrieve_full_conversation(user, context.id, "strategy")
-            llm_message = get_llm_response_openai(frequency_prompt + " " + system_prompt,
+            llm_message = get_llm_response(frequency_prompt + " " + system_prompt,
                                                   prev_conversation=conversation_so_far)
             new_context = current_context
             break
@@ -420,7 +419,7 @@ def move_to_next_context(user, current_context):
         logger.info("Moving on to context: %s", next_context.context)
         prompt = get_context_prompt(next_context.context, user)
         update_current_conversation_step(user, "strategy")
-        llm_message = get_llm_response_openai(prompt + system_prompt,
+        llm_message = get_llm_response(prompt + system_prompt,
                                               prev_conversation=conversation_so_far)
     else:
         update_current_conversation_step(user, "complete")
@@ -478,7 +477,7 @@ def generate_summary(user, strategy_scores):
     full_conversation = retrieve_full_conversation(user)
     system_prompt = get_prompt(user, "system")
     prompt = get_complete_prompt(user, most_contexts_strat, const_strategy, avg_freq, total_strat, const_strategies)
-    llm_message = get_llm_response_openai(prompt + " " + system_prompt, prev_conversation=full_conversation)
+    llm_message = get_llm_response(prompt + " " + system_prompt, prev_conversation=full_conversation)
     return llm_message
 
 

@@ -23,7 +23,7 @@ class User(db.Model):
     client: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
     study_subject: so.Mapped[Optional[str]] = so.mapped_column(sa.String())
-    evaluation: so.Mapped["StrategyEvaluation"] = so.relationship(
+    evaluation: so.Mapped[List["StrategyEvaluation"]] = so.relationship(
         back_populates="user",
         cascade="all, delete")
     strategies: so.Mapped[List["UserStrategy"]] = so.relationship(
@@ -49,10 +49,12 @@ class Context(db.Model):
 
 
 class Strategy(db.Model):
+    __tablename__ = "strategy"
     id: so.Mapped[str] = so.mapped_column(sa.String(), primary_key=True)
 
 
 class StrategyTranslation(db.Model):
+    __tablename__ = "strategy_translation"
     id: so.Mapped[str] = so.mapped_column(sa.String(), primary_key=True)
     strategy: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Strategy.id))
     name: so.Mapped[str] = so.mapped_column(sa.String())
@@ -61,6 +63,7 @@ class StrategyTranslation(db.Model):
 
 
 class StrategyVector(db.Model):
+    __tablename__ = "strategy_vector"
     id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True, autoincrement=True)
     strategy: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Strategy.id))
     description: so.Mapped[str] = so.mapped_column(sa.String())
@@ -69,18 +72,14 @@ class StrategyVector(db.Model):
 
 class TabEvent(db.Model):
     __tablename__ = "tab_events"
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-
-    user_id = db.Column(db.String(64), nullable=False)
-    user_client = db.Column(db.String(64), nullable=False)
-
-    event_type = db.Column(db.String(32), nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False)
-
+    id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True, autoincrement=True)
+    user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
+    user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
+    event_type: so.Mapped[str] = so.mapped_column(sa.String(32))
+    timestamp: so.Mapped[datetime.datetime] = so.mapped_column(sa.DateTime)
     __table_args__ = (
-        db.ForeignKeyConstraint(
-            [user_id, user_client],
+        sa.ForeignKeyConstraint(
+            ["user_id", "user_client"],
             ["users.id", "users.client"],
             ondelete="CASCADE"
         ),
@@ -94,9 +93,9 @@ class StrategyEmbedding(db.Model):
     __tablename__ = "strategy_embedding"
     strategy_id: so.Mapped[str] = so.mapped_column(sa.String(), primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String())
-    phase: so.Mapped[str] = so.mapped_column(sa.String(), nullable=True)
-    category: so.Mapped[str] = so.mapped_column(sa.String(), nullable=True)
-    content: so.Mapped[str] = so.mapped_column(sa.String(), nullable=True)
+    phase: so.Mapped[Optional[str]] = so.mapped_column(sa.String())
+    category: so.Mapped[Optional[str]] = so.mapped_column(sa.String())
+    content: so.Mapped[Optional[str]] = so.mapped_column(sa.String())
     embedding: so.Mapped[np.array] = so.mapped_column(Vector(768))
 
 
@@ -106,7 +105,7 @@ class ConversationState(db.Model):
     user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
     user: so.Mapped["User"] = so.relationship(back_populates="conversation_state", cascade="all, delete")
-    interview_completed: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=0)
+    interview_completed: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
     current_turn: so.Mapped[int] = so.mapped_column(sa.Integer, default=0)
     current_context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), nullable=True)
     strategy_for_frequency: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Strategy.id), nullable=True)
@@ -135,6 +134,7 @@ class ConversationCompletedContexts(db.Model):
 
 
 class InterviewAnswer(db.Model):
+    __tablename__ = "interview_answer"
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
@@ -152,7 +152,7 @@ class InterviewAnswer(db.Model):
         back_populates="interview_answer",
         cascade="all, delete")
     message_time: so.Mapped[datetime.datetime] = so.mapped_column(
-        nullable=False, server_default=sa.func.CURRENT_TIMESTAMP()
+        server_default=sa.text("CURRENT_TIMESTAMP")
     )
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
                                               [User.id, User.client],
@@ -160,6 +160,7 @@ class InterviewAnswer(db.Model):
 
 
 class UserStrategy(db.Model):
+    __tablename__ = "user_strategy"
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
@@ -177,6 +178,7 @@ class UserStrategy(db.Model):
 
 
 class LlmResponse(db.Model):
+    __tablename__ = "llm_response"
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
@@ -191,7 +193,7 @@ class LlmResponse(db.Model):
                                                              name="step_check"),
                                                          nullable=False)
     message_time: so.Mapped[datetime.datetime] = so.mapped_column(
-        nullable=False, server_default=sa.func.CURRENT_TIMESTAMP()
+        server_default=sa.text("CURRENT_TIMESTAMP")
     )
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
                                               [User.id, User.client],
@@ -199,12 +201,13 @@ class LlmResponse(db.Model):
 
 
 class StrategyEvaluation(db.Model):
+    __tablename__ = "strategy_evaluation"
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
     user: so.Mapped["User"] = so.relationship(back_populates="evaluation", cascade="all, delete")
-    strategy: so.Mapped["strategy"] = so.mapped_column(sa.ForeignKey(Strategy.id))
-    SU: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=0)
+    strategy: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Strategy.id))
+    SU: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
     SF: so.Mapped[float] = so.mapped_column(sa.Float())
     SC: so.Mapped[float] = so.mapped_column(sa.Float())
     __table_args__ = (sa.ForeignKeyConstraint([user_id, user_client],
@@ -213,6 +216,7 @@ class StrategyEvaluation(db.Model):
 
 
 class Archive(db.Model):
+    __tablename__ = "archive"
     id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True, autoincrement=True)
     archived_conversation: so.Mapped[str] = so.mapped_column(sa.String())
 
@@ -228,7 +232,7 @@ class SurveyResponse(db.Model):
     language: so.Mapped[str] = so.mapped_column(sa.String(8), nullable=False)
     responses: so.Mapped[dict] = so.mapped_column(sa.JSON, nullable=False)
     submitted_at: so.Mapped[datetime.datetime] = so.mapped_column(
-        nullable=False, server_default=sa.func.CURRENT_TIMESTAMP()
+        server_default=sa.text("CURRENT_TIMESTAMP")
     )
 
     __table_args__ = (
@@ -236,32 +240,24 @@ class SurveyResponse(db.Model):
     )
 
 class ActivityLog(db.Model):
-    __tablename__ = 'activity_log'
-
-    id = db.Column(db.String, primary_key=True, default=lambda: str(uuid.uuid4()))
-
-    timestamp = db.Column(db.Integer, nullable=False, index=True)
-
-    user_id = db.Column(db.String, nullable=True, index=True)
-    user_client = db.Column(db.String, nullable=True)
-
-    action = db.Column(db.String, nullable=False, index=True)
-    value = db.Column(db.JSON, nullable=True)
-
-    user_agent = db.Column(db.String, nullable=True)
-    ip_address = db.Column(db.String, nullable=True)
-
-    context = db.Column(db.String, nullable=True, index=True)
-    strategy = db.Column(db.String, nullable=True)
-    turn = db.Column(db.Integer, nullable=True)
-    step = db.Column(db.String, nullable=True)
-
-    http_status = db.Column(db.Integer, nullable=True)
-
+    __tablename__ = "activity_log"
+    id: so.Mapped[str] = so.mapped_column(sa.String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    timestamp: so.Mapped[int] = so.mapped_column(sa.Integer, index=True)
+    user_id: so.Mapped[Optional[str]] = so.mapped_column(sa.String, index=True)
+    user_client: so.Mapped[Optional[str]] = so.mapped_column(sa.String)
+    action: so.Mapped[str] = so.mapped_column(sa.String, index=True)
+    value: so.Mapped[Optional[dict]] = so.mapped_column(sa.JSON)
+    user_agent: so.Mapped[Optional[str]] = so.mapped_column(sa.String)
+    ip_address: so.Mapped[Optional[str]] = so.mapped_column(sa.String)
+    context: so.Mapped[Optional[str]] = so.mapped_column(sa.String, index=True)
+    strategy: so.Mapped[Optional[str]] = so.mapped_column(sa.String)
+    turn: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer)
+    step: so.Mapped[Optional[str]] = so.mapped_column(sa.String)
+    http_status: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer)
     __table_args__ = (
-        db.Index('idx_user_action', 'user_id', 'action'),
-        db.Index('idx_timestamp_action', 'timestamp', 'action'),
-        db.Index('idx_user_timestamp', 'user_id', 'timestamp'),
+        sa.Index("idx_user_action", "user_id", "action"),
+        sa.Index("idx_timestamp_action", "timestamp", "action"),
+        sa.Index("idx_user_timestamp", "user_id", "timestamp"),
     )
 
     def __repr__(self):

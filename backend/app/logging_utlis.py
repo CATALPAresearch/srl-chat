@@ -1,8 +1,7 @@
 import time
-import hashlib
 import uuid
 from flask import request, has_request_context
-from app import db, app
+from app import db
 from .actions import LogAction
 from .models import ActivityLog
 import logging
@@ -34,7 +33,7 @@ def log_action(
         step (str): Conversation step
         http_status (int): HTTP status code
         user_agent (str): Override user agent
-        include_ip (bool): Whether to hash IP
+        include_ip (bool): Whether to store the client IP address
 
     Example:
         log_action(
@@ -73,38 +72,10 @@ def log_action(
         db.session.add(log_entry)
         db.session.commit()
 
-        logger.debug(f"Logged action: {action.value} for user {user.id if user else 'system'}")
+        logger.debug("Logged action: %s for user %s", action.value, user.id if user else "system")
         return log_entry
 
     except Exception as e:
         db.session.rollback()
-        logger.error(f"Failed to log action {action}: {e}")
+        logger.error("Failed to log action %s: %s", action, e)
         return None
-
-def log_api_call(endpoint: str, method: str = None, user=None):
-    """Log API calls"""
-    if has_request_context() and not method:
-        method = request.method
-
-    log_action(
-        LogAction.API_CALL_START,
-        user=user,
-        value={"endpoint": endpoint, "method": method}
-    )
-
-
-def log_error(error: Exception, user=None, context: str = None):
-    """Log errors with full context"""
-    import traceback
-
-    log_action(
-        LogAction.ERROR_OCCURRED,
-        user=user,
-        value={
-            "error_type": type(error).__name__,
-            "error_message": str(error),
-            "context": context,
-            "traceback": traceback.format_exc()
-        },
-        http_status=500
-    )

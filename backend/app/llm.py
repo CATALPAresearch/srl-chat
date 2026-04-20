@@ -4,29 +4,19 @@ import requests
 import time
 import logging
 
-from openai import OpenAI
 from ollama import Client
 
-from .database.crud import get_language_by_id, get_contexts_content, get_strategies_content
+from .database.crud import get_language_by_id
 
 BASE_URL = os.getenv("BASE_URL")
 API_KEY = os.getenv("API_KEY")
 MODEL = os.getenv("MODEL")
-CONFIG_LIST = [
-    {
-        "model": MODEL,
-        "base_url": BASE_URL,
-        # "api_key": API_KEY,
-    }
-]
 EMBEDDING_URL = os.getenv("EMBEDDING_URL", "https://huggingface.co/")
 # https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
 EMBEDDING_TOKEN = os.getenv("EMBEDDING_TOKEN", "")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 # https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2
 logger = logging.getLogger('StudyBot')
-evil = False
-client = None
 
 
 def query_embeddings(text_to_embed):
@@ -50,31 +40,15 @@ def get_model_names(base_url):
     return names
 
 
-_client_instance = None
-
-
-def get_client():
-    global _client_instance
-    if _client_instance is None:
-        if evil:
-            _client_instance = OpenAI(base_url=BASE_URL)
-        else:
-            _client_instance = Client(
-                host='http://localhost:11434',
-                headers={'x-some-header': 'some-value'}
-            )
-    return _client_instance
-
-def get_llm_response_openai(
+def get_llm_response(
         system_prompt,
         user_prompt=None,
         temperature=0.0,
         top_k=25,
         top_p=0.3,
         repeat_penalty=1.1,
-        prev_conversation=[],
+        prev_conversation=None,
         expected_fields_model=None,
-        stream=True
 ):
     # --- HARD DEV GUARD: skip LLM entirely ---
     if os.getenv("DISABLE_LLM", "false").lower() == "true":
@@ -87,10 +61,6 @@ def get_llm_response_openai(
     logger.info("System Prompt: %s", system_prompt)
     logger.info("User Prompt: %s", user_prompt)
 
-    global client
-    if client is None:
-        client = get_client()
-
     # Use user/assistant format instead of system role for llama3.2 compatibility
     messages = [
         {"role": "user", "content": system_prompt},
@@ -102,14 +72,14 @@ def get_llm_response_openai(
         messages.append({"role": "user", "content": user_prompt})
 
     attempts = 5
-    timeout = 0
-    response = get_response(messages, temperature, expected_fields_model)
+    retry_delay = 1.0
+    response = get_response(messages, temperature, top_k, top_p, repeat_penalty)
     while attempts > 0:
         if response is None or not hasattr(response, "message") or response.message.content == "":
-            response = get_response(messages, temperature + 0.1, expected_fields_model)
-            time.sleep(timeout)
+            time.sleep(retry_delay)
+            response = get_response(messages, temperature + 0.1, top_k, top_p, repeat_penalty)
             attempts -= 1
-            timeout *= 2
+            retry_delay *= 2
         else:
             break
 
@@ -122,7 +92,9 @@ def get_llm_response_openai(
         raise AssertionError("Received empty response from LLM.")
     logger.info("Response: %s", response_content)
     return response_content
-def get_response(messages, temperature, expected_fields_model=None):
+
+
+def get_response(messages, temperature, top_k=25, top_p=0.3, repeat_penalty=1.1):
     """Call Ollama directly via HTTP REST API."""
     logger.info("Send request to Ollama via HTTP")
     try:
@@ -132,6 +104,9 @@ def get_response(messages, temperature, expected_fields_model=None):
             "stream": False,
             "options": {
                 "temperature": temperature,
+                "top_k": top_k,
+                "top_p": top_p,
+                "repeat_penalty": repeat_penalty,
                 "num_predict": 512,
                 "num_ctx": 4096
             }
