@@ -6,7 +6,7 @@ from json.decoder import JSONDecodeError
 
 from .database.crud import get_language_by_id, get_all_strategies
 from .llm import (
-    get_llm_response_openai,
+    get_llm_response,
     get_strategy_analysis_prompt,
     get_format_strategy_prompt,
     get_frequency_validate_prompt,
@@ -47,7 +47,6 @@ def intro_step(user: User, prev_conversation: list[str]):
     system_prompt = get_prompt(user, "system")
 
     json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, intro_prompt + system_prompt,
-                                                      expected_fields=["study_subject", "status", "comment"], # FixMe: redundant to list(model_class.__fields__.keys())
                                                       expected_fields_model=StepIntroFields,
                                                       prev_conversation=prev_conversation,
                                                       user_prompt=None)
@@ -89,7 +88,7 @@ def _strategy_step_rag(user: User, context: str, prev_conversation: list[str]):
 
     # Build a conversational comment via a single LLM call
     system_prompt = get_prompt(user, "system")
-    comment = get_llm_response_openai(
+    comment = get_llm_response(
         system_prompt
         + f"\nThe student mentioned these learning strategies: {strategies}."
         + f"\nContext: {context}."
@@ -123,7 +122,7 @@ def _strategy_step_llm(user: User, context: str, prev_conversation: list[str]):
     logger.debug("Retrieving prompt")
     strategy_analysis_prompt = get_strategy_analysis_prompt(user)
     logger.debug("Retrieving reasoning response")
-    reasoning_response = get_llm_response_openai(strategy_analysis_prompt, user_prompt=None, temperature=0.0,
+    reasoning_response = get_llm_response(strategy_analysis_prompt, user_prompt=None, temperature=0.0,
                                                  prev_conversation=prev_conversation)
     logger.debug("Retrieving prompt")
     format_strategy_prompt = get_format_strategy_prompt(user, reasoning_response, len(prev_conversation), context,
@@ -131,7 +130,6 @@ def _strategy_step_llm(user: User, context: str, prev_conversation: list[str]):
     system_prompt = get_prompt(user, "system")
     logger.debug("Retrieving JSON")
     json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, format_strategy_prompt + system_prompt,
-                                                      expected_fields=["strategies", "status", "comment"],
                                                       expected_fields_model=StepStrategieStepperFields,
                                                       prev_conversation=prev_conversation,
                                                       user_prompt=None)
@@ -158,13 +156,12 @@ def frequency_step(user: User, prev_conversation: list[str], conversation_for_st
     frequency_validate_prompt = get_frequency_validate_prompt(user, strategy_for_frequency)
     system_prompt = get_prompt(user, "system")
     logger.debug("Retrieving reasoning response")
-    reasoning_response = get_llm_response_openai(frequency_validate_prompt + system_prompt, user_prompt=None, temperature=0.0,
+    reasoning_response = get_llm_response(frequency_validate_prompt + system_prompt, user_prompt=None, temperature=0.0,
                                                  prev_conversation=conversation_for_strategy_in_context)
     logger.debug("Retrieving prompt")
     format_frequency_prompt = get_format_frequency_prompt(user, strategy_for_frequency, reasoning_response)
     logger.debug("Retrieving JSON")
     json_output, json_valid = try_get_json_completion(5, 0.0, 0.2, format_frequency_prompt + system_prompt,
-                                                      expected_fields=["frequency", "status", "comment"],
                                                       expected_fields_model=StepFrequencyStepperFields,
                                                       prev_conversation=prev_conversation,
                                                       user_prompt=None
@@ -191,44 +188,42 @@ def validate_strategies(user_strategies):
 
 
 def try_get_json_completion(
-        num_attempts, start_temp, temp_increase, system_prompt, expected_fields, expected_fields_model, prev_conversation=[], user_prompt=None
+        num_attempts, start_temp, temp_increase, system_prompt, expected_fields_model, prev_conversation=None, user_prompt=None
 ):
-    """
-    TODO: This function should be not necessary because the LLM should be able to provide strcutured output
-    """
+    if prev_conversation is None:
+        prev_conversation = []
+    expected_fields = list(expected_fields_model.model_fields.keys())
     attempts = num_attempts
     temperature = start_temp
+    llm_message_raw = ""
     while attempts > 0:
         try:
-            logger.info("@ steps, try_get_json_completion:: call get_llm_response_openai")
-            llm_message_raw = get_llm_response_openai(
-                system_prompt, 
-                user_prompt=user_prompt, 
+            logger.info("@ steps, try_get_json_completion:: call get_llm_response")
+            llm_message_raw = get_llm_response(
+                system_prompt,
+                user_prompt=user_prompt,
                 temperature=temperature,
-                prev_conversation=prev_conversation, 
+                prev_conversation=prev_conversation,
                 expected_fields_model=expected_fields_model
-                )
+            )
             regex = r"{[\s\S]+}"
-            #logger.info('system_prompt',system_prompt)
-            #logger.info('user_prompt',user_prompt)
-            logger.info("@ steps, try_get_json_completion:: LLM response: "+llm_message_raw)
-            
+            logger.info("@ steps, try_get_json_completion:: LLM response: " + llm_message_raw)
             json_string = re.search(regex, llm_message_raw).group()
             json_output = json.loads(json_string)
             for field in expected_fields:
                 if field not in json_output:
                     json_output[field] = ""
-                if not json_output[field]:
-                    continue
-            json_valid = True
+            # If the LLM put its conversational reply outside the JSON block, use it as comment fallback
+            if not json_output.get("comment"):
+                outside_text = llm_message_raw.replace(json_string, "").strip()
+                if outside_text:
+                    json_output["comment"] = outside_text
             logger.info("JSON is valid")
-            return json_output, json_valid
+            return json_output, True
         except (AttributeError, JSONDecodeError):
             logger.info("Invalid JSON, trying again")
             attempts -= 1
             temperature += temp_increase
-            continue
 
-    json_valid = False
     logger.info("JSON invalid")
-    return llm_message_raw, json_valid
+    return llm_message_raw, False
