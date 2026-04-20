@@ -26,11 +26,12 @@
     </div>
 
     <button
+      hidden
       v-if="!chatStarted"
       @click="startChat"
       class="btn btn-primary start-btn"
     >
-      Start Chat
+      Beginne das Interview
     </button>
     <ChatUI
       :messages="messages"
@@ -71,6 +72,10 @@ export default Vue.extend({
       lastMouseX: undefined,
       lastMouseY: undefined,
     };
+  },
+
+  mounted() {
+    this.startChat();
   },
 
   methods: {
