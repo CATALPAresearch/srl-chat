@@ -195,3 +195,5 @@ To get started, could you please tell me which subject or field of study you're 
 [2026-04-20 18:29:20,818] WARNING in __init__: <class 'app.config.Config'>
 [2026-04-20 18:29:21,252] WARNING in _internal:  * Debugger is active!
 [2026-04-20 18:29:21,264] INFO in _internal:  * Debugger PIN: 421-241-984
+[2026-04-20 18:30:33,831] INFO in routes: Tab event: tab_hidden for user demo_student/discord
+[2026-04-20 18:30:33,833] INFO in _internal: 127.0.0.1 - - [20/Apr/2026 18:30:33] "POST /log/tab_event HTTP/1.1" 200 -
