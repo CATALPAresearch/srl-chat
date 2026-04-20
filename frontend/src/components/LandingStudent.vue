@@ -348,7 +348,7 @@ export default Vue.extend({
     },
     async fetchInterviewState() {
       const userid = this.$store.getters.getUser;
-      const client = this.$store.getters.getChatModus || "discord";
+      const client = this.$store.getters.getChatModus || "web";
       if (!userid) return;
       try {
         const res = await axios.get(`${this.host}/student/results`, {

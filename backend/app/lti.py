@@ -32,6 +32,7 @@ def launch():
 
     session["lti_user"] = userid
     session["lti_context"] = p.get("context_id")
+    session["lti_context_title"] = p.get("context_title")
     session["lti_role"] = _normalize_role(p.get("roles", ""))
 
     return redirect(f"/lti/ui?userid={quote(userid)}")

@@ -1,7 +1,7 @@
 from collections import OrderedDict
 import json
 import os
-from flask import jsonify
+from flask import jsonify, session
 import logging
 
 from . import db
@@ -72,7 +72,11 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
         user = get_user(userid, client)
 
         if user is None:
-            created_user = first_time_setup(userid, client, language)
+            lti_context_id = session.get("lti_context") or "0"
+            lti_context_title = session.get("lti_context_title")
+            created_user = first_time_setup(userid, client, language,
+                                            context_id=lti_context_id,
+                                            context_title=lti_context_title)
             if created_user is None:
                 log_action(
                     LogAction.USER_NOT_FOUND,

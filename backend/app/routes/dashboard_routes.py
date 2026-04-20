@@ -308,7 +308,7 @@ def get_dashboard_courses():
             ORDER BY students DESC
         """)).fetchall()
         return jsonify([
-            {"id": r[0], "name": r[1] or r[0], "students": r[2]}
+            {"id": r[0], "name": r[1] or ("No course (standalone)" if r[0] == "0" else r[0]), "students": r[2]}
             for r in rows
         ]), 200
     except Exception as e:

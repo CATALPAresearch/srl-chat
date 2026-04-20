@@ -139,7 +139,7 @@ def get_strategy_mentions_for_user(user, strategy):
     return strategy_mentions
 
 
-def first_time_setup(userid, client, language):
+def first_time_setup(userid, client, language, context_id="0", context_title=None):
     language_db = get_language(language)
 
     conv_state = ConversationState(
@@ -153,6 +153,8 @@ def first_time_setup(userid, client, language):
         client=client,
         language_id=language_db.id,
         study_subject="",
+        context_id=context_id,
+        context_title=context_title,
         conversation_state=conv_state
     )
 

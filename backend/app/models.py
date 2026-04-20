@@ -23,6 +23,8 @@ class User(db.Model):
     client: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
     study_subject: so.Mapped[Optional[str]] = so.mapped_column(sa.String())
+    context_id: so.Mapped[str] = so.mapped_column(sa.String(256), server_default="0", default="0")
+    context_title: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
     evaluation: so.Mapped[List["StrategyEvaluation"]] = so.relationship(
         back_populates="user",
         cascade="all, delete")

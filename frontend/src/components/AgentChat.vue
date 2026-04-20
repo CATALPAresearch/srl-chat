@@ -105,7 +105,7 @@ export default Vue.extend({
       await axios
         .post(this.host + "/startConversation", {
           language: "en",
-          client: "discord",
+          client: "web",
           userid: this.$store.getters.getUser,
         })
         .then((response) => {
@@ -158,7 +158,7 @@ export default Vue.extend({
       await axios
         .post(this.host + "/reply", {
           message: message,
-          client: "discord",
+          client: "web",
           userid: this.$store.getters.getUser,
         })
         .then((response) => {
@@ -197,7 +197,7 @@ export default Vue.extend({
         axios
           .post(_this.host + "/log/tab_event", {
             userid: _this.$store.getters.getUser,
-            client: "discord",
+            client: "web",
             event: event,
             timestamp: timestamp,
           })
@@ -233,7 +233,7 @@ export default Vue.extend({
           axios
             .post(_this.host + "/log/mouse_traces", {
               userid: _this.$store.getters.getUser,
-              client: "discord",
+              client: "web",
               session_id: _this.mouseSessionId,
               traces: batch,
             })

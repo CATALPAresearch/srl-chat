@@ -6,7 +6,7 @@ class StudyBotUser(HttpUser):
     @task
     def reply(self):
         self.client.post("/reply", json={
-            "client": "discord",
+            "client": "web",
             "userid": "test_user",
             "message": "Hello, how are you?"
         })
