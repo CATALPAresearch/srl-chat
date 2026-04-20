@@ -1,6 +1,7 @@
-"""Chat / conversation routes: start, reply, reset."""
+"""Chat / conversation routes: start, reply, reset, history."""
 import json
 
+import sqlalchemy as sa
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
 
@@ -139,3 +140,48 @@ def reply():
             user_lang = get_language_by_id(user.language_id)
             return translations["translations"][user_lang.lang_code]["reply_error"], 200
         return translations["translations"]["en"]["create_error"], 500
+
+
+@chat_bp.route("/conversation", methods=["GET"])
+@cross_origin()
+def get_conversation():
+    """Return the full conversation history for a user, ordered chronologically.
+
+    Query params: userid, client
+    Response: { "messages": [{"author": "user"|"bot", "message": "...", "id": <int>}, ...] }
+    """
+    userid = request.args.get("userid")
+    client = request.args.get("client")
+    if not userid or not client:
+        return jsonify({"messages": []}), 400
+
+    try:
+        user_rows = db.session.execute(sa.text("""
+            SELECT turn, message, message_time, 'user' AS author
+            FROM interview_answer
+            WHERE user_id = :uid AND user_client = :client
+        """), {"uid": userid, "client": client}).fetchall()
+
+        bot_rows = db.session.execute(sa.text("""
+            SELECT turn, message, message_time, 'bot' AS author
+            FROM llm_response
+            WHERE user_id = :uid AND user_client = :client
+        """), {"uid": userid, "client": client}).fetchall()
+
+        all_rows = [
+            {"turn": r[0], "message": r[1], "time": r[2], "author": r[3]}
+            for r in (list(user_rows) + list(bot_rows))
+        ]
+        # Sort by timestamp; within same turn put user message before bot reply
+        all_rows.sort(key=lambda r: (r["time"], 0 if r["author"] == "user" else 1))
+
+        messages = [
+            {"author": r["author"], "message": r["message"], "id": i + 1}
+            for i, r in enumerate(all_rows)
+        ]
+        return jsonify({"messages": messages}), 200
+
+    except Exception as e:
+        app.logger.error("Error fetching conversation: %s", e)
+        db.session.rollback()
+        return jsonify({"messages": []}), 500

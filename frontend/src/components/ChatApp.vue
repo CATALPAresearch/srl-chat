@@ -54,10 +54,14 @@
         >EN</button>
       </div>
     </div>
-    <router-view class="chat-app__view" />
+    <keep-alive>
+      <router-view class="chat-app__view" />
+    </keep-alive>
   </div>
 </template>
-    <router-view class="chat-app__view" />
+    <keep-alive>
+      <router-view class="chat-app__view" />
+    </keep-alive>
   </div>
 </template>
 

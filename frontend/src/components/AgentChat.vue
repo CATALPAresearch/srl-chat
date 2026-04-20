@@ -86,7 +86,9 @@ export default Vue.extend({
   },
 
   mounted() {
-    this.startChat();
+    this.setupTabVisibilityTracking();
+    this.setupMouseTracking();
+    this.restoreOrStart();
   },
 
   methods: {
@@ -95,13 +97,33 @@ export default Vue.extend({
       return this.messageId;
     },
 
+    restoreOrStart: async function () {
+      this.is_loading = true;
+      try {
+        const res = await axios.get(this.host + "/conversation", {
+          params: { userid: this.$store.getters.getUser, client: "web" },
+        });
+        const history = res.data && res.data.messages;
+        if (history && history.length > 0) {
+          this.messages = history;
+          this.messageId = history.reduce(
+            (max, m) => Math.max(max, m.id || 0),
+            0,
+          );
+          this.chatStarted = true;
+          this.is_loading = false;
+          return;
+        }
+      } catch (e) {
+        console.warn("Could not restore conversation:", e);
+      }
+      this.startChat();
+    },
+
     startChat: async function () {
       console.log("Started Chat");
       this.is_loading = true;
-      this.setupTabVisibilityTracking();
-      this.setupMouseTracking();
       let _this = this;
-      // curl -X POST http://localhost:5000/startConversation -H "Content-Type: application/json" -d '{ "language": "en", "client": "discord", "userid": "none"}'
       await axios
         .post(this.host + "/startConversation", {
           language: "en",
@@ -166,9 +188,12 @@ export default Vue.extend({
           console.log("/reply: ", response);
           this.$set(this.messages, bot_pos, {
             author: "bot",
-            message: (response.data && typeof response.data.message === "string")
-              ? response.data.message
-              : (typeof response.data === "string" ? response.data : ""),
+            message:
+              response.data && typeof response.data.message === "string"
+                ? response.data.message
+                : typeof response.data === "string"
+                ? response.data
+                : "",
             id: bot_placeholder.id,
           });
           this.wait_video_generation = false;
