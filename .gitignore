@@ -1,4 +1,6 @@
 .env
+backend/logs/
+backend/static/lti/app-lazy.js
 backend/migrations/*
 backend/app/__pycache__
 # Node / Vue
