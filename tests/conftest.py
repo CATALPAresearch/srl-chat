@@ -56,6 +56,12 @@ def db(flask_app):
     return _db
 
 
+@pytest.fixture(scope="session")
+def client(flask_app):
+    """Return a Flask test client for the entire test session."""
+    return flask_app.test_client()
+
+
 # ---------------------------------------------------------------------------
 # Eval dataset loader
 # ---------------------------------------------------------------------------
