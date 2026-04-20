@@ -14,11 +14,9 @@
               </h2>
             </div>
             <p class="text-muted mb-0">
-              {{
-                lang === "de"
-                  ? "Hier sehen Sie die im Interview erkannten Lernstrategien und Ihre Umfrageantworten."
-                  : "Below you can see the learning strategies identified in your interview and your survey responses."
-              }}
+              Thank you for taking the time to share how you learn with us!
+              We've carefully analysed your answers, and your results are now
+              shown in the two graphs below so you can explore them.
             </p>
           </div>
         </div>
@@ -41,214 +39,152 @@
     </div>
 
     <template v-else>
-      <!-- Status KPIs -->
-      <div class="row justify-content-center mb-4">
-        <div class="col-md-10">
-          <div class="row">
-            <div class="col-sm-4 mb-3">
-              <div class="card border-0 shadow-sm text-center h-100">
-                <div class="card-body py-3">
-                  <div
-                    class="sr-kpi-value"
-                    :class="
-                      data.interview_completed
-                        ? 'text-success'
-                        : 'text-secondary'
-                    "
-                  >
-                    {{ data.interview_completed ? "✓" : "–" }}
-                  </div>
-                  <div class="sr-kpi-label text-muted">
-                    {{ lang === "de" ? "Interview" : "Interview" }}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-4 mb-3">
-              <div class="card border-0 shadow-sm text-center h-100">
-                <div class="card-body py-3">
-                  <div class="sr-kpi-value text-primary">
-                    {{ data.strategies.length }}
-                  </div>
-                  <div class="sr-kpi-label text-muted">
-                    {{
-                      lang === "de"
-                        ? "Erkannte Strategien"
-                        : "Strategies Identified"
-                    }}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-4 mb-3">
-              <div class="card border-0 shadow-sm text-center h-100">
-                <div class="card-body py-3">
-                  <div
-                    class="sr-kpi-value"
-                    :class="data.survey ? 'text-success' : 'text-secondary'"
-                  >
-                    {{ data.survey ? "✓" : "–" }}
-                  </div>
-                  <div class="sr-kpi-label text-muted">
-                    {{ lang === "de" ? "Umfrage" : "Survey" }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Strategies -->
       <div class="row justify-content-center mb-4">
         <div class="col-md-10">
           <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white">
-              <h5 class="mb-0 sr-section-title">
-                {{
-                  lang === "de"
-                    ? "Ihre Lernstrategien"
-                    : "Your Learning Strategies"
-                }}
-              </h5>
-              <p class="text-muted small mb-0">
-                {{
-                  lang === "de"
-                    ? "Diese Strategien wurden im Interview identifiziert."
-                    : "These strategies were identified during your interview."
-                }}
+            <div class="card-body">
+              <p>
+                The spider chart shows the learning strategies you mentioned
+                when describing how you study. Higher values mean that you
+                reported using that strategy more often and more frequently. It
+                is completely normal that the whole chart is not filled.
+                Everyone learns in different ways, and no one uses all
+                strategies equally. However, the chart may help you notice
+                strategies that you use less often.
+              </p>
+
+              <div class="row mt-3">
+                <!-- Radar chart -->
+                <div class="col-md-7 mb-3">
+                  <canvas ref="radarCanvas" style="max-width: 100%"></canvas>
+                </div>
+                <!-- Strategies not mentioned -->
+                <div class="col-md-5 mb-3">
+                  <h6 class="font-weight-600 mb-2">
+                    Strategies not yet mentioned
+                  </h6>
+                  <p class="text-muted small mb-2">
+                    These have been shown to be helpful — consider trying them:
+                  </p>
+                  <div
+                    v-if="!unmentiondStrategies.length"
+                    class="text-muted small"
+                  >
+                    Great — you mentioned all strategies!
+                  </div>
+                  <div v-else class="sr-tag-cloud">
+                    <span
+                      v-for="s in unmentiondStrategies"
+                      :key="s.id"
+                      class="sr-strategy-tag"
+                      :data-tip="s.description"
+                      >{{ s.name }}</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <p class="mt-2">
+                On the right side of the chart, you will also see some
+                strategies that were not mentioned in your answers. These
+                strategies have been shown in educational research to be helpful
+                for many students. You might want to explore whether some of
+                them could work for you too.
+              </p>
+              <p>
+                If you'd like to learn more about any of these strategies, get
+                tips on how to use them, or if something in the graph isn't
+                clear, feel free to send us a mail below.
               </p>
             </div>
-            <div class="card-body p-0">
+          </div>
+        </div>
+      </div>
+
+      <!-- Motivation and Learning Beliefs section -->
+      <div hidden class="row justify-content-center mb-4">
+        <div class="col-md-10">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+              <h5 class="mb-0 sr-section-title">
+                Your Motivation and Learning Beliefs
+              </h5>
+            </div>
+            <div class="card-body">
+              <p>
+                The second graph shows your beliefs about your motivation and
+                learning skills.
+              </p>
+              <ul>
+                <li>
+                  <strong>How to read this graph:</strong> The blue line shows
+                  your answers and the orange line shows the average results
+                  from other students in a recent large scale study.
+                </li>
+              </ul>
+              <p>
+                This comparison can help you reflect on your learning habits and
+                beliefs. There are no "good" or "bad" results here — it simply
+                shows how your views compare with those of other students.
+                However, higher scores are often correlated with better academic
+                success.
+              </p>
+
+              <!-- Line chart placeholder -->
               <div
-                v-if="!data.strategies.length"
-                class="p-4 text-muted text-center"
+                class="sr-chart-placeholder d-flex align-items-center justify-content-center mb-3"
               >
-                {{
-                  lang === "de"
-                    ? "Noch keine Strategien erfasst."
-                    : "No strategies recorded yet."
-                }}
+                <span class="text-muted">[ Line Chart ]</span>
               </div>
-              <div
-                v-for="(s, i) in data.strategies"
-                :key="s.id"
-                class="sr-strategy-row d-flex align-items-start p-3"
-                :class="{ 'border-top': i > 0 }"
-              >
-                <div class="sr-strategy-num text-primary font-weight-bold mr-3">
-                  {{ i + 1 }}
-                </div>
-                <div class="flex-grow-1">
-                  <div class="font-weight-600">{{ s.name }}</div>
-                  <div class="text-muted small mt-1">{{ s.description }}</div>
-                </div>
-                <div v-if="s.frequency !== null" class="sr-freq-badge ml-3">
-                  <span class="badge badge-light border">
-                    {{ lang === "de" ? "Häufigkeit" : "Frequency" }}:
-                    {{ s.frequency }}
-                  </span>
-                </div>
-              </div>
+
+              <p>
+                If you have specific questions, or would like ideas on how to
+                strengthen your motivation or improve certain learning skills
+                presented here (like metacognition), please ask in the chat
+                below. We are happy to share practical tips and helpful
+                suggestions.
+              </p>
+              <p class="mb-0">
+                We hope these results help you learn more about your own
+                learning process and discover strategies that work best for you.
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Survey results -->
+      <!-- Question textarea -->
       <div class="row justify-content-center mb-4">
         <div class="col-md-10">
           <div class="card border-0 shadow-sm">
             <div class="card-header bg-white">
-              <h5 class="mb-0 sr-section-title">
-                {{
-                  lang === "de"
-                    ? "Umfrageergebnisse (SRL-O)"
-                    : "Survey Results (SRL-O)"
-                }}
-              </h5>
+              <h5 class="mb-0 sr-section-title">Ask a Question</h5>
               <p class="text-muted small mb-0">
-                {{
-                  lang === "de"
-                    ? "Ihre Selbsteinschätzung auf einer Skala von 1–5."
-                    : "Your self-assessment on a scale of 1–5."
-                }}
+                Is something unclear? Would you like tips on a specific
+                strategy?
               </p>
             </div>
             <div class="card-body">
-              <div v-if="!data.survey" class="text-muted text-center py-3">
-                {{
-                  lang === "de"
-                    ? "Sie haben die Umfrage noch nicht ausgefüllt."
-                    : "You have not completed the survey yet."
-                }}
-                <div class="mt-2">
-                  <router-link
-                    to="/survey"
-                    class="btn btn-sm btn-outline-primary"
-                  >
-                    {{ lang === "de" ? "Zur Umfrage" : "Go to Survey" }}
-                  </router-link>
-                </div>
+              <label for="sr-question" class="sr-only">Your question</label>
+              <textarea
+                id="sr-question"
+                v-model="question"
+                class="form-control mb-2"
+                rows="3"
+                placeholder="Type your question here…"
+              />
+              <button
+                class="btn btn-primary"
+                :disabled="!question.trim()"
+                @click="submitQuestion"
+              >
+                Send
+              </button>
+              <div v-if="questionSent" class="text-success mt-2 small">
+                Your question has been sent. You can follow the conversation in
+                the chat.
               </div>
-              <template v-else>
-                <div class="text-muted small mb-3">
-                  {{ lang === "de" ? "Eingereicht am" : "Submitted" }}:
-                  {{
-                    new Date(data.survey.submitted_at).toLocaleDateString(
-                      lang === "de" ? "de-DE" : "en-GB",
-                    )
-                  }}
-                </div>
-                <div class="sr-survey-grid">
-                  <div
-                    v-for="(val, key) in data.survey.responses"
-                    :key="key"
-                    class="sr-survey-item"
-                  >
-                    <div class="sr-item-id text-muted">{{ key }}</div>
-                    <div class="sr-item-bar-wrap">
-                      <div
-                        class="sr-item-bar"
-                        :style="{ width: (val / 5) * 100 + '%' }"
-                        :class="barClass(val)"
-                      ></div>
-                    </div>
-                    <div class="sr-item-val font-weight-600">{{ val }}</div>
-                  </div>
-                </div>
-              </template>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- CTA -->
-      <div class="row justify-content-center mb-4">
-        <div class="col-md-10">
-          <div
-            class="alert alert-info border-0 shadow-sm d-flex align-items-center"
-          >
-            <div class="flex-grow-1">
-              {{
-                lang === "de"
-                  ? "Möchten Sie die Umfrage ausfüllen oder das Interview erneut starten?"
-                  : "Would you like to complete the survey or restart the interview?"
-              }}
-            </div>
-            <router-link
-              v-if="!data.survey"
-              to="/survey"
-              class="btn btn-primary btn-sm ml-3 text-nowrap"
-            >
-              {{ lang === "de" ? "Zur Umfrage" : "Take Survey" }}
-            </router-link>
-            <router-link
-              to="/agent-chat"
-              class="btn btn-outline-secondary btn-sm ml-2 text-nowrap"
-            >
-              {{ lang === "de" ? "Interview starten" : "Start Interview" }}
-            </router-link>
           </div>
         </div>
       </div>
@@ -259,13 +195,13 @@
 <script>
 import Vue from "vue";
 import axios from "axios";
+import Chart from "chart.js";
 
 export default Vue.extend({
   name: "StudentResults",
 
   data() {
     return {
-      host: "http://localhost:5000",
       loading: true,
       error: null,
       data: {
@@ -273,20 +209,147 @@ export default Vue.extend({
         survey: null,
         interview_completed: false,
       },
+      question: "",
+      questionSent: false,
+      radarChart: null,
     };
   },
 
   computed: {
+    host() {
+      return this.$store.getters.getApiHost;
+    },
     lang() {
       return this.$store.getters.getLanguage || "de";
+    },
+    unmentiondStrategies() {
+      if (!this.data.radar_data) return [];
+      return this.data.radar_data.filter(
+        (s) => !s.frequency || s.frequency === 0,
+      );
     },
   },
 
   methods: {
+    renderRadarChart() {
+      const radarData = this.data.radar_data;
+      if (!radarData || !radarData.length) return;
+      const canvas = this.$refs.radarCanvas;
+      if (!canvas) return;
+
+      if (this.radarChart) {
+        this.radarChart.destroy();
+      }
+
+      const truncate = (s, n) =>
+        s.length > n ? s.slice(0, n - 1) + "\u2026" : s;
+      const shortLabels = radarData.map((s) => truncate(s.name, 20));
+      const fullLabels = radarData.map((s) => s.name);
+      const descriptions = radarData.map((s) => s.description || "");
+      const freqs = radarData.map((s) => s.frequency || 0);
+      const avgs = radarData.map(
+        (s) => Math.round((s.avg_frequency || 0) * 10) / 10,
+      );
+      const tickLabels = [
+        "",
+        "Seldom",
+        "Sometimes",
+        "Often",
+        "Most of the time",
+      ];
+      const wrapText = (text, maxLen) => {
+        const words = text.split(" ");
+        const lines = [];
+        let line = "";
+        for (const w of words) {
+          if ((line + " " + w).trim().length > maxLen) {
+            if (line) lines.push(line);
+            line = w;
+          } else {
+            line = (line + " " + w).trim();
+          }
+        }
+        if (line) lines.push(line);
+        return lines;
+      };
+      const freqLabel = (v) => {
+        const i = Math.round(v);
+        return tickLabels[i] ? tickLabels[i] + ` (${v})` : String(v);
+      };
+
+      this.radarChart = new Chart(canvas.getContext("2d"), {
+        type: "radar",
+        data: {
+          labels: shortLabels,
+          datasets: [
+            {
+              label: "You",
+              data: freqs,
+              backgroundColor: "rgba(54, 162, 235, 0.15)",
+              borderColor: "rgba(54, 162, 235, 1)",
+              pointBackgroundColor: "rgba(54, 162, 235, 1)",
+              pointBorderColor: "#fff",
+              borderWidth: 2,
+              pointRadius: 4,
+            },
+            {
+              label: "Course average",
+              data: avgs,
+              backgroundColor: "rgba(255, 153, 0, 0.12)",
+              borderColor: "rgba(255, 153, 0, 0.85)",
+              pointBackgroundColor: "rgba(255, 153, 0, 0.85)",
+              pointBorderColor: "#fff",
+              borderWidth: 2,
+              borderDash: [5, 4],
+              pointRadius: 3,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          scale: {
+            ticks: {
+              beginAtZero: true,
+              max: 4,
+              min: 0,
+              stepSize: 1,
+              callback: () => "",
+              backdropColor: "transparent",
+            },
+            pointLabels: { fontSize: 10 },
+          },
+          tooltips: {
+            mode: "index",
+            callbacks: {
+              title: (items) => fullLabels[items[0].index],
+              beforeBody: (items) => {
+                const desc = descriptions[items[0].index];
+                if (!desc) return [];
+                return wrapText(desc, 48).map((l) => " " + l);
+              },
+              label: (item) => {
+                const prefix = item.datasetIndex === 0 ? " You" : " Course avg";
+                return prefix + ": " + freqLabel(parseFloat(item.value));
+              },
+            },
+          },
+          legend: { display: true, position: "bottom" },
+        },
+      });
+    },
+
     barClass(val) {
       if (val >= 4) return "sr-bar-high";
       if (val >= 3) return "sr-bar-mid";
       return "sr-bar-low";
+    },
+
+    submitQuestion() {
+      if (!this.question.trim()) return;
+      this.$emit("question", this.question.trim());
+      this.question = "";
+      this.questionSent = true;
+      setTimeout(() => (this.questionSent = false), 5000);
     },
 
     async loadResults() {
@@ -308,11 +371,18 @@ export default Vue.extend({
       } finally {
         this.loading = false;
       }
+      // Canvas is only in the DOM once loading is false, so render after.
+      await this.$nextTick();
+      this.renderRadarChart();
     },
   },
 
   mounted() {
     this.loadResults();
+  },
+
+  beforeDestroy() {
+    if (this.radarChart) this.radarChart.destroy();
   },
 });
 </script>
@@ -404,5 +474,58 @@ export default Vue.extend({
 
 .sr-item-val {
   text-align: right;
+}
+
+.sr-chart-placeholder {
+  background: #f1f3f5;
+  border: 2px dashed #ced4da;
+  border-radius: 8px;
+  height: 260px;
+  font-size: 1rem;
+  color: #adb5bd;
+}
+
+.sr-tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sr-strategy-tag {
+  position: relative;
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: #e8f0fe;
+  color: #3367d6;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  white-space: normal;
+  word-break: break-word;
+  cursor: default;
+}
+
+.sr-strategy-tag::before {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(33, 37, 41, 0.93);
+  color: #fff;
+  border-radius: 6px;
+  padding: 7px 11px;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  width: 240px;
+  white-space: normal;
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.sr-strategy-tag:hover::before {
+  opacity: 1;
 }
 </style>

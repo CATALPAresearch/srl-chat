@@ -15,6 +15,10 @@ services:
       - PG_PASSWORD=${PG_PASSWORD}
       - PG_DB=${PG_DB}
       - INTERVIEW_PROTOCOL=${INTERVIEW_PROTOCOL:-interview_default}
+      - DISABLE_LLM=${DISABLE_LLM:-false}
+      - USE_RAG_STRATEGY=${USE_RAG_STRATEGY:-false}
+      - RAG_EMBEDDING_MODEL=${RAG_EMBEDDING_MODEL:-nomic-embed-text}
+      - SECRET_KEY=${SECRET_KEY}
     expose:
       - 5000
     ports:

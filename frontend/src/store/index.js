@@ -36,6 +36,9 @@ export const store = new Vuex.Store({
     strings: {},
     llmModelList: [],
 
+    // API backend host (set from SRL_CONFIG or defaults to current origin)
+    apiHost: window.location.origin,
+
     // user context
     user: {
       userId: null,
@@ -140,6 +143,10 @@ export const store = new Vuex.Store({
       state.isAdmin = value;
     },
 
+    setApiHost(state, host) {
+      state.apiHost = host;
+    },
+
     setUser(state, userId) {
       state.user.userId = userId;
     },
@@ -222,6 +229,10 @@ export const store = new Vuex.Store({
 
     getInformedConsentAgreement(state) {
       return state.informedConsentAgreement;
+    },
+
+    getApiHost(state) {
+      return state.apiHost;
     },
 
     getUser(state) {

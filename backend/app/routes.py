@@ -385,12 +385,71 @@ def get_student_results():
         Context.language_id == lang_id
     ).count() if lang_id else 0
 
+    # --- Radar chart data: all 17 strategies with max frequency ---
+    with open(os.path.join(_CONFIG_DIR, "strategy_code_map.json"), "r", encoding="utf-8") as _f:
+        code_map = json.load(_f)
+    with open(os.path.join(_CONFIG_DIR, "learning_strategies.json"), "r", encoding="utf-8") as _f:
+        _strat_list = json.load(_f)
+    strategy_lookup = {
+        x["strategy_id"]: {
+            "name": x["name"],
+            "description": x["definitions"][0] if x.get("definitions") else "",
+        }
+        for x in _strat_list
+    }
+
+    # Build frequency map from already-loaded rows (strategy_id → max frequency across contexts)
+    freq_map = {}
+    for us, _st in rows:
+        if us.frequency and int(us.frequency) > 0:
+            freq_map[us.strategy] = max(freq_map.get(us.strategy, 0), int(us.frequency))
+
+    # --- Course average: avg frequency per strategy, treating unmentioned as 0 ---
+    from .models import ConversationState as CS
+    # Count all completed students in this client group (excluding current user)
+    completed_count = db.session.scalar(
+        sa.select(sa.func.count())
+        .select_from(CS)
+        .where(CS.user_client == client)
+        .where(CS.interview_completed == True)
+    ) or 1  # avoid divide-by-zero
+
+    # Sum of per-user max frequencies per strategy code
+    peer_rows = db.session.execute(
+        sa.text("""
+            SELECT us.strategy, SUM(us.frequency) AS freq_sum
+            FROM user_strategy us
+            JOIN state cs ON cs.user_id = us.user_id AND cs.user_client = us.user_client
+            WHERE us.user_client = :client
+              AND cs.interview_completed = true
+              AND us.frequency > 0
+            GROUP BY us.strategy
+        """),
+        {"client": client},
+    ).all()
+    avg_map = {r.strategy: round(r.freq_sum / completed_count, 2) for r in peer_rows}
+
+    radar_data = []
+    for code, sid in code_map.items():
+        if code == "008-001":   # skip "other"
+            continue
+        info = strategy_lookup.get(sid, {})
+        radar_data.append({
+            "id": code,
+            "code": code,
+            "name": info.get("name", sid),
+            "description": info.get("description", ""),
+            "frequency": freq_map.get(code, 0),
+            "avg_frequency": avg_map.get(code, 0),
+        })
+
     return jsonify({
         "strategies": strategies,
         "survey": survey,
         "interview_completed": interview_completed,
         "answers_count": answers_count,
         "total_contexts": total_contexts,
+        "radar_data": radar_data,
     }), 200
 
 

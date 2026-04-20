@@ -74,7 +74,7 @@
           <label for="chatTextarea" class="sr-only">Gib deine Frage ein</label>
           <textarea
             ref="chatTextarea"
-            class="w100 chat-textarea"
+            class="w50 chat-textarea"
             v-model="chat_message"
             @keyup.enter="handleEnter"
             @input="resizeTextarea"
@@ -82,13 +82,13 @@
             role="textbox"
           />
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <font-awesome-icon hidden icon="comment-dots" aria-hidden="true" />
+            <span style="width: 1em; display: inline-block" />
 
             <button
               type="button"
               class="btn btn-primary"
               @click="handleChatMessage"
-              :disabled="chat_message.length == 0"
+              :disabled="chat_message.length == 0 || is_loading"
             >
               <font-awesome-icon icon="arrow-up" />
             </button>
@@ -109,6 +109,10 @@ export default Vue.extend({
   name: "ChatUI",
   props: {
     messages: Object,
+    is_loading: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {

@@ -4,6 +4,7 @@
       <h3 class="d-flex justify-content-betweenx xalign-items-center mb-3">
         <span id="chat-title">Agent-Chat</span>
         <button
+          hidden
           @click="$store.commit('toggleShowSettings', 1)"
           class="btn btn-link settings-icon-button"
           aria-controls="settings-panel"
@@ -22,19 +23,20 @@
       <div id="intro">
         {{ $store.getters.getPluginSettings.intro }}
       </div>
-      <ChatSettings v-if="$store.getters.showSettings" :documents="[]" />
+      <ChatSettings hidden v-if="$store.getters.showSettings" :documents="[]" />
     </div>
 
     <button
       hidden
       v-if="!chatStarted"
       @click="startChat"
-      class="btn btn-primary start-btn"
+      class="btn btn-primary start-btn w-25"
     >
       Beginne das Interview
     </button>
     <ChatUI
       :messages="messages"
+      :is_loading="is_loading"
       @requestChatResponse="requestAgentChat"
       aria-labelledby="chat-title"
     />
@@ -61,7 +63,6 @@ export default Vue.extend({
       messageId: 0,
       error_msg: "",
       is_loading: false,
-      host: "http://localhost:5000",
       chatStarted: false,
       userInput: "",
       tabHiddenAt: null,
@@ -78,6 +79,12 @@ export default Vue.extend({
     this.startChat();
   },
 
+  computed: {
+    host() {
+      return this.$store.getters.getApiHost;
+    },
+  },
+
   methods: {
     getNextMessageId: function () {
       this.messageId++;
@@ -89,6 +96,13 @@ export default Vue.extend({
       this.setupTabVisibilityTracking();
       this.setupMouseTracking();
       let _this = this;
+      this.is_loading = true;
+      const bot_placeholder = {
+        message: "",
+        author: "bot",
+        id: this.getNextMessageId(),
+      };
+      const bot_pos = this.messages.push(bot_placeholder) - 1;
       // curl -X POST http://localhost:5000/startConversation -H "Content-Type: application/json" -d '{ "language": "en", "client": "discord", "userid": "none"}'
       await axios
         .post(this.host + "/startConversation", {
@@ -99,10 +113,11 @@ export default Vue.extend({
         .then((response) => {
           _this.is_loading = false;
           console.log("/startConversation: ", response);
-          _this.messages.push({
-            message: response.data || "Chat started!",
+          _this.$set(_this.messages, bot_pos, {
+            message:
+              (response.data && response.data.message) || "Chat started!",
             author: "bot",
-            id: _this.getNextMessageId(),
+            id: bot_placeholder.id,
           });
           _this.chatStarted = true;
         })
@@ -135,6 +150,13 @@ export default Vue.extend({
       // TODO: let admin define the url of the agent webservice
       //const base = new URL(this.$store.getters.getRAGWebserviceHost);
 
+      const bot_placeholder = {
+        author: "bot",
+        message: "",
+        id: this.getNextMessageId(),
+      };
+      const bot_pos = this.messages.push(bot_placeholder) - 1;
+
       await axios
         .post(this.host + "/reply", {
           message: message,
@@ -144,21 +166,20 @@ export default Vue.extend({
         .then((response) => {
           this.is_loading = false;
           console.log("/reply: ", response);
-          new_message = {
+          this.$set(this.messages, bot_pos, {
             author: "bot",
-            message: response.data,
-            id: this.getNextMessageId(),
-          };
-          this.messages.push(new_message);
+            message: (response.data && response.data.message) || response.data,
+            id: bot_placeholder.id,
+          });
           this.wait_video_generation = false;
         })
         .catch((error) => {
           this.is_loading = false;
           console.error("Error sending message:", error);
-          this.messages.push({
-            message: "Error: Unable to get a response.",
+          this.$set(this.messages, bot_pos, {
             author: "bot",
-            id: this.getNextMessageId(),
+            message: "Error: Unable to get a response.",
+            id: bot_placeholder.id,
           });
         });
     },

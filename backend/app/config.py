@@ -2,7 +2,10 @@ import os
 from dotenv import load_dotenv
 
 basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-load_dotenv(os.path.join(basedir, '.env'))
+# Load from project root first (canonical .env), fall back to backend/.env
+rootdir = os.path.abspath(os.path.join(basedir, '..'))
+load_dotenv(os.path.join(rootdir, '.env'))
+load_dotenv(os.path.join(basedir, '.env'), override=False)  # legacy fallback
 
 
 class Config:
