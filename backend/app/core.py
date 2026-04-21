@@ -40,7 +40,7 @@ from .database.crud import (
 from .logging_utlis import log_action
 from .steps import strategy_step, frequency_step, validate_strategies, intro_step
 
-logger = logging.getLogger("StudyBot")
+logger = logging.getLogger("InterviewAgent")
 
 
 def start_conversation_core(language, client, userid) -> tuple[str, int]:

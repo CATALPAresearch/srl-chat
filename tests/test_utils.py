@@ -273,7 +273,7 @@ class TestLogAction:
         from app.logging_utlis import log_action
 
         with flask_app.test_request_context("/"):
-            log_action(LogAction.REPLY, user=None)  # should not raise
+            log_action(LogAction.REPLY_USER, user=None)  # should not raise
 
     def test_value_stored_as_json(self, flask_app, db):
         import sqlalchemy as sa
@@ -301,12 +301,12 @@ class TestLogAction:
         from app.models import ActivityLog
 
         with flask_app.test_request_context("/"):
-            log_action(LogAction.REPLY, user=None, step="intro", turn=3)
+            log_action(LogAction.REPLY_USER, user=None, step="intro", turn=3)
 
         with flask_app.app_context():
             entry = db.session.scalar(
                 sa.select(ActivityLog)
-                .where(ActivityLog.action == LogAction.REPLY.value)
+                .where(ActivityLog.action == LogAction.REPLY_USER.value)
                 .where(ActivityLog.step == "intro")
                 .where(ActivityLog.turn == 3)
                 .order_by(ActivityLog.timestamp.desc())

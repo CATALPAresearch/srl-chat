@@ -14,7 +14,6 @@ class Language(db.Model):
     lang_code: so.Mapped[str] = so.mapped_column(sa.String(2), index=True, unique=True)
     contexts: so.Mapped[List["Context"]] = so.relationship()
     strategies: so.Mapped[List["StrategyTranslation"]] = so.relationship()
-    strategy_vectors: so.Mapped[List["StrategyVector"]] = so.relationship()
 
 
 class User(db.Model):
@@ -27,20 +26,19 @@ class User(db.Model):
     context_title: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
     evaluation: so.Mapped[List["StrategyEvaluation"]] = so.relationship(
         back_populates="user",
-        cascade="all, delete")
+        cascade="all, delete-orphan")
     strategies: so.Mapped[List["UserStrategy"]] = so.relationship(
         back_populates="user",
-        cascade="all, delete")
+        cascade="all, delete-orphan")
     interview_answers: so.Mapped[List["InterviewAnswer"]] = so.relationship(
         back_populates="user",
-        cascade="all, delete")
+        cascade="all, delete-orphan")
     conversation_state: so.Mapped["ConversationState"] = so.relationship(
         back_populates="user",
-        cascade="all, delete")
+        cascade="all, delete-orphan")
     llm_responses: so.Mapped[List["LlmResponse"]] = so.relationship(
         back_populates="user",
-        cascade="all, delete")
-    __table_args__ = (sa.UniqueConstraint('id', 'client', name='_user_client_uc'),)
+        cascade="all, delete-orphan")
 
 
 class Context(db.Model):
@@ -64,30 +62,17 @@ class StrategyTranslation(db.Model):
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
 
 
+
+
+
 class StrategyVector(db.Model):
+    """Legacy HuggingFace 384-dim embeddings (used by database/setup.py)."""
     __tablename__ = "strategy_vector"
     id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True, autoincrement=True)
     strategy: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Strategy.id))
     description: so.Mapped[str] = so.mapped_column(sa.String())
     embedding: so.Mapped[np.array] = so.mapped_column(Vector(384))
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
-
-class TabEvent(db.Model):
-    __tablename__ = "tab_events"
-    id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True, autoincrement=True)
-    user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
-    user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
-    event_type: so.Mapped[str] = so.mapped_column(sa.String(32))
-    timestamp: so.Mapped[datetime.datetime] = so.mapped_column(sa.DateTime)
-    __table_args__ = (
-        sa.ForeignKeyConstraint(
-            ["user_id", "user_client"],
-            ["users.id", "users.client"],
-            ondelete="CASCADE"
-        ),
-    )
-
-
 
 
 class StrategyEmbedding(db.Model):
@@ -106,14 +91,14 @@ class ConversationState(db.Model):
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
-    user: so.Mapped["User"] = so.relationship(back_populates="conversation_state", cascade="all, delete")
+    user: so.Mapped["User"] = so.relationship(back_populates="conversation_state")
     interview_completed: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
     current_turn: so.Mapped[int] = so.mapped_column(sa.Integer, default=0)
     current_context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), nullable=True)
     strategy_for_frequency: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Strategy.id), nullable=True)
     completed_contexts: so.Mapped[List["ConversationCompletedContexts"]] = so.relationship(
         back_populates="conversation",
-        cascade="all, delete")
+        cascade="all, delete-orphan")
     current_conversation_step: so.Mapped[str] = so.mapped_column(sa.String(32),
                                                                  sa.CheckConstraint(
                                                                      "current_conversation_step IN ('intro', 'strategy', 'probe', 'frequency', 'complete')",
@@ -132,7 +117,7 @@ class ConversationCompletedContexts(db.Model):
                                                                           ondelete="CASCADE"),
                                                             primary_key=True)
     conversation: so.Mapped["ConversationState"] = so.relationship(
-        back_populates="completed_contexts", cascade="all, delete")
+        back_populates="completed_contexts")
 
 
 class InterviewAnswer(db.Model):
@@ -140,7 +125,7 @@ class InterviewAnswer(db.Model):
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
-    user: so.Mapped["User"] = so.relationship(back_populates="interview_answers", cascade="all, delete")
+    user: so.Mapped["User"] = so.relationship(back_populates="interview_answers")
     context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), nullable=True)
     strategy: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Strategy.id), nullable=True)
     turn: so.Mapped[int] = so.mapped_column(sa.Integer)
@@ -152,7 +137,7 @@ class InterviewAnswer(db.Model):
                                                          nullable=False)
     strategies: so.Mapped[List["UserStrategy"]] = so.relationship(
         back_populates="interview_answer",
-        cascade="all, delete")
+        cascade="all, delete-orphan")
     message_time: so.Mapped[datetime.datetime] = so.mapped_column(
         server_default=sa.text("CURRENT_TIMESTAMP")
     )
@@ -167,10 +152,10 @@ class UserStrategy(db.Model):
     user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
     user: so.Mapped["User"] = so.relationship(
-        back_populates="strategies", cascade="all, delete")
+        back_populates="strategies")
     interview_answer_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(InterviewAnswer.id))
     interview_answer: so.Mapped["InterviewAnswer"] = so.relationship(
-        back_populates="strategies", cascade="all, delete")
+        back_populates="strategies")
     context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id))
     strategy: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Strategy.id))
     frequency: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=True)
@@ -184,7 +169,7 @@ class LlmResponse(db.Model):
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
-    user: so.Mapped["User"] = so.relationship(back_populates="llm_responses", cascade="all, delete")
+    user: so.Mapped["User"] = so.relationship(back_populates="llm_responses")
     message: so.Mapped[str] = so.mapped_column(sa.String())
     context: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Context.id), nullable=True)
     strategy: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Strategy.id), nullable=True)
@@ -207,7 +192,7 @@ class StrategyEvaluation(db.Model):
     id: so.Mapped[str] = so.mapped_column(sa.String(64), primary_key=True)
     user_id: so.Mapped[str] = so.mapped_column(sa.String(64))
     user_client: so.Mapped[str] = so.mapped_column(sa.String(64))
-    user: so.Mapped["User"] = so.relationship(back_populates="evaluation", cascade="all, delete")
+    user: so.Mapped["User"] = so.relationship(back_populates="evaluation")
     strategy: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Strategy.id))
     SU: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False)
     SF: so.Mapped[float] = so.mapped_column(sa.Float())

@@ -30,13 +30,13 @@ dictConfig(
             },
         },
         "root": {"level": "INFO", "handlers": ["console", "fileRotate"]},
-        "StudyBot": {"level": "DEBUG", "handlers": ["console", "fileRotate"]},
+        "InterviewAgent": {"level": "DEBUG", "handlers": ["console", "fileRotate"]},
     }
 )
 
 
 load_dotenv()
-app = Flask('StudyBot')
+app = Flask('InterviewAgent')
 app.config.from_object(Config)
 app.secret_key = os.environ.get("SECRET_KEY", "fallback_secret_key")
 convention = {

@@ -9,7 +9,6 @@ from app.models import (
     ConversationState,
     Strategy,
     StrategyTranslation,
-    StrategyVector,
     Context,
     InterviewAnswer,
     ConversationCompletedContexts,
@@ -19,7 +18,7 @@ from app.models import (
 import sqlalchemy as sa
 import uuid
 
-logger = logging.getLogger("StudyBot")
+logger = logging.getLogger("InterviewAgent")
 
 
 def get_user(userid, client) -> User | None:
@@ -281,13 +280,6 @@ def save_evaluation_for_strategy(user, strategy, SU, SF, SC):
         sa.select(StrategyEvaluation).where(StrategyEvaluation.id == evaluation_id)
     )
     return created_evaluation
-
-
-def retrieve_similar_docs_vector(query_embedding):
-    embedding_array = np.array(query_embedding)
-    query = sa.select(StrategyVector).order_by(StrategyVector.embedding.l2_distance(embedding_array))
-    result = db.session.scalars(query.limit(5)).fetchall()
-    return result
 
 
 def archive_conversation(user, conversation_data):

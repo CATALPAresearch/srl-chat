@@ -1,6 +1,6 @@
 from locust import HttpUser, task, between
 
-class StudyBotUser(HttpUser):
+class InterviewAgentUser(HttpUser):
     wait_time = between(1, 3)
 
     @task

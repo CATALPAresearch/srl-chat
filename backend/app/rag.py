@@ -27,7 +27,7 @@ from pgvector.sqlalchemy import Vector
 from app import db
 from app.models import StrategyEmbedding
 
-logger = logging.getLogger("StudyBot")
+logger = logging.getLogger("InterviewAgent")
 
 # ---------------------------------------------------------------------------
 # Configuration

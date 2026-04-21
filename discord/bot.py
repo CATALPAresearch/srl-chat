@@ -181,12 +181,12 @@ async def talk_in_user_channel(user, language, translations):
     await user_channel.send(message)
 
 
-@client.tree.command(name="studybot")
+@client.tree.command(name="InterviewAgent")
 @app_commands.describe(
     language="'en' for English | 'de' für Deutsch",
 )
-async def studybot(interaction: Interaction, language: str):
-    """Start a conversation with StudyBot!"""
+async def interview_agent(interaction: Interaction, language: str):
+    """Start a conversation with InterviewAgent!"""
     headers = {'Content-Type': 'application/json; charset=utf-8', }
     translations_response = requests.get(f"{API_URL}/translations/{language}",  headers=headers)
     try:

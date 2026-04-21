@@ -3,7 +3,7 @@ import os
 from urllib.parse import quote_plus
 from dotenv import load_dotenv
 
-logger = logging.getLogger("StudyBot")
+logger = logging.getLogger("InterviewAgent")
 
 basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 # Load from project root first (canonical .env), fall back to backend/.env

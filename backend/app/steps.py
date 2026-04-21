@@ -18,7 +18,7 @@ from .models import User
 from .rag import USE_RAG_STRATEGY, detect_strategies_rag
 
 ABANDON_AFTER_STEPS = 6
-logger = logging.getLogger('StudyBot')
+logger = logging.getLogger('InterviewAgent')
 
 
 class StepIntroFields(BaseModel):
@@ -43,6 +43,9 @@ class StepFrequencyStepperFields(BaseModel):
 
 
 def intro_step(user: User, prev_conversation: list[str]):
+    """
+    The first of the three types of steps. In this step the interview starts with an introduction.
+    """
     intro_prompt = get_intro_prompt(user, ABANDON_AFTER_STEPS)
     system_prompt = get_prompt(user, "system")
 
@@ -60,7 +63,12 @@ def intro_step(user: User, prev_conversation: list[str]):
 
 
 
+
 def strategy_step(user: User, context: str, prev_conversation: list[str]):
+    """
+    The second type of step aims to collect mentioned strategies.
+    Two strategy detection methods are supported: Retrieval Augmented Generation and ChainOfThought
+    """
     if USE_RAG_STRATEGY:
         return _strategy_step_rag(user, context, prev_conversation)
     return _strategy_step_llm(user, context, prev_conversation)
@@ -122,8 +130,11 @@ def _strategy_step_llm(user: User, context: str, prev_conversation: list[str]):
     logger.debug("Retrieving prompt")
     strategy_analysis_prompt = get_strategy_analysis_prompt(user)
     logger.debug("Retrieving reasoning response")
-    reasoning_response = get_llm_response(strategy_analysis_prompt, user_prompt=None, temperature=0.0,
-                                                 prev_conversation=prev_conversation)
+    reasoning_response = get_llm_response(
+        strategy_analysis_prompt, 
+        user_prompt=None, temperature=0.0,
+        prev_conversation=prev_conversation
+        )
     logger.debug("Retrieving prompt")
     format_strategy_prompt = get_format_strategy_prompt(user, reasoning_response, len(prev_conversation), context,
                                                         ABANDON_AFTER_STEPS)
@@ -149,6 +160,10 @@ def _strategy_step_llm(user: User, context: str, prev_conversation: list[str]):
 
 
 def frequency_step(user: User, prev_conversation: list[str], conversation_for_strategy_in_context: list[str]):
+    """
+    Third type of step aim at collecting information about how often a strategy is applyed by the user. 
+    The use should respond with a number between 1 and 4.
+    """
     logger.debug("Retrieving strategy")
     strategy_for_frequency = user.conversation_state.strategy_for_frequency
 
@@ -156,8 +171,12 @@ def frequency_step(user: User, prev_conversation: list[str], conversation_for_st
     frequency_validate_prompt = get_frequency_validate_prompt(user, strategy_for_frequency)
     system_prompt = get_prompt(user, "system")
     logger.debug("Retrieving reasoning response")
-    reasoning_response = get_llm_response(frequency_validate_prompt + system_prompt, user_prompt=None, temperature=0.0,
-                                                 prev_conversation=conversation_for_strategy_in_context)
+    reasoning_response = get_llm_response(
+        frequency_validate_prompt + system_prompt, 
+        user_prompt=None, 
+        temperature=0.0,
+        prev_conversation=conversation_for_strategy_in_context
+        )
     logger.debug("Retrieving prompt")
     format_frequency_prompt = get_format_frequency_prompt(user, strategy_for_frequency, reasoning_response)
     logger.debug("Retrieving JSON")
@@ -174,11 +193,9 @@ def frequency_step(user: User, prev_conversation: list[str], conversation_for_st
     return strategy_for_frequency, json_output["frequency"], json_output["status"], json_output["comment"]
 
 
-def complete():
-    pass
-
 
 def validate_strategies(user_strategies):
+    """Util function that compares the detected strategies from the user input with expert curated list of strategies"""
     all_strategies = get_all_strategies()
     valid_strategies = []
     for strategy in user_strategies:
@@ -188,8 +205,15 @@ def validate_strategies(user_strategies):
 
 
 def try_get_json_completion(
-        num_attempts, start_temp, temp_increase, system_prompt, expected_fields_model, prev_conversation=None, user_prompt=None
+        num_attempts, 
+        start_temp, 
+        temp_increase, 
+        system_prompt, 
+        expected_fields_model, 
+        prev_conversation=None, 
+        user_prompt=None
 ):
+    """xxx"""
     if prev_conversation is None:
         prev_conversation = []
     expected_fields = list(expected_fields_model.model_fields.keys())

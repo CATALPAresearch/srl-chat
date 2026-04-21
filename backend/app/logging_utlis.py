@@ -6,7 +6,7 @@ from .actions import LogAction
 from .models import ActivityLog
 import logging
 
-logger = logging.getLogger("StudyBot")
+logger = logging.getLogger("InterviewAgent")
 
 def log_action(
         action: LogAction,
