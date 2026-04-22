@@ -1,9 +1,9 @@
-"""Telemetry logging routes: tab events and mouse traces."""
-import sqlalchemy as sa
+"""Telemetry logging routes: tab events, mouse traces, and page views."""
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
 
 from app import app, db
+from ..models import MouseTrace
 from ..database.crud import get_user
 from ..actions import LogAction
 from ..logging_utlis import log_action
@@ -76,28 +76,70 @@ def log_mouse_traces():
         if not userid or not client or not traces:
             return jsonify({"error": "Missing required fields"}), 400
 
-        with db.engine.connect() as conn:
+        with db.session.begin_nested():
             for trace in traces:
-                conn.execute(sa.text("""
-                    INSERT INTO mouse_traces
-                        (user_id, user_client, x, y, page_width, page_height, timestamp, session_id)
-                    VALUES
-                        (:user_id, :user_client, :x, :y, :page_width, :page_height, :timestamp, :session_id)
-                """), {
-                    "user_id": userid,
-                    "user_client": client,
-                    "x": trace.get("x", 0),
-                    "y": trace.get("y", 0),
-                    "page_width": trace.get("page_width"),
-                    "page_height": trace.get("page_height"),
-                    "timestamp": trace.get("timestamp"),
-                    "session_id": session_id,
-                })
-            conn.commit()
+                db.session.add(MouseTrace(
+                    user_id=userid,
+                    user_client=client,
+                    session_id=session_id,
+                    x=trace.get("x", 0),
+                    y=trace.get("y", 0),
+                    page_width=trace.get("page_width"),
+                    page_height=trace.get("page_height"),
+                    timestamp=trace.get("timestamp"),
+                ))
+        db.session.commit()
+
+        log_action(
+            LogAction.MOUSE_TRACE,
+            user=get_user(userid, client),
+            value={"count": len(traces), "session_id": session_id},
+            http_status=200,
+        )
 
         app.logger.info("Stored %d mouse traces for user %s/%s", len(traces), userid, client)
         return jsonify({"status": "stored", "count": len(traces)}), 200
 
     except Exception as e:
+        db.session.rollback()
         app.logger.error("Error storing mouse traces: %s", e)
+        return jsonify({"error": str(e)}), 500
+
+
+@logs_bp.route("/log/page_view", methods=["POST", "OPTIONS"])
+@cross_origin()
+def log_page_view():
+    """
+    Log when the user navigates to a page.
+    Expected JSON body:
+    {
+        "userid": "...",
+        "client": "...",
+        "path": "/agent-chat",
+        "timestamp": 1234567890
+    }
+    """
+    try:
+        content = request.json
+        userid = content.get("userid")
+        client = content.get("client")
+        path = content.get("path")
+        timestamp = content.get("timestamp")
+
+        if not path:
+            return jsonify({"error": "Missing path"}), 400
+
+        user = get_user(userid, client)
+        log_action(
+            LogAction.PAGE_VIEW,
+            user=user,
+            value={"path": path, "timestamp": timestamp, "userid": userid, "client": client},
+            http_status=200,
+            step="navigation",
+        )
+
+        return jsonify({"status": "logged", "path": path}), 200
+
+    except Exception as e:
+        app.logger.error("Error logging page view: %s", e)
         return jsonify({"error": str(e)}), 500

@@ -14,10 +14,12 @@ Workflow
    interview-format IDs (e.g. ``"001-001"``).
 """
 
+import hashlib
 import json
 import logging
 import os
 import pathlib
+from functools import lru_cache
 
 import numpy as np
 import requests
@@ -33,26 +35,19 @@ logger = logging.getLogger("InterviewAgent")
 # Configuration
 # ---------------------------------------------------------------------------
 USE_RAG_STRATEGY = os.getenv("USE_RAG_STRATEGY", "false").lower() == "true"
-RAG_EMBEDDING_MODEL = os.getenv("RAG_EMBEDDING_MODEL", "nomic-embed-text")
-OLLAMA_BASE_URL = os.getenv("BASE_URL", "http://localhost:11434").rstrip("/")
+EXPECTED_EMBEDDING_DIM = 768  # nomic-embed-text output dimension; update if model changes
 
 _CONFIG_DIR = pathlib.Path(__file__).resolve().parent.parent / "config"
 _STRATEGIES_PATH = _CONFIG_DIR / "learning_strategies.json"
 _CODE_MAP_PATH = _CONFIG_DIR / "strategy_code_map.json"
+_STRATEGIES_HASH_PATH = _CONFIG_DIR / "learning_strategies.hash"
 
-# Reverse map: rag_id → interview_id  (e.g. "rehearsal_mnemonics" → "001-001")
-_RAG_TO_INTERVIEW: dict[str, str] = {}
-
-
+@lru_cache(maxsize=1)
 def _load_code_map() -> dict[str, str]:
-    """Load and invert the code map so we can translate RAG IDs back."""
-    global _RAG_TO_INTERVIEW
-    if _RAG_TO_INTERVIEW:
-        return _RAG_TO_INTERVIEW
+    """Load and invert the code map (rag_id → interview_id). Result is cached."""
     with open(_CODE_MAP_PATH, "r", encoding="utf-8") as f:
         code_map = json.load(f)  # {"001-001": "rehearsal_mnemonics", ...}
-    _RAG_TO_INTERVIEW = {v: k for k, v in code_map.items()}
-    return _RAG_TO_INTERVIEW
+    return {v: k for k, v in code_map.items()}
 
 
 # ---------------------------------------------------------------------------
@@ -61,16 +56,25 @@ def _load_code_map() -> dict[str, str]:
 
 def _get_embedding(text: str) -> list[float]:
     """Call Ollama's embedding endpoint and return the vector."""
+    rag_model = os.getenv("RAG_EMBEDDING_MODEL", "nomic-embed-text")
+    ollama_url = os.getenv("BASE_URL", "http://localhost:11434").rstrip("/")
     response = requests.post(
-        f"{OLLAMA_BASE_URL}/api/embeddings",
-        json={"model": RAG_EMBEDDING_MODEL, "prompt": text},
+        f"{ollama_url}/api/embeddings",
+        json={"model": rag_model, "prompt": text},
         timeout=120,
     )
     response.raise_for_status()
     data = response.json()
     if "embedding" not in data:
         raise ValueError(f"Unexpected Ollama embedding response: {data}")
-    return data["embedding"]
+    vec = data["embedding"]
+    if len(vec) != EXPECTED_EMBEDDING_DIM:
+        raise ValueError(
+            f"Embedding dimension mismatch: expected {EXPECTED_EMBEDDING_DIM}, "
+            f"got {len(vec)} (model: {rag_model!r}). "
+            f"Update EXPECTED_EMBEDDING_DIM or RAG_EMBEDDING_MODEL."
+        )
+    return vec
 
 
 # ---------------------------------------------------------------------------
@@ -82,9 +86,9 @@ def _build_strategy_text(strategy: dict) -> str:
     parts = [f"Learning strategy: {strategy['name']}"]
 
     if "definitions" in strategy:
-        parts.append(" ".join(strategy["definitions"]) * 2)
+        parts.extend(strategy["definitions"] * 2)
     if "student_phrases" in strategy:
-        parts.append(" ".join(strategy["student_phrases"]) * 3)
+        parts.extend(strategy["student_phrases"] * 3)
     if "methods" in strategy:
         parts.append(" ".join(strategy["methods"]))
     if "positive_indicators" in strategy:
@@ -113,19 +117,27 @@ def seed_strategy_embeddings() -> None:
     with open(_STRATEGIES_PATH, "r", encoding="utf-8") as f:
         strategies = json.load(f)
 
+    current_hash = hashlib.md5(_STRATEGIES_PATH.read_bytes()).hexdigest()
+    stored_hash = (
+        _STRATEGIES_HASH_PATH.read_text(encoding="utf-8").strip()
+        if _STRATEGIES_HASH_PATH.exists()
+        else ""
+    )
     existing_count = db.session.scalar(
         sa.select(sa.func.count()).select_from(StrategyEmbedding)
     )
 
-    if existing_count and existing_count >= len(strategies):
+    if existing_count >= len(strategies) and current_hash == stored_hash:
         logger.info(
-            "[RAG] strategy_embedding already contains %d rows — skipping seed.",
+            "[RAG] strategy_embedding up to date (%d rows, hash %s) — skipping seed.",
             existing_count,
+            current_hash[:8],
         )
         return
 
+    rag_model = os.getenv("RAG_EMBEDDING_MODEL", "nomic-embed-text")
     logger.info("[RAG] Seeding %d strategy embeddings via %s …",
-                len(strategies), RAG_EMBEDDING_MODEL)
+                len(strategies), rag_model)
 
     for s in strategies:
         text = _build_strategy_text(s)
@@ -147,6 +159,7 @@ def seed_strategy_embeddings() -> None:
             db.session.add(row)
 
     db.session.commit()
+    _STRATEGIES_HASH_PATH.write_text(current_hash, encoding="utf-8")
     logger.info("[RAG] Strategy embeddings seeded successfully.")
 
 
@@ -194,7 +207,7 @@ def detect_strategies_rag(
             ORDER BY embedding <=> :vec
             LIMIT :k
         """),
-        {"vec": str(query_vector.tolist()), "k": top_k},
+        {"vec": query_vector.tolist(), "k": top_k},
     ).fetchall()
 
     if not results:

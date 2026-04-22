@@ -33,7 +33,7 @@
           >
             <button
               type="button"
-              class="btn btn-link"
+              class="btn btn-link btn-sm"
               aria-label="Antwort kopieren"
               title="Kopieren"
               v-if="!copied"
@@ -47,7 +47,7 @@
             </span>
             <button
               type="button"
-              class="btn btn-link"
+              class="btn btn-link btn-sm"
               aria-label="Antwort positiv bewerten"
               title="Gefällt mir"
               @click="sendRating('up', index)"
@@ -56,7 +56,7 @@
             </button>
             <button
               type="button"
-              class="btn btn-link"
+              class="btn btn-link btn-sm"
               aria-label="Antwort negativ bewerten"
               title="Gefällt mir nicht"
               @click="sendRating('down', index)"
@@ -82,13 +82,7 @@
             role="textbox"
           />
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <font-awesome-icon
-              v-if="is_loading"
-              class="fa-spin"
-              icon="spinner"
-              aria-hidden="true"
-            />
-            <span v-else style="width: 1em; display: inline-block" />
+            <span style="width: 1em; display: inline-block" />
 
             <button
               type="button"
@@ -264,22 +258,28 @@ export default Vue.extend({
 .message-actions {
   margin-top: 10px;
   min-height: 20px;
+  border-top: 1px solid #555;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .message-actions * {
   display: inline;
-  margin-right: 10px;
+  margin-right: 0px;
   font-size: 1.1em;
   color: #7d7575;
   border-radius: 4px;
-  padding: 5px;
+  padding: 2px;
 }
 
 .message-actions *:hover {
   background-color: #dadde4;
 }
 
-.message-bot:hover .message-actions * {
-  display: inline;
+.user-bot:hover .message-actions {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
 }
 </style>

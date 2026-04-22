@@ -197,6 +197,11 @@ export default Vue.extend({
             id: bot_placeholder.id,
           });
           this.wait_video_generation = false;
+          if (response.data && response.data.complete) {
+            setTimeout(() => {
+              this.$router.push("/survey");
+            }, 3000);
+          }
         })
         .catch((error) => {
           this.is_loading = false;

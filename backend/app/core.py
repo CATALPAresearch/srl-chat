@@ -124,7 +124,7 @@ def start_conversation_core(language, client, userid) -> tuple[str, int]:
         log_action(
             LogAction.REPLY_LLM,
             user=user,
-            value={"message_length": len(llm_message), "message_preview": llm_message[:100]},
+            value={"message": llm_message},
             turn=turn,
             step="intro",
             context="conversation_start",
@@ -184,7 +184,7 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
         log_action(
             LogAction.REPLY_USER,
             user=user,
-            value={"message_length": len(user_message), "message_preview": user_message[:100]},
+            value={"message": user_message},
             context=current_context.context if current_context else "user first response",
             strategy=current_strategy if current_strategy else "strategy_not_detected",
             turn=turn,
@@ -203,7 +203,7 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
             store_llm_answer(user, llm_message, current_context,
                              user.conversation_state.strategy_for_frequency, turn,
                              user.conversation_state.current_conversation_step)
-            return jsonify({"message": llm_message}), 200
+            return jsonify({"message": llm_message, "complete": True}), 200
 
         logger.info("Replying to user: %s - %s. Step: %s", user.id, user.client, conversation_step)
 
@@ -236,7 +236,7 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                     log_action(
                         LogAction.REPLY_LLM,
                         user=user,
-                        value={"message_length": len(llm_message), "message_preview": llm_message[:100]},
+                        value={"message": llm_message},
                         turn=turn,
                         step=conversation_step,
                         context=current_context.context,
@@ -263,10 +263,7 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                     log_action(
                         LogAction.REPLY_LLM,
                         user=user,
-                        value={
-                            "message_length": len(llm_message),
-                            "message_preview": llm_message[:100],
-                        },
+                        value={"message": llm_message},
                         turn=turn,
                         step=conversation_step,
                         context=current_context.context if current_context else None,
@@ -277,10 +274,7 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                     log_action(
                         LogAction.REPLY_LLM,
                         user=user,
-                        value={
-                            "message_length": len(llm_message),
-                            "message_preview": llm_message[:100],
-                        },
+                        value={"message": llm_message},
                         turn=turn,
                         step="strategy",
                         context=current_context.context if current_context else None,
@@ -311,10 +305,7 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                 log_action(
                     LogAction.REPLY_LLM,
                     user=user,
-                    value={
-                        "message_length": len(llm_message),
-                        "message_preview": llm_message[:100],
-                    },
+                    value={"message": llm_message},
                     turn=turn,
                     step=conversation_step,
                     context=current_context.context if current_context else None,
@@ -329,7 +320,10 @@ def reply_core(client, userid, user_message) -> tuple[str, int]:
                          user.conversation_state.strategy_for_frequency, turn,
                          user.conversation_state.current_conversation_step
                          )
-        return jsonify({"message": llm_message}), 200
+        return jsonify({
+            "message": llm_message,
+            "complete": bool(user.conversation_state.interview_completed),
+        }), 200
     except Exception as e:
         db.session.rollback()
         logger.error("Error in reply_core: %s", e)
@@ -419,6 +413,20 @@ def move_to_next_context(user, current_context):
     next_context = set_current_context_complete(user, current_context)
     conversation_so_far = retrieve_full_conversation(user)
     system_prompt = get_prompt(user, "system")
+
+    # Optional test-only short-circuit: stop after N completed contexts.
+    # Disabled by default; enable with TEST_STOP_AFTER_CONTEXTS=1 (or 2, ...).
+    stop_after_contexts = int(os.getenv("TEST_STOP_AFTER_CONTEXTS", "0") or "0")
+    completed_contexts = get_completed_contexts(user) or []
+    if stop_after_contexts > 0 and len(completed_contexts) >= stop_after_contexts:
+        set_interview_complete(user)
+        update_current_conversation_step(user, "complete")
+        llm_message = (
+            f"[TEST MODE] Interview stopped early after {len(completed_contexts)} "
+            "context(s)."
+        )
+        return llm_message, None
+
     if next_context:
         logger.info("Moving on to context: %s", next_context.context)
         prompt = get_context_prompt(next_context.context, user)

@@ -75,6 +75,23 @@ class StrategyVector(db.Model):
     language_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Language.id))
 
 
+class MouseTrace(db.Model):
+    """Sampled mouse positions sent in batches from the frontend."""
+    __tablename__ = "mouse_traces"
+    id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True, autoincrement=True)
+    user_id: so.Mapped[Optional[str]] = so.mapped_column(sa.String(64))
+    user_client: so.Mapped[Optional[str]] = so.mapped_column(sa.String(64))
+    session_id: so.Mapped[Optional[str]] = so.mapped_column(sa.String(128))
+    x: so.Mapped[int] = so.mapped_column(sa.Integer)
+    y: so.Mapped[int] = so.mapped_column(sa.Integer)
+    page_width: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer)
+    page_height: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer)
+    timestamp: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer)
+    __table_args__ = (
+        sa.Index("idx_mouse_user_session", "user_id", "user_client", "session_id"),
+    )
+
+
 class StrategyEmbedding(db.Model):
     """RAG-based strategy embeddings using Ollama nomic-embed-text (768-dim)."""
     __tablename__ = "strategy_embedding"
@@ -266,16 +283,3 @@ class ActivityLog(db.Model):
             'step': self.step,
             'http_status': self.http_status
         }
-
-
-class MouseTrace(db.Model):
-    __tablename__ = "mouse_traces"
-    id: so.Mapped[int] = so.mapped_column(sa.Integer, primary_key=True, autoincrement=True)
-    user_id: so.Mapped[str] = so.mapped_column(sa.String(64), nullable=False, index=True)
-    user_client: so.Mapped[str] = so.mapped_column(sa.String(64), nullable=False)
-    x: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False)
-    y: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False)
-    page_width: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer, nullable=True)
-    page_height: so.Mapped[Optional[int]] = so.mapped_column(sa.Integer, nullable=True)
-    timestamp: so.Mapped[int] = so.mapped_column(sa.BigInteger, nullable=False, index=True)
-    session_id: so.Mapped[Optional[str]] = so.mapped_column(sa.String(64), nullable=True)

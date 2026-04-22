@@ -61,6 +61,12 @@ from app.rag import USE_RAG_STRATEGY, seed_strategy_embeddings
 if USE_RAG_STRATEGY:
     with app.app_context():
         db.create_all()  # ensure strategy_embedding table exists
-        seed_strategy_embeddings()
+    import threading
+
+    def _seed_rag() -> None:
+        with app.app_context():
+            seed_strategy_embeddings()
+
+    threading.Thread(target=_seed_rag, daemon=True, name="rag-seed").start()
 
 

@@ -73,3 +73,9 @@ class LogAction(str, Enum):
     # ============ Tab Visibility ============
     TAB_HIDDEN = "tab_hidden"
     TAB_VISIBLE = "tab_visible"
+
+    # ============ Navigation ============
+    PAGE_VIEW = "page_view"
+
+    # ============ Mouse Tracking ============
+    MOUSE_TRACE = "mouse_trace"
