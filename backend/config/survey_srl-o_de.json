@@ -1,6 +1,6 @@
 {
   "id": "srl-o",
-  "title": "Fragebogen zur Selbstregulation beim Online-Lernen (SRL-O)",
+  "title": "Fragebogen zur Selbstregulation",
   "description": "Bitte bewerten Sie jede Aussage auf einer Skala von 1 (stimme gar nicht zu) bis 5 (stimme voll zu).",
   "scale": {
     "min": 1,

@@ -46,7 +46,7 @@
           :key="scale.id"
           class="survey-scale"
         >
-          <h5 class="scale-title">
+          <h5 hidden class="scale-title">
             {{ sIdx + 1 }}.
             {{
               typeof scale.title === "string"
@@ -54,6 +54,7 @@
                 : scale.title[lang] || scale.title.en
             }}
           </h5>
+          <h5 class="scale-title">Teil {{ sIdx + 1 }}.</h5>
 
           <table class="survey-table">
             <thead>

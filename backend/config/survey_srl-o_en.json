@@ -1,6 +1,6 @@
 {
   "id": "srl-o",
-  "title": "Self-Regulation for Learning Online Questionnaire (SRL-O)",
+  "title": "Self-Regulation for Learning Questionnaire",
   "description": "Please rate each statement on a scale from 1 (strongly disagree) to 5 (strongly agree).",
   "scale": {
     "min": 1,
